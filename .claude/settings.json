@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(**/*.fixtures.ts)",
+      "Write(**/*.fixtures.ts)",
+      "Edit(**/__fixtures__/pending/**)",
+      "Write(**/__fixtures__/pending/**)",
+      "Edit(**/__tests__/sheet-area.test.ts)",
+      "Write(**/__tests__/sheet-area.test.ts)",
+      "Edit(**/__tests__/aero.test.ts)",
+      "Write(**/__tests__/aero.test.ts)"
+    ]
+  }
+}
