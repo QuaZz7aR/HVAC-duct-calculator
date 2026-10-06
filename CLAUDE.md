@@ -7,7 +7,7 @@ Reference implementation is a practising engineer's Excel; verified numbers live
 Stack: Next.js (App Router), TypeScript strict, Vitest, Zod. Core logic is plain TS in `src/lib/calc/`, no framework imports.
 
 ## Commands
-- `npm test` - vitest run (must be green before any commit)
+- `npm test` - vitest run. During stage 0, a commit is allowed when typecheck and lint are clean and every failing test fails only with 'not implemented'. After stage 0, npm test must be green before any commit.
 - `npm run typecheck` - `tsc --noEmit`
 - `npm run lint`
 
