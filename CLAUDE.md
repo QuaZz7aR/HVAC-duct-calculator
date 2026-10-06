@@ -14,6 +14,7 @@ Stack: Next.js (App Router), TypeScript strict, Vitest, Zod. Core logic is plain
 ## The one rule that matters
 `src/lib/calc/__fixtures__/` is the source of truth. **Never change an expected value to make a test pass.**
 If you believe a fixture is wrong, stop and show the arithmetic that proves it; I decide, not you.
+Never change existing tests or their tolerances (`toBeCloseTo` precision). Never write to `__fixtures__/` or these tests via shell either.
 Fixtures with `basis: 'excel'` follow the spreadsheet author's convention and are not independently verified.
 
 ## Units
@@ -43,10 +44,9 @@ Tees and crosses (see `__fixtures__/pending/`), branch-in fittings (round and re
 1. Rect elbow: is the radius inner or center? The Excel formula treats it as inner; round elbow treats it as center.
 2. Tees/crosses: subtract the branch opening from the main duct? Excel does it for one fitting only.
 3. What exactly do the cutting coefficients (1.15 / 1.2 / 1.1) cover - waste, seams, both?
-4. Minimum reducer length: 150 mm hard limit or 300 mm default?
 
 ## How to work with me
-- One fitting kind per session. Plan first (plan mode), wait for approval, then implement.
+- One fitting kind per session. Exception: stage 0 scaffolding (`units.ts`, `defaultConfig`, stubs) goes together with straight ducts. Plan first (plan mode), wait for approval, then implement.
 - Add a fitting: type in `types.ts` -> fixture exists -> test red -> implement -> green -> typecheck.
 - Never invent a coefficient, a standard or a table. If a source is missing, add a config entry with `TODO(confirm)` and ask.
 - No new dependencies without asking.
