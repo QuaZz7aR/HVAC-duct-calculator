@@ -15,10 +15,14 @@ export function developedLength(f: Fitting): number {
       return mmToM(f.length);
     case 'roundElbow':
     case 'rectElbow':
-    case 'roundReducer':
     case 'rectReducer':
     case 'rectToRoundReducer':
       return notImplemented(f.kind);
+    case 'roundReducer': {
+      // cone generatrix (slant height) plus the connection allowance at both ends
+      const slant = Math.sqrt(mmToM(f.length) ** 2 + ((mmToM(f.diameter) - mmToM(f.smallDiameter)) / 2) ** 2);
+      return slant + 2 * mmToM(f.allowance);
+    }
     default:
       return assertNever(f);
   }
@@ -41,10 +45,12 @@ export function sheetArea(f: Fitting): number {
       return mmToM(f.width) * mmToM(f.height) + 2 * (mmToM(f.width) + mmToM(f.height)) * developedLength(f);
     case 'roundElbow':
     case 'rectElbow':
-    case 'roundReducer':
     case 'rectReducer':
     case 'rectToRoundReducer':
       return notImplemented(f.kind);
+    case 'roundReducer':
+      // frustum surface: mean circumference x developed length (cone wall + allowance strips at both ends)
+      return (Math.PI * (mmToM(f.diameter) + mmToM(f.smallDiameter)) / 2) * developedLength(f);
     default:
       return assertNever(f);
   }
@@ -62,10 +68,12 @@ export function centerlineLength(f: Fitting): number {
       return 0;
     case 'roundElbow':
     case 'rectElbow':
-    case 'roundReducer':
     case 'rectReducer':
     case 'rectToRoundReducer':
       return notImplemented(f.kind);
+    case 'roundReducer':
+      // TODO(confirm): reducer centerline = axial length (not in CLAUDE.md, no fixture covers it)
+      return mmToM(f.length);
     default:
       return assertNever(f);
   }
