@@ -10,9 +10,9 @@ export function developedLength(f: Fitting): number {
   switch (f.kind) {
     case 'roundStraight':
     case 'rectStraight':
-      return mmToM(f.length);
     case 'roundCap':
     case 'rectCap':
+      return mmToM(f.length);
     case 'roundElbow':
     case 'rectElbow':
     case 'roundReducer':
@@ -34,7 +34,11 @@ export function sheetArea(f: Fitting): number {
       // four walls: perimeter x developed length
       return 2 * (mmToM(f.width) + mmToM(f.height)) * developedLength(f);
     case 'roundCap':
+      // end disc + cylindrical skirt
+      return (Math.PI * mmToM(f.diameter) ** 2) / 4 + Math.PI * mmToM(f.diameter) * developedLength(f);
     case 'rectCap':
+      // end plate + four skirt walls
+      return mmToM(f.width) * mmToM(f.height) + 2 * (mmToM(f.width) + mmToM(f.height)) * developedLength(f);
     case 'roundElbow':
     case 'rectElbow':
     case 'roundReducer':
@@ -54,6 +58,8 @@ export function centerlineLength(f: Fitting): number {
       return mmToM(f.length);
     case 'roundCap':
     case 'rectCap':
+      // TODO(confirm): cap centerline = 0 (not in CLAUDE.md)
+      return 0;
     case 'roundElbow':
     case 'rectElbow':
     case 'roundReducer':
