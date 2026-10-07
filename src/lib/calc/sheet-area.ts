@@ -15,8 +15,12 @@ export function developedLength(f: Fitting): number {
       return mmToM(f.length);
     case 'roundElbow':
     case 'rectElbow':
-    case 'rectToRoundReducer':
       return notImplemented(f.kind);
+    case 'rectToRoundReducer': {
+      // TODO(confirm): v1 approximation from engineer's Excel, slant uses (W - d)/2 only; height ignored, same as rectReducer. Cone generatrix plus allowance at both ends.
+      const slant = Math.sqrt(mmToM(f.length) ** 2 + ((mmToM(f.width) - mmToM(f.smallDiameter)) / 2) ** 2);
+      return slant + 2 * mmToM(f.allowance);
+    }
     case 'rectReducer': {
       // TODO(confirm): v1 approximation from engineer's Excel, slant uses width offset only; height taper ignored, area understated when (H-h) >> (W-w). Exact per-face geometry is option B, pending engineer decision.
       const slant = Math.sqrt(mmToM(f.length) ** 2 + ((mmToM(f.width) - mmToM(f.smallWidth)) / 2) ** 2);
@@ -49,8 +53,10 @@ export function sheetArea(f: Fitting): number {
       return mmToM(f.width) * mmToM(f.height) + 2 * (mmToM(f.width) + mmToM(f.height)) * developedLength(f);
     case 'roundElbow':
     case 'rectElbow':
-    case 'rectToRoundReducer':
       return notImplemented(f.kind);
+    case 'rectToRoundReducer':
+      // transition surface: mean of rect and round perimeters x developed length
+      return ((2 * (mmToM(f.width) + mmToM(f.height)) + Math.PI * mmToM(f.smallDiameter)) / 2) * developedLength(f);
     case 'rectReducer':
       // four trapezoid faces: mean perimeter x developed length
       return (mmToM(f.width) + mmToM(f.height) + mmToM(f.smallWidth) + mmToM(f.smallHeight)) * developedLength(f);
@@ -74,8 +80,8 @@ export function centerlineLength(f: Fitting): number {
       return 0;
     case 'roundElbow':
     case 'rectElbow':
-    case 'rectToRoundReducer':
       return notImplemented(f.kind);
+    case 'rectToRoundReducer':
     case 'rectReducer':
       // TODO(confirm): reducer centerline = axial length (not in CLAUDE.md, no fixture covers it)
       return mmToM(f.length);
