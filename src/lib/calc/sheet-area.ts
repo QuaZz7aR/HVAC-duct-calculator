@@ -1,10 +1,6 @@
 import type { Fitting } from './types';
 import { degToRad, mmToM } from './units';
 
-const notImplemented = (kind: string): never => {
-  throw new Error(`not implemented: ${kind}`);
-};
-
 /** Wall length along the surface, computed once per fitting and shared by metal and insulation. */
 export function developedLength(f: Fitting): number {
   switch (f.kind) {
@@ -17,7 +13,8 @@ export function developedLength(f: Fitting): number {
       // bend arc along the center radius plus the connection allowance at both ends
       return centerlineLength(f) + 2 * mmToM(f.allowance);
     case 'rectElbow':
-      return notImplemented(f.kind);
+      // bend arc along the center radius plus the connection allowance at both ends
+      return centerlineLength(f) + 2 * mmToM(f.allowance);
     case 'rectToRoundReducer': {
       // TODO(confirm): v1 approximation from engineer's Excel, slant uses (W - d)/2 only; height ignored, same as rectReducer. Cone generatrix plus allowance at both ends.
       const slant = Math.sqrt(mmToM(f.length) ** 2 + ((mmToM(f.width) - mmToM(f.smallDiameter)) / 2) ** 2);
@@ -57,7 +54,8 @@ export function sheetArea(f: Fitting): number {
       // torus segment unrolled: circumference x developed length
       return Math.PI * mmToM(f.diameter) * developedLength(f);
     case 'rectElbow':
-      return notImplemented(f.kind);
+      // four walls (two cheeks + inner and outer curved walls) unrolled: perimeter x developed length
+      return 2 * (mmToM(f.width) + mmToM(f.height)) * developedLength(f);
     case 'rectToRoundReducer':
       // transition surface: mean of rect and round perimeters x developed length
       return ((2 * (mmToM(f.width) + mmToM(f.height)) + Math.PI * mmToM(f.smallDiameter)) / 2) * developedLength(f);
@@ -86,7 +84,8 @@ export function centerlineLength(f: Fitting): number {
       // arc of the bend along the center radius
       return mmToM(f.centerRadius) * degToRad(f.angle);
     case 'rectElbow':
-      return notImplemented(f.kind);
+      // TODO(confirm): innerRadius is the INNER radius and width is the bend-plane side (CLAUDE.md open question 1); center radius = innerRadius + width / 2
+      return (mmToM(f.innerRadius) + mmToM(f.width) / 2) * degToRad(f.angle);
     case 'rectToRoundReducer':
     case 'rectReducer':
       // TODO(confirm): reducer centerline = axial length (not in CLAUDE.md, no fixture covers it)
