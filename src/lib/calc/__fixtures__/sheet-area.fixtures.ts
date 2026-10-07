@@ -128,7 +128,7 @@ export const sheetAreaCases: SheetAreaCase[] = [
         },
         area: 0.401039864,
         basis: 'geometry',
-        note: 'slant uses the width offset only - accepted approximation for v1',
+        note: 'Exact: each face pair with its own slant.',
     },
     {
         id: 'rect-reducer-600x400-400x300',
