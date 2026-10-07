@@ -16,14 +16,21 @@ export function developedLength(f: Fitting): number {
       // bend arc along the center radius plus the connection allowance at both ends
       return centerlineLength(f) + 2 * mmToM(f.allowance);
     case 'rectToRoundReducer': {
-      // TODO(confirm): v1 approximation from engineer's Excel, slant uses (W - d)/2 only; height ignored, same as rectReducer. Cone generatrix plus allowance at both ends.
+      // TODO(confirm): project approximation; Excel uses axial length. Slant uses (W - d)/2 only, height ignored. Cone generatrix plus allowance at both ends.
       const slant = Math.sqrt(mmToM(f.length) ** 2 + ((mmToM(f.width) - mmToM(f.smallDiameter)) / 2) ** 2);
       return slant + 2 * mmToM(f.allowance);
     }
     case 'rectReducer': {
-      // TODO(confirm): v1 approximation from engineer's Excel, slant uses width offset only; height taper ignored, area understated when (H-h) >> (W-w). Exact per-face geometry is option B, pending engineer decision.
-      const slant = Math.sqrt(mmToM(f.length) ** 2 + ((mmToM(f.width) - mmToM(f.smallWidth)) / 2) ** 2);
-      return slant + 2 * mmToM(f.allowance);
+      // Area-equivalent length (total face area / mean perimeter), NOT a physical edge length: there is no single slant.
+      // Top/bottom trapezoids slope by (H - h) / 2, side trapezoids by (W - w) / 2; allowance strips at both ends.
+      const W = mmToM(f.width);
+      const H = mmToM(f.height);
+      const w = mmToM(f.smallWidth);
+      const h = mmToM(f.smallHeight);
+      const L = mmToM(f.length);
+      const topBottom = (W + w) * Math.sqrt(L ** 2 + ((H - h) / 2) ** 2);
+      const sides = (H + h) * Math.sqrt(L ** 2 + ((W - w) / 2) ** 2);
+      return (topBottom + sides) / (W + H + w + h) + 2 * mmToM(f.allowance);
     }
     case 'roundReducer': {
       // cone generatrix (slant height) plus the connection allowance at both ends
@@ -60,7 +67,7 @@ export function sheetArea(f: Fitting): number {
       // transition surface: mean of rect and round perimeters x developed length
       return ((2 * (mmToM(f.width) + mmToM(f.height)) + Math.PI * mmToM(f.smallDiameter)) / 2) * developedLength(f);
     case 'rectReducer':
-      // four trapezoid faces: mean perimeter x developed length
+      // four trapezoid faces + allowance strips: mean perimeter x area-equivalent developed length
       return (mmToM(f.width) + mmToM(f.height) + mmToM(f.smallWidth) + mmToM(f.smallHeight)) * developedLength(f);
     case 'roundReducer':
       // frustum surface: mean circumference x developed length (cone wall + allowance strips at both ends)
