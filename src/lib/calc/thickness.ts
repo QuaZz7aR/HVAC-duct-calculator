@@ -29,12 +29,16 @@ export function thicknessSize(f: Fitting): ThicknessSize {
     case 'roundStraight':
     case 'roundCap':
     case 'roundElbow':
-    case 'roundReducer':
       return { shape: 'round', diameter: f.diameter };
+    case 'roundReducer':
+      // max over both ends: a mis-ordered "small" end must not pick a thinner sheet
+      return { shape: 'round', diameter: Math.max(f.diameter, f.smallDiameter) };
+    case 'rectReducer':
+      // the larger side of either end decides, so a "small" end that is wider on one side still counts
+      return { shape: 'rect', width: Math.max(f.width, f.smallWidth), height: Math.max(f.height, f.smallHeight) };
     case 'rectStraight':
     case 'rectCap':
     case 'rectElbow':
-    case 'rectReducer':
     case 'rectToRoundReducer':
       return { shape: 'rect', width: f.width, height: f.height };
     default:
