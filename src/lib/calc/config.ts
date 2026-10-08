@@ -23,8 +23,20 @@ export interface WasteFactorTable {
   rect: WasteRow[]; // elbows, keyed by equivalent diameter 2WH/(W+H), ascending fromMm
 }
 
+/** Air constants and defaults for airAtConditions (Excel "Шаблон" AP5, AQ5). */
+export interface AirConfig {
+  gasConstantJPerKgK: number; // specific gas constant of air
+  zeroCelsiusK: number; // 0 C in kelvin
+  sutherlandMu0KgfSPerM2: number; // dynamic viscosity at 0 C, kgf*s/m2
+  sutherlandCK: number; // Sutherland constant, K
+  gravityMPerS2: number; // converts kgf*s/m2 to Pa*s
+  airTemperatureC: number; // default air temperature
+  airPressurePa: number; // default air pressure
+}
+
 /** Boundary-unit defaults (mm). Convert with units.ts before use in the core. */
 export interface CalcConfig {
+  air: AirConfig;
   roughnessMm: number; // absolute roughness, steel
   reducerLengthMm: number; // default reducer length
   reducerMinLengthMm: number; // validation floor, never a silent clamp
@@ -33,6 +45,15 @@ export interface CalcConfig {
 }
 
 export const defaultConfig: CalcConfig = {
+  air: {
+    gasConstantJPerKgK: 287,
+    zeroCelsiusK: 273, // Excel rounding, kept for consistency with aero fixtures
+    sutherlandMu0KgfSPerM2: 1.74e-6,
+    sutherlandCK: 114,
+    gravityMPerS2: 9.8, // Excel rounding, kept for consistency with aero fixtures
+    airTemperatureC: 22,
+    airPressurePa: 101308,
+  },
   roughnessMm: 0.1,
   reducerLengthMm: 300,
   reducerMinLengthMm: 150,
