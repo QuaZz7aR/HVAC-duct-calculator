@@ -32,6 +32,10 @@ Fixtures with `basis: 'excel'` follow the spreadsheet author's convention and ar
 - Reducer length: default 300 mm, validation floor 150 mm. Never silently clamp what the user typed.
 - Pressure drop: Altshul `lambda = 0.11 * (k/d + 68/Re)^0.25`, equivalent diameter `2ab/(a+b)` for rectangles, `dp_friction = lambda * L/d * Pd`, `dp_local = zeta * Pd`. Default roughness 0.1 mm (steel).
 
+## Guardrails in `.claude/settings.json`
+- `npm install` and its aliases, `add`, `update`, `uninstall`, `audit fix`, `dedupe`, `prune`, `link` (and `pnpm`/`yarn` equivalents) are denied for the agent. On Windows they prune Linux-only `@emnapi/*` entries from `package-lock.json` and break CI `npm ci`. Use `npm ci`. Dependencies are added by Linux threads (and only after asking).
+- A `Stop` hook (`.claude/hooks/stop-check.mjs`, plain node, cross-platform) runs typecheck, lint and tests when the agent finishes and blocks the stop with the output if any fail. It is skipped when `git status` shows no changes under `src/` or in package/tsconfig/eslint config. Work already committed in the same session is not re-checked. After one blocked retry it only reports, to avoid loops.
+
 ## Naming and style
 - camelCase for values, PascalCase for types, discriminated unions on `kind`. Short but meaningful names.
 - Vocabulary: `width`, `height`, `diameter`, `smallWidth`, `smallHeight`, `smallDiameter`, `centerRadius` (round elbow), `innerRadius` (rect elbow), `angle`, `allowance`, `length`, `area`, `thickness`.

@@ -8,7 +8,84 @@
       "Edit(**/__tests__/sheet-area.test.ts)",
       "Write(**/__tests__/sheet-area.test.ts)",
       "Edit(**/__tests__/aero.test.ts)",
-      "Write(**/__tests__/aero.test.ts)"
+      "Write(**/__tests__/aero.test.ts)",
+      "Bash(npm install)",
+      "Bash(npm install *)",
+      "Bash(npm i)",
+      "Bash(npm i *)",
+      "Bash(npm add)",
+      "Bash(npm add *)",
+      "Bash(npm update)",
+      "Bash(npm update *)",
+      "Bash(npm up)",
+      "Bash(npm up *)",
+      "Bash(npm upgrade)",
+      "Bash(npm upgrade *)",
+      "Bash(npm uninstall)",
+      "Bash(npm uninstall *)",
+      "Bash(npm remove)",
+      "Bash(npm remove *)",
+      "Bash(npm audit fix)",
+      "Bash(npm audit fix *)",
+      "Bash(npm in)",
+      "Bash(npm in *)",
+      "Bash(npm ins)",
+      "Bash(npm ins *)",
+      "Bash(npm it)",
+      "Bash(npm it *)",
+      "Bash(npm install-test)",
+      "Bash(npm install-test *)",
+      "Bash(npm rm)",
+      "Bash(npm rm *)",
+      "Bash(npm un)",
+      "Bash(npm un *)",
+      "Bash(npm dedupe)",
+      "Bash(npm dedupe *)",
+      "Bash(npm ddp)",
+      "Bash(npm ddp *)",
+      "Bash(npm prune)",
+      "Bash(npm prune *)",
+      "Bash(npm link)",
+      "Bash(npm link *)",
+      "Bash(npm ln)",
+      "Bash(npm ln *)",
+      "Bash(pnpm install)",
+      "Bash(pnpm install *)",
+      "Bash(pnpm add)",
+      "Bash(pnpm add *)",
+      "Bash(pnpm up)",
+      "Bash(pnpm up *)",
+      "Bash(pnpm upgrade)",
+      "Bash(pnpm upgrade *)",
+      "Bash(pnpm remove)",
+      "Bash(pnpm remove *)",
+      "Bash(yarn install)",
+      "Bash(yarn install *)",
+      "Bash(yarn add)",
+      "Bash(yarn add *)",
+      "Bash(yarn up)",
+      "Bash(yarn up *)",
+      "Bash(yarn upgrade)",
+      "Bash(yarn upgrade *)",
+      "Bash(yarn remove)",
+      "Bash(yarn remove *)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              ".claude/hooks/stop-check.mjs"
+            ],
+            "timeout": 600,
+            "statusMessage": "Running typecheck, lint and tests..."
+          }
+        ]
+      }
     ]
   }
 }
