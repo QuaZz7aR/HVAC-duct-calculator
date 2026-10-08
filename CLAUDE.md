@@ -4,12 +4,29 @@
 
 Web tool: list of duct fittings -> sheet-metal area, insulation area, pressure drop per section.
 Reference implementation is a practising engineer's Excel; verified numbers live in the fixtures.
-Stack: Next.js (App Router), TypeScript strict, Vitest, Zod. Core logic is plain TS in `src/lib/calc/`, no framework imports.
+Stack: Next.js (App Router), TypeScript strict, Vitest, Zod 4. Core logic is plain TS in `src/lib/calc/`, no framework imports and no Zod. Input validation lives in `src/lib/validation/` and wraps the core.
+Engineering decisions, the `TODO(confirm)` register and deferred work: `docs/decisions.md`.
+
+## Status
+Stage 0 (fittings geometry, pressure drop) and stage 1 core (thickness table, elbow waste factor, air properties, Zod validation, `assembleSection`) are done and merged. No UI yet (`src/app/page.tsx` is still the create-next-app stub). Next: sheet list by thickness, then UI + Vercel, XLSX export.
+
+## Code map (`src/lib/`)
+- `calc/units.ts` - `mmToM`, `m3hToM3s`, `degToRad`; the only place that converts.
+- `calc/config.ts` - `CalcConfig` and `defaultConfig`: roughness, reducer length and floor, air constants, thickness table, waste-factor table.
+- `calc/sheet-area.ts` - `developedLength`, `sheetArea` (pure geometry, no waste), `centerlineLength`.
+- `calc/waste-factor.ts` - `wasteFactor` (elbows only, other kinds use `table.default`), `metalArea = sheetArea * wasteFactor`.
+- `calc/thickness.ts` - `thickness(size, config)` lookup.
+- `calc/air.ts` - `airAtConditions(tC, pPa, config)` -> density, kinematic viscosity.
+- `calc/aero.ts` - `pressureDrop` (straight section), `pressureDropAt`, `roundOpening` / `rectOpening`.
+- `calc/section.ts` - `assembleSection({ fitting, flow, localCoefficient }, air, config)` -> `metalArea` (m2), `centerlineLength` (m), `pressureDrop`.
+- `validation/` - `createSchemas(config)`, `fittingSchema`, `ductSectionSchema`, `airInputSchema`, `validate`. Errors are stable codes (`codes.ts`), never human text.
 
 ## Commands
-- `npm test` - vitest run. During stage 0, a commit is allowed when typecheck and lint are clean and every failing test fails only with 'not implemented'. After stage 0, npm test must be green before any commit.
-- `npm run typecheck` - `tsc --noEmit`
+- `npm ci` - install. Never `npm install` (see Guardrails).
+- `npm test` - vitest run. Must be green before any commit.
+- `npm run typecheck` - `next typegen && tsc --noEmit`
 - `npm run lint`
+- CI (`.github/workflows/ci.yml`, job `check`) runs `npm ci`, typecheck, lint, test on Node from `.nvmrc` (24).
 
 ## The one rule that matters
 `src/lib/calc/__fixtures__/` is the source of truth. **Never change an expected value to make a test pass.**
@@ -31,8 +48,12 @@ Fixtures with `basis: 'excel'` follow the spreadsheet author's convention and ar
 - Sheet thickness is a versioned lookup table (rect: by larger side, round: by diameter), not a formula. Threshold values are placeholders until confirmed.
 - Reducer length: default 300 mm, validation floor 150 mm. Never silently clamp what the user typed.
 - Pressure drop: Altshul `lambda = 0.11 * (k/d + 68/Re)^0.25`, equivalent diameter `2ab/(a+b)` for rectangles, `dp_friction = lambda * L/d * Pd`, `dp_local = zeta * Pd`. Default roughness 0.1 mm (steel).
+- Waste factor applies to elbows only (round: by diameter, rect: by equivalent diameter); every other kind uses the config default 1.0.
+- `rectReducer` is exact per-face geometry (`developedLength` is the area-equivalent length). `rectToRoundReducer` is a project approximation (slant from width only). The Excel is a reference, not the truth.
+- Reducer sections in `assembleSection` follow the Excel: friction by the larger end's diameter, velocity is the mean of both ends, `dp_local = zeta * Pd` at that mean velocity (`TODO(confirm)`, handbooks use the small section).
 
 ## Guardrails in `.claude/settings.json`
+- `Edit`/`Write` are denied for `**/*.fixtures.ts`, `**/__fixtures__/pending/**`, `__tests__/sheet-area.test.ts` and `__tests__/aero.test.ts`. The other tests are not blocked by the harness but the "one rule" still applies to them.
 - `npm install` and its aliases, `add`, `update`, `uninstall`, `audit fix`, `dedupe`, `prune`, `link` (and `pnpm`/`yarn` equivalents) are denied for the agent. On Windows they prune Linux-only `@emnapi/*` entries from `package-lock.json` and break CI `npm ci`. Use `npm ci`. Dependencies are added by Linux threads (and only after asking).
 - A `Stop` hook (`.claude/hooks/stop-check.mjs`, plain node, cross-platform) runs typecheck, lint and tests when the agent finishes and blocks the stop with the output if any fail. It is skipped when `git status` shows no changes under `src/` or in package/tsconfig/eslint config. Work already committed in the same session is not re-checked. After one blocked retry it only reports, to avoid loops.
 
@@ -47,10 +68,18 @@ Tees and crosses (see `__fixtures__/pending/`), branch-in fittings (round and re
 ## Open questions (waiting for the spreadsheet author - do not guess)
 1. Rect elbow: is the radius inner or center? The Excel formula treats it as inner; round elbow treats it as center.
 2. Tees/crosses: subtract the branch opening from the main duct? Excel does it for one fitting only.
-3. What exactly do the cutting coefficients (1.15 / 1.2 / 1.1) cover - waste, seams, both?
+3. What exactly do the cutting coefficients (1.15 / 1.2 / 1.1) cover - waste, seams, both? The engineer only said they were copied from websites as a safety margin.
+4. Reducer local loss: which velocity does `zeta` refer to (the Excel uses the mean of both ends)?
 
-## How to work with me
-- One fitting kind per session. Exception: stage 0 scaffolding (`units.ts`, `defaultConfig`, stubs) goes together with straight ducts. Plan first (plan mode), wait for approval, then implement.
-- Add a fitting: type in `types.ts` -> fixture exists -> test red -> implement -> green -> typecheck.
+Every `TODO(confirm)` in the code is listed in `docs/decisions.md`.
+
+## Workflow
+- `main` is protected: a PR is required (0 approvals), status check `check` must pass, no force push. Never commit to `main`; work on a branch and open a PR. The owner reviews the diff on GitHub and merges.
+- Fixtures are written and committed by the owner (short branch + PR). Agents never stage `__fixtures__/`. For a new fixture, draft the values to a file outside the repo and wait.
+- Order: type in `types.ts` -> fixture is on `main` -> test red with "not implemented" -> implement -> green -> typecheck and lint -> `/code-review` on the diff -> PR. Open the PR only when `npm test`, typecheck and lint are all green.
+- One fitting kind per session. Plan first (plan mode), wait for approval, then implement.
 - Never invent a coefficient, a standard or a table. If a source is missing, add a config entry with `TODO(confirm)` and ask.
-- No new dependencies without asking.
+- No new dependencies without asking. They are added only from Linux, never on Windows.
+
+## Docs stay in sync
+Every approved change updates the relevant `.md` files in the same PR: this file (status, code map, rules, open questions), `docs/decisions.md` (new decision, new or resolved `TODO(confirm)`, deferred work). Add a new doc only when it clearly helps an agent understand context, and say why in the PR. A PR that changes behaviour or workflow without touching the docs is incomplete.
