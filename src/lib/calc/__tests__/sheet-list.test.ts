@@ -11,6 +11,23 @@ describe('thicknessSize', () => {
   });
 });
 
+describe('thicknessSize reducers take the max over both ends', () => {
+  it('rect reducer whose small end is wider on one side', () => {
+    const fitting = { kind: 'rectReducer', width: 300, height: 200, smallWidth: 350, smallHeight: 150, length: 300, allowance: 50 } as const;
+    expect(thicknessSize(fitting)).toEqual({ shape: 'rect', width: 350, height: 200 });
+  });
+
+  it('rect reducer where the small end alone crosses the threshold', () => {
+    const fitting = { kind: 'rectReducer', width: 300, height: 200, smallWidth: 400, smallHeight: 100, length: 300, allowance: 50 } as const;
+    expect(thickness(thicknessSize(fitting), defaultConfig)).toBe(0.7);
+  });
+
+  it('round reducer with swapped ends', () => {
+    const fitting = { kind: 'roundReducer', diameter: 300, smallDiameter: 400, length: 300, allowance: 50 } as const;
+    expect(thicknessSize(fitting)).toEqual({ shape: 'round', diameter: 400 });
+  });
+});
+
 describe('sheetList', () => {
   it.each(sheetListCases)('$id', ({ items, expected }) => {
     const result = sheetList(items, defaultConfig);

@@ -21,7 +21,7 @@ export function thickness(size: ThicknessSize, config: CalcConfig): number {
 }
 
 /**
- * Which size of a fitting keys the thickness lookup: the larger end of a reducer, the rect end of rect-to-round (as in the Excel).
+ * Which size of a fitting keys the thickness lookup: the larger side over both ends of a reducer, the rect end of rect-to-round (as in the Excel).
  * TODO(confirm): Excel convention (columns C/D); handbooks may key on the larger of the two ends.
  */
 export function thicknessSize(f: Fitting): ThicknessSize {
