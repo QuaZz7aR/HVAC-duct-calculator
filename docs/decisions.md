@@ -15,15 +15,37 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 - **Sheet list** (`sheetList`) groups `metalArea * quantity` by thickness and returns m2 only. The Excel has no grouping and no sheet count (thickness and area per row), so grouping is ours. `thicknessSize`: for reducers the larger size over both ends (max of diameters, per-side max of width/height; the Excel uses the first-given C/D end, same result when the ends are ordered), rect end for rect-to-round. Quantity must be a positive integer.
 
 ## Known deviations from the Excel
-Deliberate; the Excel is a reference, not the truth. Both are rect elbows and both are `TODO(confirm)` with the engineer.
-- **Allowance counted twice.** Excel (`M8`) adds the connection allowance once, our fixtures twice (the engineer said x2 for elbows). Area is +9.6 % (350x150) and +13.7 % (400x200) against the Excel.
-- **Centerline from geometry, not area.** Excel derives the rect elbow length for friction from its area (`J8 = M8 / perimeter`, includes allowance and waste factor); our `centerlineLength` is pure geometry. Friction differs by about +33 % in the Excel's favour of the larger length.
+Deliberate; the Excel is a reference, not the truth. Both are rect elbows.
+- **Allowance counted twice.** Excel (`M8`) adds the connection allowance once, our fixtures twice. Confirmed by the engineer: x2 for rect elbows too, so the Excel is wrong here and our value is right. Area is +9.6 % (350x150) and +13.7 % (400x200) against the Excel.
+- **Centerline from geometry, not area.** Excel derives the rect elbow length for friction from its area (`J8 = M8 / perimeter`, includes allowance and waste factor); our `centerlineLength` is pure geometry. Friction differs by about +33 % in the Excel's favour of the larger length. Still `TODO(confirm)`: the engineer was not asked about `J8`.
+
+## Engineer answers
+Relayed by the owner (2026-10-07, paraphrased; the engineer wrote the Excel for himself years ago). Source questions are numbered as in the owner's message to the engineer.
+
+Settled:
+- **Allowance** is extra wall length added at manufacture so there is room to attach flanges. For rect elbows it counts x2, like round elbows (supports the deviation above).
+- **Reducer length** (Q2): 150 mm is the minimum, 300 mm the optimum, longer is a special case. The Excel's `0,3` clamp was an example length, not a rule; our default 300 / floor 150 / no silent clamp stands.
+- **Thickness** (Q3): rect by equivalent diameter was a simplification; he did not work out how to handle such cases. Our larger-side key is a project choice.
+- **Flexible duct roughness** (Q8): steel roughness 0.1 mm is a deliberate simplification (rare element), as in the `flexible-d200` fixture note.
+- **ППКр** (Q4): the formula is wrong, the branch length `G` is missing from the second term (the parameter has to be derived). Cross-fittings are out of v1; when they are added the area comes from geometry, not from the Excel.
+- **Summary row 46** (Q7): a leftover of something moved elsewhere. Row 30 and the `#REF!` totals were not answered.
+
+Informs but does not settle:
+- **Cutting coefficients 1.15 / 1.2 / 1.1** (Q1): taken from other websites as a safety margin. Their source is known, what they physically cover is not (open question 3).
+- **ПККр** (Q5): he said the errors "average out"; our check did not confirm it (the ratio to geometry varies from x0.77 to x2.13).
+- **Пвр collar** (Q6): "possibly a mistake", he cannot say, wrote the formulas long ago.
+
+No answer yet: how he works with the Excel (what he adds by hand per item, where he errs most, where the specification goes next), whether the totals work in his real file, rect elbow radius inner or center (open question 1), tees and crosses opening subtraction (open question 2), which velocity `zeta` of a reducer refers to (open question 4).
+
+### `TODO(confirm)` after the answers
+- Closed: the rect elbow allowance deviation (it had no code `TODO(confirm)`, only the note above). No register row closes completely; the thickness row now carries the confirmed simplification.
+- Still open: rect elbow `innerRadius`, rect elbow centerline deviation, coefficients meaning and thresholds, thickness thresholds, cap and reducer centerline, `rectToRoundReducer` slant, reducer `Pd` velocity, `thicknessSize`, and the form prefills.
 
 ## `TODO(confirm)` register
 Find them all with `grep -rn "TODO(confirm)" src`.
 | Where | What is unconfirmed |
 |---|---|
-| `calc/config.ts` thickness | Band thresholds and thicknesses are Excel placeholders; the rect table is keyed by the larger side, the Excel used the equivalent diameter (the engineer called that a simplification). |
+| `calc/config.ts` thickness | Band thresholds and thicknesses are Excel placeholders; the rect table is keyed by the larger side, the Excel used the equivalent diameter (the engineer confirmed that the equivalent diameter was a simplification, so the rect key stays our choice; the thresholds remain placeholders). |
 | `calc/config.ts` wasteFactor | Factors 1.15 / 1.2 / 1.1 and their thresholds came from websites; what they cover is open question 3. Rect is keyed by equivalent diameter, thickness by larger side. |
 | `calc/sheet-area.ts` | Cap centerline is 0. Reducer centerline is the axial length (no fixture covers it). `rectToRoundReducer` slant ignores height. Rect elbow `innerRadius` is the inner radius (open question 1). |
 | `calc/thickness.ts` `thicknessSize` | Reducers are sized by the larger side over both ends, rect-to-round by its rect end (Excel convention); unconfirmed against handbooks. |

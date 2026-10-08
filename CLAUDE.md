@@ -72,6 +72,8 @@ Tees and crosses (see `__fixtures__/pending/`), branch-in fittings (round and re
 3. What exactly do the cutting coefficients (1.15 / 1.2 / 1.1) cover - waste, seams, both? The engineer only said they were copied from websites as a safety margin.
 4. Reducer local loss: which velocity does `zeta` refer to (the Excel uses the mean of both ends)?
 
+Answers the engineer has already given (allowance x2 for rect elbows, reducer length 150 / 300, thickness and flexible-duct roughness as simplifications, ППКр formula bug) are in `docs/decisions.md`, "Engineer answers".
+
 Every `TODO(confirm)` in the code is listed in `docs/decisions.md`.
 
 ## Workflow
