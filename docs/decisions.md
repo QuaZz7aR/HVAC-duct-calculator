@@ -12,6 +12,8 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 - **`assembleSection`** throws on non-positive flow and negative local coefficient; the validation layer reports the same cases as codes.
 - **Reducer section pressure drop** follows the Excel: friction by the larger end, velocity is the mean of both ends, local loss at that velocity.
 
+- **Sheet list** (`sheetList`) groups `metalArea * quantity` by thickness and returns m2 only. The Excel has no grouping and no sheet count (thickness and area per row), so grouping is ours. `thicknessSize`: larger end for reducers, rect end for rect-to-round (the Excel uses the C/D columns). Quantity must be a positive integer.
+
 ## `TODO(confirm)` register
 Find them all with `grep -rn "TODO(confirm)" src`.
 | Where | What is unconfirmed |
@@ -24,6 +26,6 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 ## Deferred
 - `npm audit` findings (5 high) and the eslint 9 -> 10 upgrade: postponed by the owner; do not run `npm audit fix`.
 - Share the equivalent-diameter helper between `aero.ts` (m) and `waste-factor.ts` (mm).
-- Mapping `Fitting` -> `ThicknessSize`.
-- Next feature: sheet list grouped by thickness. After that UI + Vercel and XLSX export.
+- Converting m2 per thickness to a count of standard sheets: needs the sheet size and a nesting allowance, neither is in the Excel; ask the owner (TODO(confirm) when added to config).
+- Next features: UI + Vercel, XLSX export.
 - Tees, crosses, branch-ins, offsets, adapters, insulation: out of v1, see `CLAUDE.md`.

@@ -1,4 +1,5 @@
 import type { CalcConfig } from './config';
+import type { Fitting } from './types';
 
 export type ThicknessSize =
   | { shape: 'round'; diameter: number }
@@ -17,4 +18,27 @@ export function thickness(size: ThicknessSize, config: CalcConfig): number {
     throw new Error(`thickness table ${config.thickness.version} has no row for ${size.shape} size ${key}`);
   }
   return row.thicknessMm;
+}
+
+/** Which size of a fitting keys the thickness lookup: the larger end of a reducer, the rect end of rect-to-round (as in the Excel). */
+export function thicknessSize(f: Fitting): ThicknessSize {
+  switch (f.kind) {
+    case 'roundStraight':
+    case 'roundCap':
+    case 'roundElbow':
+    case 'roundReducer':
+      return { shape: 'round', diameter: f.diameter };
+    case 'rectStraight':
+    case 'rectCap':
+    case 'rectElbow':
+    case 'rectReducer':
+    case 'rectToRoundReducer':
+      return { shape: 'rect', width: f.width, height: f.height };
+    default:
+      return assertNever(f);
+  }
+}
+
+function assertNever(x: never): never {
+  throw new Error(`unknown fitting: ${JSON.stringify(x)}`);
 }
