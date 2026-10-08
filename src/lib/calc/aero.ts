@@ -23,13 +23,25 @@ export function pressureDrop(section: DuctSection, air: AirConditions): Pressure
   }
 
   const velocity = m3hToM3s(section.flow) / area;
+  return pressureDropAt(velocity, dh, mmToM(section.length), section.localCoefficient, mmToM(section.roughness), air);
+}
+
+/** Pressure drop for a given mean velocity and hydraulic diameter; SI only (m/s, m, Pa). */
+export function pressureDropAt(
+  velocity: number,
+  dh: number,
+  length: number,
+  localCoefficient: number,
+  roughness: number,
+  air: AirConditions,
+): PressureDrop {
   const reynolds = (velocity * dh) / air.kinematicViscosity;
   const dynamicPressure = (air.density * velocity ** 2) / 2;
   // Altshul friction factor with relative roughness k/dh
-  const frictionFactor = 0.11 * (mmToM(section.roughness) / dh + 68 / reynolds) ** 0.25;
+  const frictionFactor = 0.11 * (roughness / dh + 68 / reynolds) ** 0.25;
   // friction loss along the centerline length, local loss by the summed zeta
-  const frictionLoss = (frictionFactor / dh) * dynamicPressure * mmToM(section.length);
-  const localLoss = section.localCoefficient * dynamicPressure;
+  const frictionLoss = (frictionFactor / dh) * dynamicPressure * length;
+  const localLoss = localCoefficient * dynamicPressure;
 
   return { velocity, reynolds, dynamicPressure, frictionFactor, frictionLoss, localLoss };
 }
