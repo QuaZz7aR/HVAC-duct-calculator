@@ -1,4 +1,5 @@
-import { pressureDropAt } from './aero';
+import { pressureDropAt, rectOpening, roundOpening } from './aero';
+import type { Opening } from './aero';
 import type { CalcConfig } from './config';
 import { metalArea } from './waste-factor';
 import { centerlineLength } from './sheet-area';
@@ -18,42 +19,23 @@ export interface SectionResult {
   pressureDrop: PressureDrop;
 }
 
-/** Flow cross-section in SI: area m2 and hydraulic diameter m. */
-interface Opening {
-  area: number;
-  dh: number;
-}
-
-const round = (diameter: number): Opening => {
-  const d = mmToM(diameter);
-  // circle: flow area pi d^2 / 4, hydraulic diameter is the diameter itself
-  return { area: (Math.PI * d ** 2) / 4, dh: d };
-};
-
-const rect = (width: number, height: number): Opening => {
-  const w = mmToM(width);
-  const h = mmToM(height);
-  // rectangle: flow area W*H, hydraulic diameter 2WH/(W+H)
-  return { area: w * h, dh: (2 * w * h) / (w + h) };
-};
-
 /** One opening for constant-section fittings, both ends for reducers. */
-function openings(f: Fitting): [Opening] | [Opening, Opening] {
+function openings(f: Fitting): Opening[] {
   switch (f.kind) {
     case 'roundStraight':
     case 'roundCap':
     case 'roundElbow':
-      return [round(f.diameter)];
+      return [roundOpening(f.diameter)];
     case 'rectStraight':
     case 'rectCap':
     case 'rectElbow':
-      return [rect(f.width, f.height)];
+      return [rectOpening(f.width, f.height)];
     case 'roundReducer':
-      return [round(f.diameter), round(f.smallDiameter)];
+      return [roundOpening(f.diameter), roundOpening(f.smallDiameter)];
     case 'rectReducer':
-      return [rect(f.width, f.height), rect(f.smallWidth, f.smallHeight)];
+      return [rectOpening(f.width, f.height), rectOpening(f.smallWidth, f.smallHeight)];
     case 'rectToRoundReducer':
-      return [rect(f.width, f.height), round(f.smallDiameter)];
+      return [rectOpening(f.width, f.height), roundOpening(f.smallDiameter)];
     default:
       return assertNever(f);
   }
@@ -65,8 +47,12 @@ export function assembleSection(input: SectionInput, air: AirConditions, config:
   if (!Number.isFinite(flow) || flow <= 0) {
     throw new Error(`section flow must be positive: ${flow} m3/h`);
   }
+  if (!Number.isFinite(localCoefficient) || localCoefficient < 0) {
+    throw new Error(`local coefficient must be non-negative: ${localCoefficient}`);
+  }
   const q = m3hToM3s(flow);
   const ends = openings(fitting);
+  // friction runs along the centerline; caps have centerline 0 (TODO(confirm) in sheet-area.ts), so no friction
   const length = centerlineLength(fitting);
 
   // TODO(confirm): reducers follow the engineer's Excel - hydraulic diameter of the larger end and

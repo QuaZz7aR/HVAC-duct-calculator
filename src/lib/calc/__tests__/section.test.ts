@@ -33,4 +33,14 @@ describe('assembleSection errors', () => {
     const input = { fitting: { kind: 'roundStraight', diameter: 150, length: 1000 } as const, flow, localCoefficient: 0.2 };
     expect(() => assembleSection(input, air, defaultConfig)).toThrow();
   });
+
+  it.each([0, -1, Number.NaN])('throws on invalid diameter %s', (diameter) => {
+    const input = { fitting: { kind: 'roundStraight', diameter, length: 1000 } as const, flow: 265, localCoefficient: 0.2 };
+    expect(() => assembleSection(input, air, defaultConfig)).toThrow();
+  });
+
+  it.each([-0.1, Number.NaN])('throws on invalid local coefficient %s', (localCoefficient) => {
+    const input = { fitting: { kind: 'roundStraight', diameter: 150, length: 1000 } as const, flow: 265, localCoefficient };
+    expect(() => assembleSection(input, air, defaultConfig)).toThrow();
+  });
 });
