@@ -1,0 +1,95 @@
+import type { FittingKind } from '../form/fields';
+import type { FormIssueCode } from '../form/messages';
+
+/**
+ * Every user-visible string lives here. Another language is one more file with the same shape.
+ * Fitting designations follow the engineer's Excel (КВ, ПВ, КО, ПО, КП, ПП, ППК, Заглушка).
+ */
+export const uk = {
+  appTitle: 'Калькулятор повітроводів',
+  appSubtitle:
+    'Список фасонних частин → площа металу, товщина, довжина по осі та втрати тиску. Усе рахується в браузері.',
+  airTitle: 'Параметри повітря',
+  airTemperature: 'Температура, °C',
+  airPressure: 'Тиск, Па',
+  itemsTitle: 'Деталі',
+  addItem: 'Додати деталь',
+  removeItem: 'Видалити',
+  kind: 'Тип',
+  quantity: 'Кількість, шт',
+  flow: 'Витрата, м³/год',
+  zeta: 'ζ (місцевий опір)',
+  optional: 'необов’язково',
+  kinds: {
+    roundStraight: { designation: 'КВ', name: 'Круглий повітровод' },
+    rectStraight: { designation: 'ПВ', name: 'Прямокутний повітровод' },
+    roundCap: { designation: 'Заглушка', name: 'Заглушка кругла' },
+    rectCap: { designation: 'Заглушка', name: 'Заглушка прямокутна' },
+    roundElbow: { designation: 'КО', name: 'Круглий відвід' },
+    rectElbow: { designation: 'ПО', name: 'Прямокутний відвід' },
+    roundReducer: { designation: 'КП', name: 'Круглий перехід' },
+    rectReducer: { designation: 'ПП', name: 'Прямокутний перехід' },
+    rectToRoundReducer: { designation: 'ППК', name: 'Перехід прямокутник → круг' },
+  } satisfies Record<FittingKind, { designation: string; name: string }>,
+  fields: {
+    diameter: 'Діаметр Д, мм',
+    smallDiameter: 'Малий діаметр, мм',
+    width: 'Ширина, мм',
+    height: 'Висота, мм',
+    smallWidth: 'Мала ширина, мм',
+    smallHeight: 'Мала висота, мм',
+    length: 'Довжина, мм',
+    centerRadius: 'Радіус по осі, мм',
+    innerRadius: 'Внутрішній радіус, мм',
+    angle: 'Кут, °',
+    allowance: 'Припуск, мм',
+  },
+  results: {
+    title: 'Результати по позиціях',
+    item: 'Деталь',
+    thickness: 'Товщина, мм',
+    metalArea: 'Площа металу, м² (шт.)',
+    metalAreaTotal: 'Площа металу, м² (всього)',
+    centerline: 'Довжина по осі, м',
+    velocity: 'Швидкість, м/с',
+    friction: 'Тертя, Па',
+    local: 'Місцеві, Па',
+    pressureDrop: 'Втрати тиску, Па (шт.)',
+    empty: 'Додайте деталь, щоб побачити розрахунок.',
+    skipped: (n: number) => `Не враховано позицій з помилками: ${n}.`,
+  },
+  totals: {
+    title: 'Разом',
+    metalArea: 'Площа металу, м²',
+    pressureDrop: 'Сума втрат тиску, Па',
+    pressureDropNote: 'Сума по всіх позиціях з урахуванням кількості, як для однієї послідовної ділянки.',
+  },
+  sheetList: {
+    title: 'Відомість металу за товщиною',
+    thickness: 'Товщина, мм',
+    area: 'Площа, м²',
+    note: 'Площа з коефіцієнтом розкрою, без підрахунку листів.',
+  },
+  errors: {
+    'field.required': 'Обов’язкове поле',
+    'field.invalid': 'Некоректне значення',
+    'size.nonPositive': 'Має бути більше нуля',
+    'size.notFinite': 'Введіть число',
+    'allowance.negative': 'Не може бути від’ємним',
+    'angle.outOfRange': 'Кут має бути більшим за 0° і не більшим за 180°',
+    'reducer.tooShort': 'Довжина переходу менша за мінімально допустиму',
+    'reducer.noSizeChange': 'Розміри кінців переходу однакові',
+    'flow.nonPositive': 'Витрата має бути більшою за нуль',
+    'coefficient.negative': 'Не може бути від’ємним',
+    'roughness.negative': 'Шорсткість не може бути від’ємною',
+    'air.temperatureTooLow': 'Температура нижче абсолютного нуля',
+    'air.pressureNonPositive': 'Тиск має бути більшим за нуль',
+    'kind.unknown': 'Невідомий тип деталі',
+    'input.unknownKey': 'Зайве поле',
+    'input.invalid': 'Некоректні дані',
+    'quantity.invalid': 'Ціле число, не менше 1',
+  } satisfies Record<FormIssueCode, string>,
+  footer: 'Розрахунок за методикою, звіреною з Excel практикуючого інженера. Коефіцієнти розкрою та таблиця товщин попередні.',
+};
+
+export type Dictionary = typeof uk;
