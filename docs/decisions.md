@@ -12,6 +12,13 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 - **`assembleSection`** throws on non-positive flow and negative local coefficient; the validation layer reports the same cases as codes.
 - **Reducer section pressure drop** follows the Excel: friction by the larger end, velocity is the mean of both ends, local loss at that velocity.
 
+- **Sheet list** (`sheetList`) groups `metalArea * quantity` by thickness and returns m2 only. The Excel has no grouping and no sheet count (thickness and area per row), so grouping is ours. `thicknessSize`: for reducers the larger size over both ends (max of diameters, per-side max of width/height; the Excel uses the first-given C/D end, same result when the ends are ordered), rect end for rect-to-round. Quantity must be a positive integer.
+
+## Known deviations from the Excel
+Deliberate; the Excel is a reference, not the truth. Both are rect elbows and both are `TODO(confirm)` with the engineer.
+- **Allowance counted twice.** Excel (`M8`) adds the connection allowance once, our fixtures twice (the engineer said x2 for elbows). Area is +9.6 % (350x150) and +13.7 % (400x200) against the Excel.
+- **Centerline from geometry, not area.** Excel derives the rect elbow length for friction from its area (`J8 = M8 / perimeter`, includes allowance and waste factor); our `centerlineLength` is pure geometry. Friction differs by about +33 % in the Excel's favour of the larger length.
+
 ## `TODO(confirm)` register
 Find them all with `grep -rn "TODO(confirm)" src`.
 | Where | What is unconfirmed |
@@ -19,11 +26,12 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `calc/config.ts` thickness | Band thresholds and thicknesses are Excel placeholders; the rect table is keyed by the larger side, the Excel used the equivalent diameter (the engineer called that a simplification). |
 | `calc/config.ts` wasteFactor | Factors 1.15 / 1.2 / 1.1 and their thresholds came from websites; what they cover is open question 3. Rect is keyed by equivalent diameter, thickness by larger side. |
 | `calc/sheet-area.ts` | Cap centerline is 0. Reducer centerline is the axial length (no fixture covers it). `rectToRoundReducer` slant ignores height. Rect elbow `innerRadius` is the inner radius (open question 1). |
+| `calc/thickness.ts` `thicknessSize` | Reducers are sized by the larger side over both ends, rect-to-round by its rect end (Excel convention); unconfirmed against handbooks. |
 | `calc/section.ts` | Reducer friction by the larger end's diameter and mean-velocity `Pd` for the local loss (open question 4). Caps have no friction because their centerline is 0. |
 
 ## Deferred
 - `npm audit` findings (5 high) and the eslint 9 -> 10 upgrade: postponed by the owner; do not run `npm audit fix`.
 - Share the equivalent-diameter helper between `aero.ts` (m) and `waste-factor.ts` (mm).
-- Mapping `Fitting` -> `ThicknessSize`.
-- Next feature: sheet list grouped by thickness. After that UI + Vercel and XLSX export.
+- Converting m2 per thickness to a count of standard sheets: needs the sheet size and a nesting allowance, neither is in the Excel; ask the owner (TODO(confirm) when added to config).
+- Next features: UI + Vercel, XLSX export.
 - Tees, crosses, branch-ins, offsets, adapters, insulation: out of v1, see `CLAUDE.md`.

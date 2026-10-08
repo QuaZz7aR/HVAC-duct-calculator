@@ -8,14 +8,15 @@ Stack: Next.js (App Router), TypeScript strict, Vitest, Zod 4. Core logic is pla
 Engineering decisions, the `TODO(confirm)` register and deferred work: `docs/decisions.md`.
 
 ## Status
-Stage 0 (fittings geometry, pressure drop) and stage 1 core (thickness table, elbow waste factor, air properties, Zod validation, `assembleSection`) are done and merged. No UI yet (`src/app/page.tsx` is still the create-next-app stub). Next: sheet list by thickness, then UI + Vercel, XLSX export.
+Stage 0 (fittings geometry, pressure drop) and stage 1 core (thickness table, elbow waste factor, air properties, Zod validation, `assembleSection`) are done and merged. No UI yet (`src/app/page.tsx` is still the create-next-app stub). Sheet list by thickness (metal m2 per thickness, `sheetList`) is done. Next: UI + Vercel, XLSX export.
 
 ## Code map (`src/lib/`)
 - `calc/units.ts` - `mmToM`, `m3hToM3s`, `degToRad`; the only place that converts.
 - `calc/config.ts` - `CalcConfig` and `defaultConfig`: roughness, reducer length and floor, air constants, thickness table, waste-factor table.
 - `calc/sheet-area.ts` - `developedLength`, `sheetArea` (pure geometry, no waste), `centerlineLength`.
 - `calc/waste-factor.ts` - `wasteFactor` (elbows only, other kinds use `table.default`), `metalArea = sheetArea * wasteFactor`.
-- `calc/thickness.ts` - `thickness(size, config)` lookup.
+- `calc/thickness.ts` - `thickness(size, config)` lookup; `thicknessSize(fitting)` picks the size that keys it (reducers: larger end, rect-to-round: the rect end, as in the Excel).
+- `calc/sheet-list.ts` - `sheetList([{ fitting, quantity }], config)` -> `[{ thicknessMm, area }]` ascending thickness, area in m2 with waste factor times quantity. No sheet count (see decisions.md).
 - `calc/air.ts` - `airAtConditions(tC, pPa, config)` -> density, kinematic viscosity.
 - `calc/aero.ts` - `pressureDrop` (straight section), `pressureDropAt`, `roundOpening` / `rectOpening`.
 - `calc/section.ts` - `assembleSection({ fitting, flow, localCoefficient }, air, config)` -> `metalArea` (m2), `centerlineLength` (m), `pressureDrop`.

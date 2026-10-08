@@ -61,3 +61,15 @@ export interface PressureDrop {
   frictionLoss: number; // Pa
   localLoss: number; // Pa
 }
+
+/** One line of the sheet list input: a fitting and how many identical pieces. */
+export interface SheetListItem {
+  fitting: Fitting;
+  quantity: number; // pieces, positive integer
+}
+
+/** Metal of one sheet thickness. */
+export interface ThicknessGroup {
+  thicknessMm: number;
+  area: number; // m2, including the cutting-waste factor, times quantity
+}

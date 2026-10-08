@@ -1,4 +1,5 @@
 import type { CalcConfig } from './config';
+import type { Fitting } from './types';
 
 export type ThicknessSize =
   | { shape: 'round'; diameter: number }
@@ -17,4 +18,34 @@ export function thickness(size: ThicknessSize, config: CalcConfig): number {
     throw new Error(`thickness table ${config.thickness.version} has no row for ${size.shape} size ${key}`);
   }
   return row.thicknessMm;
+}
+
+/**
+ * Which size of a fitting keys the thickness lookup: the larger side over both ends of a reducer, the rect end of rect-to-round (as in the Excel).
+ * TODO(confirm): Excel convention (columns C/D); handbooks may key on the larger of the two ends.
+ */
+export function thicknessSize(f: Fitting): ThicknessSize {
+  switch (f.kind) {
+    case 'roundStraight':
+    case 'roundCap':
+    case 'roundElbow':
+      return { shape: 'round', diameter: f.diameter };
+    case 'roundReducer':
+      // max over both ends: a mis-ordered "small" end must not pick a thinner sheet
+      return { shape: 'round', diameter: Math.max(f.diameter, f.smallDiameter) };
+    case 'rectReducer':
+      // the larger side of either end decides, so a "small" end that is wider on one side still counts
+      return { shape: 'rect', width: Math.max(f.width, f.smallWidth), height: Math.max(f.height, f.smallHeight) };
+    case 'rectStraight':
+    case 'rectCap':
+    case 'rectElbow':
+    case 'rectToRoundReducer':
+      return { shape: 'rect', width: f.width, height: f.height };
+    default:
+      return assertNever(f);
+  }
+}
+
+function assertNever(x: never): never {
+  throw new Error(`unknown fitting: ${JSON.stringify(x)}`);
 }
