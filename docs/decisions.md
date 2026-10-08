@@ -14,6 +14,9 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 
 - **Sheet list** (`sheetList`) groups `metalArea * quantity` by thickness and returns m2 only. The Excel has no grouping and no sheet count (thickness and area per row), so grouping is ours. `thicknessSize`: for reducers the larger size over both ends (max of diameters, per-side max of width/height; the Excel uses the first-given C/D end, same result when the ends are ordered), rect end for rect-to-round. Quantity must be a positive integer.
 
+- **UI** (first version): one client component, all calculation in the browser over the pure core, no backend, no persistence, no new dependencies. Language is Ukrainian; all strings are in `src/lib/i18n/uk.ts`, fitting names use the Excel designations. Form fields are raw text (decimal comma accepted); text is parsed in `form/calculate.ts`, validated by the existing Zod schemas, and errors are shown as the dictionary message for the stable code. Quantity (positive integer) is checked in `form/` with its own code `quantity.invalid` because the sheet-list item schema is still deferred. Empty zeta means 0; empty reducer length means the config default. The page total of pressure drop is the plain sum of quantity times section loss, valid for one serial path only (labelled so). Rows with errors are left out of totals and counted. Fonts are the system stack (no Google Fonts, no network at build).
+- **Form prefills** (not core defaults): allowance 50 mm (what the fixtures use) and elbow angle 90, `TODO(confirm)` in `form/fields.ts`.
+
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth. Both are rect elbows and both are `TODO(confirm)` with the engineer.
 - **Allowance counted twice.** Excel (`M8`) adds the connection allowance once, our fixtures twice (the engineer said x2 for elbows). Area is +9.6 % (350x150) and +13.7 % (400x200) against the Excel.
@@ -27,11 +30,13 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `calc/config.ts` wasteFactor | Factors 1.15 / 1.2 / 1.1 and their thresholds came from websites; what they cover is open question 3. Rect is keyed by equivalent diameter, thickness by larger side. |
 | `calc/sheet-area.ts` | Cap centerline is 0. Reducer centerline is the axial length (no fixture covers it). `rectToRoundReducer` slant ignores height. Rect elbow `innerRadius` is the inner radius (open question 1). |
 | `calc/thickness.ts` `thicknessSize` | Reducers are sized by the larger side over both ends, rect-to-round by its rect end (Excel convention); unconfirmed against handbooks. |
+| `form/fields.ts` | Prefilled allowance 50 mm and angle 90 in the form: UI convenience only, the core has no default for allowance. |
 | `calc/section.ts` | Reducer friction by the larger end's diameter and mean-velocity `Pd` for the local loss (open question 4). Caps have no friction because their centerline is 0. |
 
 ## Deferred
 - `npm audit` findings (5 high) and the eslint 9 -> 10 upgrade: postponed by the owner; do not run `npm audit fix`.
 - Share the equivalent-diameter helper between `aero.ts` (m) and `waste-factor.ts` (mm).
 - Converting m2 per thickness to a count of standard sheets: needs the sheet size and a nesting allowance, neither is in the Excel; ask the owner (TODO(confirm) when added to config).
-- Next features: UI + Vercel, XLSX export.
+- Next features: Vercel deploy (owner's account), XLSX export (format can follow the engineer's spec).
+- UI: Russian/English dictionaries, no list persistence, no per-system grouping.
 - Tees, crosses, branch-ins, offsets, adapters, insulation: out of v1, see `CLAUDE.md`.

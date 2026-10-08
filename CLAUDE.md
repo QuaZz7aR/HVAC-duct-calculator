@@ -8,7 +8,7 @@ Stack: Next.js (App Router), TypeScript strict, Vitest, Zod 4. Core logic is pla
 Engineering decisions, the `TODO(confirm)` register and deferred work: `docs/decisions.md`.
 
 ## Status
-Stage 0 (fittings geometry, pressure drop) and stage 1 core (thickness table, elbow waste factor, air properties, Zod validation, `assembleSection`) are done and merged. No UI yet (`src/app/page.tsx` is still the create-next-app stub). Sheet list by thickness (metal m2 per thickness, `sheetList`) is done. Next: UI + Vercel, XLSX export.
+Stage 0 (fittings geometry, pressure drop) and stage 1 core (thickness table, elbow waste factor, air properties, Zod validation, `assembleSection`) are done and merged. Sheet list by thickness (metal m2 per thickness, `sheetList`) is done. First UI is done: one client-side calculator page (Ukrainian), no backend. Next: connect the repo to Vercel (owner's account), XLSX export.
 
 ## Code map (`src/lib/`)
 - `calc/units.ts` - `mmToM`, `m3hToM3s`, `degToRad`; the only place that converts.
@@ -20,6 +20,9 @@ Stage 0 (fittings geometry, pressure drop) and stage 1 core (thickness table, el
 - `calc/air.ts` - `airAtConditions(tC, pPa, config)` -> density, kinematic viscosity.
 - `calc/aero.ts` - `pressureDrop` (straight section), `pressureDropAt`, `roundOpening` / `rectOpening`.
 - `calc/section.ts` - `assembleSection({ fitting, flow, localCoefficient }, air, config)` -> `metalArea` (m2), `centerlineLength` (m), `pressureDrop`.
+- `form/` - the layer between the UI and the core (plain TS, tested): `fields.ts` (`kindFields`: which inputs each kind has, form prefills, `FormRow` of raw text), `calculate.ts` (`calculate(rows, airText, config)`: text -> Zod validation -> `assembleSection` / `sheetList`, per-row outcome, totals), `messages.ts` (`issueMessage`: error code -> text from the dictionary).
+- `i18n/uk.ts` - the dictionary: every user-visible string, kind designations (КВ, ПВ, КО, ПО, КП, ПП, ППК, Заглушка) and one message per error code. A new language is one more file with the `Dictionary` shape.
+- `src/components/Calculator.tsx` - the page (client component). `src/app/page.tsx` only renders it.
 - `validation/` - `createSchemas(config)`, `fittingSchema`, `ductSectionSchema`, `airInputSchema`, `validate`. Errors are stable codes (`codes.ts`), never human text.
 
 ## Commands
