@@ -41,7 +41,7 @@ export interface Calculation {
 }
 
 /** Form text -> validated core fitting plus the section inputs. */
-function parseRow(row: FormRow, config: CalcConfig) {
+function parseRow(row: FormRow, schemas: ReturnType<typeof createSchemas>) {
   const issues: FormIssue[] = [];
 
   const raw: Record<string, unknown> = { kind: row.kind };
@@ -49,12 +49,11 @@ function parseRow(row: FormRow, config: CalcConfig) {
     const v = parseNumber(row.values[f.key]);
     if (v !== undefined) raw[f.key] = v;
   }
-  const fitting = validate(createSchemas(config).fitting, raw);
-  if (!fitting.ok) issues.push(...fitting.issues);
-
-  const quantity = parseNumber(row.quantity);
-  if (quantity === undefined || !Number.isInteger(quantity) || quantity < 1) {
-    issues.push({ code: 'quantity.invalid', path: ['quantity'] });
+  // fitting and quantity go through the sheet-list item schema; its issues for the fitting carry a leading 'fitting' path segment
+  // an empty quantity is NaN here so it reports quantity.invalid, as before, not the schema's generic field.required
+  const item = validate(schemas.sheetListItem, { fitting: raw, quantity: parseNumber(row.quantity) ?? NaN });
+  if (!item.ok) {
+    issues.push(...item.issues.map((i) => (i.path[0] === 'fitting' ? { ...i, path: i.path.slice(1) } : i)));
   }
 
   const flow = parseNumber(row.flow);
@@ -66,8 +65,8 @@ function parseRow(row: FormRow, config: CalcConfig) {
   if (Number.isNaN(zeta)) issues.push({ code: 'size.notFinite', path: ['zeta'] });
   else if (zeta < 0) issues.push({ code: 'coefficient.negative', path: ['zeta'] });
 
-  if (issues.length > 0 || !fitting.ok) return { ok: false as const, issues };
-  return { ok: true as const, fitting: fitting.value, quantity: quantity!, flow: flow!, zeta };
+  if (issues.length > 0 || !item.ok) return { ok: false as const, issues };
+  return { ok: true as const, fitting: item.value.fitting, quantity: item.value.quantity, flow: flow!, zeta };
 }
 
 export function calculate(
@@ -81,11 +80,12 @@ export function calculate(
   });
   const airResult = air.ok ? airAtConditions(air.value.temperatureC, air.value.pressurePa, config) : undefined;
 
+  const schemas = createSchemas(config);
   const outcomes: RowOutcome[] = [];
   const valid: { fitting: Fitting; quantity: number }[] = [];
   let totalPressureDrop = 0;
   for (const row of rows) {
-    const p = parseRow(row, config);
+    const p = parseRow(row, schemas);
     if (!p.ok) {
       outcomes.push({ ok: false, id: row.id, issues: p.issues });
     } else if (!airResult) {
