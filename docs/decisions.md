@@ -57,7 +57,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 
 ## Deferred
 - `npm audit`: 5 high findings, one chain (`braces` <- `micromatch` <- `fast-glob` <- `@next/eslint-plugin-next` <- `eslint-config-next`), dev tooling only, nothing ships to the browser or the server. No non-breaking fix exists: `npm audit fix --force` would downgrade `eslint-config-next` to 14.2.35 (Next 16 here). Wait for a `eslint-config-next` release that updates `fast-glob`/`micromatch`; do not run `npm audit fix`.
-- eslint 9 -> 10: postponed by the owner; see the PR that handles it.
+- eslint 9 -> 10: blocked upstream. `eslint-config-next` 16.3.8 itself allows `eslint >=9`, but the plugins it bundles (`eslint-plugin-react` 7.37.5, `eslint-plugin-import` 2.32.0, `eslint-plugin-jsx-a11y` 6.10.2, all at their latest releases) declare peers only up to `^9`. Retry when those publish eslint 10 support; do not force it with overrides.
 - Share the equivalent-diameter helper between `aero.ts` (m) and `waste-factor.ts` (mm).
 - Converting m2 per thickness to a count of standard sheets: needs the sheet size and a nesting allowance, neither is in the Excel; ask the owner (TODO(confirm) when added to config).
 - Next features: Vercel deploy (owner's account), XLSX export (format can follow the engineer's spec).
