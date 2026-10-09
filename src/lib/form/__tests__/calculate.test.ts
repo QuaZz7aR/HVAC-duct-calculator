@@ -59,6 +59,11 @@ describe('calculate', () => {
     expect(calc.sheetList).toHaveLength(1);
   });
 
+  it('reports an empty quantity as quantity.invalid', () => {
+    const calc = calculate([straight({ quantity: '' })], air);
+    const r = calc.rows[0];
+    expect(!r.ok && r.issues.map((i) => i.code)).toEqual(['quantity.invalid']);
+  });
   it('flags missing flow, bad quantity and negative zeta', () => {
     const calc = calculate([straight({ flow: '', quantity: '1.5', zeta: '-1' })], air);
     const r = calc.rows[0];
