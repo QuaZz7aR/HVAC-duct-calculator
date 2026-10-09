@@ -3,7 +3,7 @@ import type { FormIssueCode } from '../form/messages';
 
 /**
  * Every user-visible string lives here. Another language is one more file with the same shape.
- * Fitting designations follow the engineer's Excel (КВ, ПВ, КО, ПО, КП, ПП, ППК, Заглушка).
+ * Fitting designations follow the engineer's Excel (КВ, ПВ, КО, ПО, КП, ПП, ППК, Кз, Пз) and full names from the "Шаблон" sheet, column A.
  */
 export const uk = {
   appTitle: 'Калькулятор повітроводів',
@@ -21,15 +21,15 @@ export const uk = {
   zeta: 'ζ (місцевий опір)',
   optional: 'необов’язково',
   kinds: {
-    roundStraight: { designation: 'КВ', name: 'Круглий повітровод' },
-    rectStraight: { designation: 'ПВ', name: 'Прямокутний повітровод' },
-    roundCap: { designation: 'Заглушка', name: 'Заглушка кругла' },
-    rectCap: { designation: 'Заглушка', name: 'Заглушка прямокутна' },
+    roundStraight: { designation: 'КВ', name: 'Круглий прямошовний повітропровід' },
+    rectStraight: { designation: 'ПВ', name: 'Прямокутний повітропровід' },
+    roundCap: { designation: 'Кз', name: 'Кругла заглушка' },
+    rectCap: { designation: 'Пз', name: 'Прямокутна заглушка' },
     roundElbow: { designation: 'КО', name: 'Круглий відвід' },
     rectElbow: { designation: 'ПО', name: 'Прямокутний відвід' },
     roundReducer: { designation: 'КП', name: 'Круглий перехід' },
     rectReducer: { designation: 'ПП', name: 'Прямокутний перехід' },
-    rectToRoundReducer: { designation: 'ППК', name: 'Перехід прямокутник → круг' },
+    rectToRoundReducer: { designation: 'ППК', name: 'Прямокутний на круглий перехід' },
   } satisfies Record<FittingKind, { designation: string; name: string }>,
   fields: {
     diameter: 'Діаметр Д, мм',
@@ -46,15 +46,15 @@ export const uk = {
   },
   results: {
     title: 'Результати по позиціях',
-    item: 'Деталь',
-    thickness: 'Товщина, мм',
-    metalArea: 'Площа металу, м² (шт.)',
-    metalAreaTotal: 'Площа металу, м² (всього)',
+    item: 'Назва позиції',
+    thickness: 'Товщина металу, мм',
+    metalArea: 'Площа, м² (шт.)',
+    metalAreaTotal: 'Сума площі, м²',
     centerline: 'Довжина по осі, м',
     velocity: 'Швидкість, м/с',
-    friction: 'Тертя, Па',
-    local: 'Місцеві, Па',
-    pressureDrop: 'Втрати тиску, Па (шт.)',
+    friction: 'Падіння тиску на тертя, Па',
+    local: 'Місцеве падіння тиску, Па',
+    pressureDrop: 'Загальне падіння тиску, Па (шт.)',
     empty: 'Додайте деталь, щоб побачити розрахунок.',
     skipped: (n: number) => `Не враховано позицій з помилками: ${n}.`,
   },
