@@ -1,8 +1,8 @@
 import type { ErrorCode, ValidationIssue } from '../validation';
 import type { Dictionary } from '../i18n/uk';
 
-/** Form-level codes the Zod layer does not own (the sheet-list item schema is deferred). */
-export type FormIssueCode = ErrorCode | 'quantity.invalid';
+/** The form shows the same stable codes the Zod layer produces. */
+export type FormIssueCode = ErrorCode;
 
 export interface FormIssue {
   code: FormIssueCode;

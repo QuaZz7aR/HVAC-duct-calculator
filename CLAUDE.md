@@ -23,7 +23,7 @@ Stage 0 (fittings geometry, pressure drop) and stage 1 core (thickness table, el
 - `form/` - the layer between the UI and the core (plain TS, tested): `fields.ts` (`kindFields`: which inputs each kind has, form prefills, `FormRow` of raw text), `calculate.ts` (`calculate(rows, airText, config)`: text -> Zod validation -> `assembleSection` / `sheetList`, per-row outcome, totals), `messages.ts` (`issueMessage`: error code -> text from the dictionary).
 - `i18n/uk.ts` - the dictionary: every user-visible string, kind designations (КВ, ПВ, КО, ПО, КП, ПП, ППК, Заглушка) and one message per error code. A new language is one more file with the `Dictionary` shape.
 - `src/components/Calculator.tsx` - the page (client component). `src/app/page.tsx` only renders it.
-- `validation/` - `createSchemas(config)`, `fittingSchema`, `ductSectionSchema`, `airInputSchema`, `validate`. Errors are stable codes (`codes.ts`), never human text.
+- `validation/` - `createSchemas(config)`, `fittingSchema`, `ductSectionSchema`, `airInputSchema`, `sheetListItemSchema` (`{ fitting, quantity }`), `sheetListSchema` (array of those), `validate`. Errors are stable codes (`codes.ts`), never human text.
 
 ## Commands
 - `npm ci` - install. Never `npm install` (see Guardrails).
