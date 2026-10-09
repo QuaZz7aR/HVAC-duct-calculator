@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { defaultConfig, type CalcConfig } from '../calc/config';
-import type { DuctSection, Fitting } from '../calc/types';
+import type { DuctSection, Fitting, SheetListItem } from '../calc/types';
 import type { ErrorCode } from './codes';
 
 /** Boundary units: mm, degrees, m3/h, C, Pa. Zod `error` params carry stable codes, not text. */
@@ -113,11 +113,25 @@ export function createSchemas(config: CalcConfig) {
     pressurePa: z.number({ error: typeError('field.invalid') }).gt(0, { error: 'air.pressureNonPositive' }),
   });
 
-  return { fitting, ductSection, airInput };
+  // Pieces of one fitting: a positive integer. Checked in order so one bad value gives one issue.
+  const quantity = z
+    .number({ error: typeError('quantity.invalid') })
+    .gte(1, { error: 'quantity.invalid', abort: true })
+    .int({ error: 'quantity.invalid' });
+
+  const sheetListItem = obj({ fitting, quantity });
+  const sheetList = z.array(sheetListItem, { error: 'field.invalid' });
+
+  return { fitting, ductSection, airInput, sheetListItem, sheetList };
 }
 
-export const { fitting: fittingSchema, ductSection: ductSectionSchema, airInput: airInputSchema } =
-  createSchemas(defaultConfig);
+export const {
+  fitting: fittingSchema,
+  ductSection: ductSectionSchema,
+  airInput: airInputSchema,
+  sheetListItem: sheetListItemSchema,
+  sheetList: sheetListSchema,
+} = createSchemas(defaultConfig);
 
 export type AirInput = z.infer<typeof airInputSchema>;
 
@@ -125,5 +139,7 @@ export type AirInput = z.infer<typeof airInputSchema>;
 type Mutual<A, B> = [A] extends [B] ? ([B] extends [A] ? true : never) : never;
 const _fittingMatches: Mutual<z.infer<typeof fittingSchema>, Fitting> = true;
 const _sectionMatches: Mutual<z.infer<typeof ductSectionSchema>, DuctSection> = true;
+const _itemMatches: Mutual<z.infer<typeof sheetListItemSchema>, SheetListItem> = true;
 void _fittingMatches;
+void _itemMatches;
 void _sectionMatches;

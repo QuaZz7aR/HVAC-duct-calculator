@@ -10,6 +10,7 @@ export const errorCodes = [
   'reducer.noSizeChange',
   'flow.nonPositive',
   'coefficient.negative',
+  'quantity.invalid',
   'roughness.negative',
   'air.temperatureTooLow',
   'air.pressureNonPositive',

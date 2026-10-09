@@ -24,7 +24,7 @@ Stage 0 (fittings geometry, pressure drop) and stage 1 core (thickness table, el
 - `i18n/uk.ts` - the dictionary: every user-visible string, kind designations (КВ, ПВ, КО, ПО, КП, ПП, ППК, Заглушка) and one message per error code. A new language is one more file with the `Dictionary` shape.
 - `src/components/Calculator.tsx` - the page (client component): lays out the blocks, no logic. `src/app/page.tsx` only renders it.
 - `src/components/calculator/` - the blocks: `useCalculator.ts` (hook: rows and air state, `calculate`, row actions), `AirParams`, `FittingList` > `FittingCard` (one row), `ResultsTable`, `Totals`, `SheetList`, shared `TextField`, `ErrorList`, `format.ts` (`fmt`, `rowTitle`), `styles.ts` (Tailwind class strings). Components take props only; calculation stays in `src/lib`.
-- `validation/` - `createSchemas(config)`, `fittingSchema`, `ductSectionSchema`, `airInputSchema`, `validate`. Errors are stable codes (`codes.ts`), never human text.
+- `validation/` - `createSchemas(config)`, `fittingSchema`, `ductSectionSchema`, `airInputSchema`, `sheetListItemSchema` (`{ fitting, quantity }`), `sheetListSchema` (array of those), `validate`. Errors are stable codes (`codes.ts`), never human text.
 
 ## Commands
 - `npm ci` - install. Never `npm install` (see Guardrails).
