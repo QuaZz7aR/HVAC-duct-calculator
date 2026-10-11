@@ -9,10 +9,7 @@
       "Write(**/__tests__/sheet-area.test.ts)",
       "Edit(**/__tests__/aero.test.ts)",
       "Write(**/__tests__/aero.test.ts)",
-      "Bash(npm install)",
-      "Bash(npm install *)",
-      "Bash(npm i)",
-      "Bash(npm i *)",
+
       "Bash(npm add)",
       "Bash(npm add *)",
       "Bash(npm update)",
