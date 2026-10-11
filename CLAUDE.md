@@ -8,7 +8,7 @@ Stack: Next.js (App Router), TypeScript strict, Vitest, Zod 4. Core logic is pla
 Engineering decisions, the `TODO(confirm)` register and deferred work: `docs/decisions.md`.
 
 ## Status
-Stage 0 (fittings geometry, pressure drop) and stage 1 core (thickness table, elbow waste factor, air properties, Zod validation, `assembleSection`) are done and merged. Sheet list by thickness (metal m2 per thickness, `sheetList`) is done. First UI is done (split into focused components + `useCalculator` hook): one client-side calculator page (Ukrainian), no backend. Next: connect the repo to Vercel (owner's account), XLSX export.
+Stage 0 (fittings geometry, pressure drop) and stage 1 core (thickness table, elbow waste factor, air properties, Zod validation, `assembleSection`) are done and merged. Sheet list by thickness (metal m2 per thickness, `sheetList`) is done. First UI is done (split into focused components + `useCalculator` hook): one client-side calculator page (Ukrainian), no backend. Deployed on Vercel (owner's account, Hobby plan, auto-deploy from `main`, previews per PR); Vercel Web Analytics is wired in (`<Analytics />` in `src/app/layout.tsx`, package `@vercel/analytics`, the owner enables it in the Vercel dashboard). Next: XLSX export.
 
 ## Code map (`src/lib/`)
 - `calc/units.ts` - `mmToM`, `m3hToM3s`, `degToRad`; the only place that converts.
@@ -59,7 +59,7 @@ Fixtures with `basis: 'excel'` follow the spreadsheet author's convention and ar
 
 ## Guardrails in `.claude/settings.json`
 - `Edit`/`Write` are denied for `**/*.fixtures.ts`, `**/__fixtures__/pending/**`, `__tests__/sheet-area.test.ts` and `__tests__/aero.test.ts`. The other tests are not blocked by the harness but the "one rule" still applies to them.
-- `npm install` and its aliases, `add`, `update`, `uninstall`, `audit fix`, `dedupe`, `prune`, `link` (and `pnpm`/`yarn` equivalents) are denied for the agent. On Windows they prune Linux-only `@emnapi/*` entries from `package-lock.json` and break CI `npm ci`. Use `npm ci`. Dependencies are added by Linux threads (and only after asking).
+- `npm install` / `npm i` were taken off the deny list by the owner on 2026-10-11 so a Linux thread can add an approved dependency; never run them on Windows. Still denied for the agent: `add`, `update`, `uninstall`, `audit fix`, `dedupe`, `prune`, `link` (and `pnpm`/`yarn` equivalents). On Windows they prune Linux-only `@emnapi/*` entries from `package-lock.json` and break CI `npm ci`. Use `npm ci`. Dependencies are added by Linux threads (and only after asking).
 - A `Stop` hook (`.claude/hooks/stop-check.mjs`, plain node, cross-platform) runs typecheck, lint and tests when the agent finishes and blocks the stop with the output if any fail. It is skipped when `git status` shows no changes under `src/` or in package/tsconfig/eslint config. Work already committed in the same session is not re-checked. After one blocked retry it only reports, to avoid loops.
 
 ## Naming and style
