@@ -4,7 +4,8 @@ export type FittingKind = Fitting['kind'];
 
 export type FieldKey =
   | 'diameter' | 'smallDiameter' | 'width' | 'height' | 'smallWidth' | 'smallHeight'
-  | 'length' | 'centerRadius' | 'innerRadius' | 'angle' | 'allowance';
+  | 'length' | 'centerRadius' | 'innerRadius' | 'angle' | 'allowance'
+  | 'branchDiameter' | 'branchWidth' | 'branchHeight';
 
 export interface FieldDef {
   key: FieldKey;
@@ -25,6 +26,14 @@ export const kindOrder: FittingKind[] = [
 ];
 
 export const kindFields: Record<FittingKind, FieldDef[]> = {
+  roundTee: [{ key: 'diameter' }, { key: 'branchDiameter' }, allowance],
+  roundTeeRectBranch: [{ key: 'diameter' }, { key: 'branchWidth' }, { key: 'branchHeight' }, allowance],
+  rectTee: [{ key: 'width' }, { key: 'height' }, { key: 'branchWidth' }, { key: 'branchHeight' }, allowance],
+  rectTeeRoundBranch: [{ key: 'width' }, { key: 'height' }, { key: 'branchDiameter' }, allowance],
+  roundCross: [{ key: 'diameter' }, { key: 'branchDiameter' }, allowance],
+  roundCrossRectBranches: [{ key: 'diameter' }, { key: 'branchWidth' }, { key: 'branchHeight' }, allowance],
+  rectCross: [{ key: 'width' }, { key: 'height' }, { key: 'branchWidth' }, { key: 'branchHeight' }, allowance],
+  rectCrossRoundBranches: [{ key: 'width' }, { key: 'height' }, { key: 'branchDiameter' }, allowance],
   roundStraight: [{ key: 'diameter' }, { key: 'length' }],
   rectStraight: [{ key: 'width' }, { key: 'height' }, { key: 'length' }],
   roundCap: [{ key: 'diameter' }, { key: 'length' }],

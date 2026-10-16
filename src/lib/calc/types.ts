@@ -35,7 +35,18 @@ export type Fitting =
       smallDiameter: number;
       length: number;
       allowance: number;
-    };
+    }
+  // Tees and crosses (Excel КТ, КПТ, ПТ, ПКТ / КККр, КПКр, ПККр, ППКр): main run + one branch (tee) or two opposite branches (cross).
+  // Main kind first, then the branch kind. `branchWidth` / `branchDiameter` is the branch size ALONG the main axis (the Excel column E);
+  // the main run is that size + 2 x allowance long. `allowance` is also the branch collar length.
+  | { kind: 'roundTee'; diameter: number; branchDiameter: number; allowance: number }
+  | { kind: 'roundTeeRectBranch'; diameter: number; branchWidth: number; branchHeight: number; allowance: number }
+  | { kind: 'rectTee'; width: number; height: number; branchWidth: number; branchHeight: number; allowance: number }
+  | { kind: 'rectTeeRoundBranch'; width: number; height: number; branchDiameter: number; allowance: number }
+  | { kind: 'roundCross'; diameter: number; branchDiameter: number; allowance: number }
+  | { kind: 'roundCrossRectBranches'; diameter: number; branchWidth: number; branchHeight: number; allowance: number }
+  | { kind: 'rectCross'; width: number; height: number; branchWidth: number; branchHeight: number; allowance: number }
+  | { kind: 'rectCrossRoundBranches'; width: number; height: number; branchDiameter: number; allowance: number };
 
 export interface AirConditions {
   density: number; // kg/m3

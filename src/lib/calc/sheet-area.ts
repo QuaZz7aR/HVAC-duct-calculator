@@ -37,6 +37,15 @@ export function developedLength(f: Fitting): number {
       const slant = Math.sqrt(mmToM(f.length) ** 2 + ((mmToM(f.diameter) - mmToM(f.smallDiameter)) / 2) ** 2);
       return slant + 2 * mmToM(f.allowance);
     }
+    case 'roundTee':
+    case 'roundTeeRectBranch':
+    case 'rectTee':
+    case 'rectTeeRoundBranch':
+    case 'roundCross':
+    case 'roundCrossRectBranches':
+    case 'rectCross':
+    case 'rectCrossRoundBranches':
+      return notImplemented(f.kind);
     default:
       return assertNever(f);
   }
@@ -72,6 +81,15 @@ export function sheetArea(f: Fitting): number {
     case 'roundReducer':
       // frustum surface: mean circumference x developed length (cone wall + allowance strips at both ends)
       return (Math.PI * (mmToM(f.diameter) + mmToM(f.smallDiameter)) / 2) * developedLength(f);
+    case 'roundTee':
+    case 'roundTeeRectBranch':
+    case 'rectTee':
+    case 'rectTeeRoundBranch':
+    case 'roundCross':
+    case 'roundCrossRectBranches':
+    case 'rectCross':
+    case 'rectCrossRoundBranches':
+      return notImplemented(f.kind);
     default:
       return assertNever(f);
   }
@@ -100,9 +118,23 @@ export function centerlineLength(f: Fitting): number {
     case 'roundReducer':
       // TODO(confirm): reducer centerline = axial length (not in CLAUDE.md, no fixture covers it)
       return mmToM(f.length);
+    case 'roundTee':
+    case 'roundTeeRectBranch':
+    case 'rectTee':
+    case 'rectTeeRoundBranch':
+    case 'roundCross':
+    case 'roundCrossRectBranches':
+    case 'rectCross':
+    case 'rectCrossRoundBranches':
+      return notImplemented(f.kind);
     default:
       return assertNever(f);
   }
+}
+
+/** Tees and crosses: types and fixtures first, geometry in the next step. */
+function notImplemented(kind: string): never {
+  throw new Error(`not implemented: ${kind}`);
 }
 
 function assertNever(x: never): never {
