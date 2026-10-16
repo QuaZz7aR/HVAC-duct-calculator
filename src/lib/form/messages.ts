@@ -17,6 +17,7 @@ export function issueMessage(issue: { code: FormIssueCode }, dict: Dictionary): 
 
 /** Warning text with the numbers filled in (decimal comma, as the UI shows them). */
 export function warningMessage(w: FittingWarning, dict: Dictionary): string {
-  const n = (x: number) => String(Math.round(x * 100) / 100).replace('.', ',');
-  return dict.warnings[w.code](n(w.value), n(w.limit));
+  // the value is rounded up so the text never says a number exceeds an identical one
+  const n = (x: number, up = false) => String((up ? Math.ceil(x * 100 - 1e-9) : Math.round(x * 100)) / 100).replace('.', ',');
+  return dict.warnings[w.code](n(w.value, true), n(w.limit));
 }

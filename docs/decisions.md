@@ -50,7 +50,7 @@ No answer yet: how he works with the Excel (what he adds by hand per item, where
 Relayed by the owner; the numbering is the engineer questionnaire's. Full text: the project report `engineer-answers-2026-10-16.md`.
 
 Confirmed:
-- **Rect elbow radius is inner** (Ш1). His construction is an annular sector: area of the big circle minus the small one of the inner radius, cut by the angle. Our `perimeter x (arc on the axis + 2 x allowance)` with `center = innerRadius + width / 2` is the same geometry. Closes open question 1.
+- **Rect elbow radius is inner** (Ш1). His construction is an annular sector: area of the big circle minus the small one of the inner radius, cut by the angle. Our `perimeter x (arc on the axis + 2 x allowance)` with `center = innerRadius + width / 2` is the same geometry. Closes the former open question 1 (numbers in this section refer to the CLAUDE.md list as of 2026-10-07).
 - **Axis length by geometry** is fine (Ш2), see the deviation above.
 - **`zeta` refers to the mean velocity** of a reducer (Ш6). Closes open question 4.
 - **Tees and crosses subtract the branch opening, in every fitting** (Ш7). Closes open question 2. Still out of v1; the pending fixtures already follow it.
@@ -87,7 +87,8 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `calc/sheet-area.ts` | Cap centerline is 0. Reducer centerline is the axial length (no fixture covers it). `rectToRoundReducer` slant ignores height. Rect elbow `innerRadius` is inner (confirmed 2026-10-16). |
 | `calc/thickness.ts` `thicknessSize` | Reducers are sized by the larger side over both ends, rect-to-round by its rect end (Excel convention); unconfirmed against handbooks. |
 | `form/fields.ts` | Prefilled allowance 50 mm and angle 90 in the form: UI convenience only, the core has no default for allowance. |
-| `calc/section.ts` | Reducer friction by the larger end's diameter (our choice); mean-velocity `Pd` confirmed by the engineer. Caps have no friction because their centerline is 0. || `calc/config.ts` warnings | `elbowInnerRadiusFactor` 2 is preliminary; the aspect ratio threshold 3 comes from the engineer's "2.5-3". |
+| `calc/section.ts` | Reducer friction by the larger end's diameter (our choice); mean-velocity `Pd` confirmed by the engineer. Caps have no friction because their centerline is 0. |
+| `calc/config.ts` warnings | `elbowInnerRadiusFactor` 2 is preliminary; the aspect ratio threshold 3 comes from the engineer's "2.5-3". |
 
 ## Deferred
 - `npm audit`: 5 high findings, one chain (`braces` <- `micromatch` <- `fast-glob` <- `@next/eslint-plugin-next` <- `eslint-config-next`), dev tooling only, nothing ships to the browser or the server. No non-breaking fix exists: `npm audit fix --force` would downgrade `eslint-config-next` to 14.2.35 (Next 16 here). Wait for a `eslint-config-next` release that updates `fast-glob`/`micromatch`; do not run `npm audit fix`.

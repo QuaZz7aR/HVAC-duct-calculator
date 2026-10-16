@@ -51,7 +51,7 @@ Fixtures with `basis: 'excel'` follow the spreadsheet author's convention and ar
 - `allowance` = extra wall length at each connection, so flanges have somewhere to attach. One field everywhere (elbows, reducers, branches). A flange itself is not modelled.
 - Cone area uses the slant height `sqrt(L^2 + ((D1 - D2) / 2)^2)`, not the axial length.
 - Cutting-waste factor and similar coefficients live in config (`defaultConfig`), never as literals in function bodies. Their source is unconfirmed: keep a `TODO(confirm)` next to each.
-- Sheet thickness is a versioned lookup table (rect: by larger side, round: by diameter), not a formula. Threshold values are placeholders until confirmed.
+- Sheet thickness is a versioned lookup table (rect: by larger side, round: by diameter), not a formula. Thresholds 400 mm / 0.55 / 0.7 are confirmed by the engineer (2026-10-16); the ДБН В.2.5-67 table differs and is an open question.
 - Reducer length: default 300 mm, validation floor 150 mm. Never silently clamp what the user typed.
 - Pressure drop: Altshul `lambda = 0.11 * (k/d + 68/Re)^0.25`, equivalent diameter `2ab/(a+b)` for rectangles, `dp_friction = lambda * L/d * Pd`, `dp_local = zeta * Pd`. Default roughness 0.1 mm (steel).
 - Waste factor applies to elbows only (round: by diameter, rect: by equivalent diameter); every other kind uses the config default 1.0. Decided 2026-10-16 (Ш4): no normative source for a general coefficient, and it would double-count `allowance`.

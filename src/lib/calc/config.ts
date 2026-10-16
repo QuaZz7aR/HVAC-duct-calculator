@@ -82,7 +82,7 @@ export const defaultConfig: CalcConfig = {
   wasteFactor: {
     version: 'placeholder-1',
     default: 1.0,
-    // TODO(confirm): thresholds and factors were copied by the engineer from websites as a safety margin; what they cover (waste, seams, both) is open question 3
+    // TODO(confirm): thresholds and factors were copied by the engineer from websites as a safety margin; what they cover (waste, seams, both) is still open (decisions.md, Engineer answers)
     round: [
       { fromMm: 0, factor: 1.15 },
       { fromMm: 315, factor: 1.1 },
@@ -95,6 +95,7 @@ export const defaultConfig: CalcConfig = {
   },
   warnings: {
     // engineer (2026-10-16): a rect side 2.5-3x the other is not done in practice, better to warn
+    // TODO(confirm): 3 is picked from the engineer's "2.5-3"
     aspectRatioWarn: 3,
     // ДБН В.2.5-67:2013, додаток Ц: rect aspect ratio not above 6.3
     aspectRatioMax: 6.3,

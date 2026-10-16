@@ -1,4 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { airAtConditions } from '../../calc/air';
+import { defaultConfig } from '../../calc/config';
+import { assembleSection } from '../../calc/section';
 import { uk } from '../../i18n/uk';
 import { calculate } from '../calculate';
 import { newRow, type FormRow } from '../fields';
@@ -21,10 +24,13 @@ describe('calculate: warnings', () => {
     expect(out.result.metalArea).toBeGreaterThan(0);
   });
   it('does not change the sizes: area equals the unwarned geometry', () => {
-    const a = calculate([rectRow('700', '100')], air);
-    const out = a.rows[0];
+    const out = calculate([rectRow('700', '100')], air).rows[0];
     if (!out.ok) throw new Error('expected ok');
     expect(out.result.fitting).toMatchObject({ width: 700, height: 100 });
+    // a warned row has the same numbers as the same geometry through the plain core
+    const core = assembleSection({ fitting: out.result.fitting, flow: 500, localCoefficient: 0 }, airAtConditions(22, 101308, defaultConfig), defaultConfig);
+    expect(out.result.metalArea).toBe(core.metalArea);
+    expect(out.result.pressureDrop.frictionLoss).toBe(core.pressureDrop.frictionLoss);
   });
   it('is empty for a normal fitting', () => {
     const out = calculate([rectRow('300', '200')], air).rows[0];
@@ -40,5 +46,12 @@ describe('warningMessage', () => {
     for (const code of ['aspect.high', 'size.overLimit', 'elbow.radiusLarge'] as const) {
       expect(warningMessage({ code, level: 'warning', value: 1, limit: 2 }, uk).length).toBeGreaterThan(10);
     }
+  });
+});
+
+describe('warningMessage rounding', () => {
+  it('never shows a value equal to its limit', () => {
+    const text = warningMessage({ code: 'aspect.excessive', level: 'strong', value: 6.304, limit: 6.3 }, uk);
+    expect(text).toContain('6,31 перевищує 6,3');
   });
 });
