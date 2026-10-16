@@ -91,7 +91,7 @@ export function centerlineLength(f: Fitting): number {
       // arc of the bend along the center radius
       return mmToM(f.centerRadius) * degToRad(f.angle);
     case 'rectElbow':
-      // TODO(confirm): innerRadius is the INNER radius and width is the bend-plane side (CLAUDE.md open question 1); center radius = innerRadius + width / 2
+      // innerRadius is the INNER radius (confirmed) and width is the bend-plane side (confirmed by the engineer 2026-10-16); center radius = innerRadius + width / 2
       return (mmToM(f.innerRadius) + mmToM(f.width) / 2) * degToRad(f.angle);
     case 'rectToRoundReducer':
     case 'rectReducer':

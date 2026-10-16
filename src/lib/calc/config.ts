@@ -34,6 +34,14 @@ export interface AirConfig {
   airPressurePa: number; // default air pressure
 }
 
+/** Thresholds of the non-blocking input warnings (warnings.ts). */
+export interface WarningConfig {
+  aspectRatioWarn: number; // rect: larger side / smaller side at or above this -> warning
+  aspectRatioMax: number; // rect: above this -> strong warning (norm limit)
+  maxSizeMm: number; // any cross-section dimension above this -> thickness needs a calculation
+  elbowInnerRadiusFactor: number; // inner radius above this x width (rect) or diameter (round) -> warning
+}
+
 /** Boundary-unit defaults (mm). Convert with units.ts before use in the core. */
 export interface CalcConfig {
   air: AirConfig;
@@ -42,6 +50,7 @@ export interface CalcConfig {
   reducerMinLengthMm: number; // validation floor, never a silent clamp
   thickness: ThicknessTable;
   wasteFactor: WasteFactorTable;
+  warnings: WarningConfig;
 }
 
 export const defaultConfig: CalcConfig = {
@@ -59,7 +68,7 @@ export const defaultConfig: CalcConfig = {
   reducerMinLengthMm: 150,
   thickness: {
     version: 'placeholder-1',
-    // TODO(confirm): thresholds and thicknesses are Excel placeholders, unconfirmed
+    // TODO(confirm): thresholds 400 mm / 0.55 / 0.7 confirmed by the engineer (2026-10-16); ДБН В.2.5-67:2013 додаток Ц has a different table (no 0.55), possible second option
     round: [
       { fromMm: 0, thicknessMm: 0.55 },
       { fromMm: 400, thicknessMm: 0.7 },
@@ -73,7 +82,7 @@ export const defaultConfig: CalcConfig = {
   wasteFactor: {
     version: 'placeholder-1',
     default: 1.0,
-    // TODO(confirm): thresholds and factors were copied by the engineer from websites as a safety margin; what they cover (waste, seams, both) is open question 3
+    // TODO(confirm): thresholds and factors were copied by the engineer from websites as a safety margin; what they cover (waste, seams, both) is still open (decisions.md, Engineer answers)
     round: [
       { fromMm: 0, factor: 1.15 },
       { fromMm: 315, factor: 1.1 },
@@ -83,5 +92,16 @@ export const defaultConfig: CalcConfig = {
       { fromMm: 0, factor: 1.2 },
       { fromMm: 250, factor: 1.1 },
     ],
+  },
+  warnings: {
+    // engineer (2026-10-16): a rect side 2.5-3x the other is not done in practice, better to warn
+    // TODO(confirm): 3 is picked from the engineer's "2.5-3"
+    aspectRatioWarn: 3,
+    // ДБН В.2.5-67:2013, додаток Ц: rect aspect ratio not above 6.3
+    aspectRatioMax: 6.3,
+    // ДБН В.2.5-67:2013, додаток Ц: thickness above 2000 mm is by calculation
+    maxSizeMm: 2000,
+    // TODO(confirm): preliminary threshold (2x width or diameter); the engineer expected inner radii up to 50-150 mm
+    elbowInnerRadiusFactor: 2,
   },
 };

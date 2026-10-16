@@ -3,7 +3,7 @@ import { kindFields, kindOrder, type FieldKey, type FittingKind, type FormRow } 
 import type { RowOutcome } from "@/lib/form/calculate";
 import { uk as dict } from "@/lib/i18n/uk";
 import { kindTitle } from "./format";
-import { ErrorList } from "./ErrorList";
+import { ErrorList, WarningList } from "./ErrorList";
 import { cardClass, inputClass, labelClass } from "./styles";
 import { TextField } from "./TextField";
 
@@ -48,6 +48,7 @@ export function FittingCard({ row, index, outcome, onKindChange, onValueChange, 
         <TextField label={`${dict.zeta} (${dict.optional})`} value={row.zeta} onChange={(zeta) => onPatch({ zeta })} />
       </div>
       {outcome && !outcome.ok && <ErrorList issues={outcome.issues} />}
+      {outcome?.ok && <WarningList warnings={outcome.result.warnings} />}
     </div>
   );
 }

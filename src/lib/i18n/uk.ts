@@ -1,3 +1,4 @@
+import type { WarningCode } from '../calc/warnings';
 import type { FittingKind } from '../form/fields';
 import type { FormIssueCode } from '../form/messages';
 
@@ -89,6 +90,18 @@ export const uk = {
     'input.invalid': 'Некоректні дані',
     'quantity.invalid': 'Ціле число, не менше 1',
   } satisfies Record<FormIssueCode, string>,
+  // non-blocking advice next to a row; numbers come from the warning, thresholds from config
+  warnings: {
+    title: 'Попередження',
+    'aspect.high': (value: string, limit: string) =>
+      `Співвідношення сторін ${value} (від ${limit}): на практиці так не роблять, перевірте розміри та товщину металу.`,
+    'aspect.excessive': (value: string, limit: string) =>
+      `Співвідношення сторін ${value} перевищує ${limit} (ДБН В.2.5-67:2013, додаток Ц). Розміри краще змінити.`,
+    'size.overLimit': (value: string, limit: string) =>
+      `Розмір ${value} мм більший за ${limit} мм: товщину металу потрібно обґрунтувати розрахунком (ДБН В.2.5-67:2013, додаток Ц).`,
+    'elbow.radiusLarge': (value: string, limit: string) =>
+      `Внутрішній радіус ${value} мм завеликий (більше ${limit} мм): деталь може вийти некоректною, перевірте радіус.`,
+  } satisfies Record<'title' | WarningCode, string | ((value: string, limit: string) => string)>,
   footer: 'Розрахунок за методикою, звіреною з Excel практикуючого інженера. Коефіцієнти розкрою та таблиця товщин попередні.',
 };
 
