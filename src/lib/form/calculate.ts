@@ -3,6 +3,7 @@ import { defaultConfig, type CalcConfig } from '../calc/config';
 import { assembleSection } from '../calc/section';
 import { sheetList } from '../calc/sheet-list';
 import { thickness, thicknessSize } from '../calc/thickness';
+import { fittingWarnings, type FittingWarning } from '../calc/warnings';
 import type { Fitting, PressureDrop, ThicknessGroup } from '../calc/types';
 import { airInputSchema, createSchemas, validate } from '../validation';
 import { kindFields, type FormRow } from './fields';
@@ -27,6 +28,7 @@ export interface RowResult {
   centerlineLength: number; // m
   pressureDrop: PressureDrop;
   totalLoss: number; // Pa, friction + local, one piece
+  warnings: FittingWarning[]; // advice only, the numbers above are unchanged
 }
 
 export type RowOutcome = { ok: true; result: RowResult } | { ok: false; id: number; issues: FormIssue[] };
@@ -106,6 +108,7 @@ export function calculate(
           centerlineLength: s.centerlineLength,
           pressureDrop: s.pressureDrop,
           totalLoss,
+          warnings: fittingWarnings(p.fitting, config),
         };
         // sizes near the float limit pass validation but overflow; a size below the first table row has no thickness
         if (![result.metalArea, result.centerlineLength, totalLoss].every(Number.isFinite)) throw new Error('not finite');
