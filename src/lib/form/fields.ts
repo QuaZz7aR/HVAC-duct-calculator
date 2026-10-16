@@ -23,6 +23,8 @@ const reducerLength: FieldDef = { key: 'length', optional: true };
 export const kindOrder: FittingKind[] = [
   'roundStraight', 'rectStraight', 'roundElbow', 'rectElbow',
   'roundReducer', 'rectReducer', 'rectToRoundReducer', 'roundCap', 'rectCap',
+  'roundTee', 'roundTeeRectBranch', 'rectTee', 'rectTeeRoundBranch',
+  'roundCross', 'roundCrossRectBranches', 'rectCross', 'rectCrossRoundBranches',
 ];
 
 export const kindFields: Record<FittingKind, FieldDef[]> = {

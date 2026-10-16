@@ -1,4 +1,5 @@
 import type { Fitting } from './types';
+import { branchLayout } from './branch';
 import { degToRad, mmToM } from './units';
 
 /** Wall length along the surface, computed once per fitting and shared by metal and insulation. */
@@ -45,7 +46,8 @@ export function developedLength(f: Fitting): number {
     case 'roundCrossRectBranches':
     case 'rectCross':
     case 'rectCrossRoundBranches':
-      return notImplemented(f.kind);
+      // main run along the axis: branch size plus the connection allowance at both ends
+      return branchLayout(f).runLength;
     default:
       return assertNever(f);
   }
@@ -89,7 +91,11 @@ export function sheetArea(f: Fitting): number {
     case 'roundCrossRectBranches':
     case 'rectCross':
     case 'rectCrossRoundBranches':
-      return notImplemented(f.kind);
+      {
+        // main run wall + collar of each branch - cut-out of each branch (flat cross-section, the saddle effect is ignored)
+        const b = branchLayout(f);
+        return b.mainPerimeter * b.runLength + b.count * (b.branchPerimeter * b.collar - b.branchArea);
+      }
     default:
       return assertNever(f);
   }
@@ -126,15 +132,11 @@ export function centerlineLength(f: Fitting): number {
     case 'roundCrossRectBranches':
     case 'rectCross':
     case 'rectCrossRoundBranches':
-      return notImplemented(f.kind);
+      // TODO(confirm): flow path through the main run = the branch size along the axis, no allowance (the Excel has only the run length with allowance)
+      return branchLayout(f).along;
     default:
       return assertNever(f);
   }
-}
-
-/** Tees and crosses: types and fixtures first, geometry in the next step. */
-function notImplemented(kind: string): never {
-  throw new Error(`not implemented: ${kind}`);
 }
 
 function assertNever(x: never): never {

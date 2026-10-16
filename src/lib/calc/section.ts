@@ -38,13 +38,15 @@ function openings(f: Fitting): Opening[] {
       return [rectOpening(f.width, f.height), roundOpening(f.smallDiameter)];
     case 'roundTee':
     case 'roundTeeRectBranch':
-    case 'rectTee':
-    case 'rectTeeRoundBranch':
     case 'roundCross':
     case 'roundCrossRectBranches':
+      // TODO(confirm): the flow runs through the main duct; the branch flow and the branch's own resistance are not modelled
+      return [roundOpening(f.diameter)];
+    case 'rectTee':
+    case 'rectTeeRoundBranch':
     case 'rectCross':
     case 'rectCrossRoundBranches':
-      throw new Error(`not implemented: ${f.kind}`);
+      return [rectOpening(f.width, f.height)];
     default:
       return assertNever(f);
   }
