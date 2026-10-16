@@ -41,6 +41,15 @@ export function thicknessSize(f: Fitting): ThicknessSize {
     case 'rectElbow':
     case 'rectToRoundReducer':
       return { shape: 'rect', width: f.width, height: f.height };
+    case 'roundTee':
+    case 'roundTeeRectBranch':
+    case 'rectTee':
+    case 'rectTeeRoundBranch':
+    case 'roundCross':
+    case 'roundCrossRectBranches':
+    case 'rectCross':
+    case 'rectCrossRoundBranches':
+      throw new Error(`not implemented: ${f.kind}`);
     default:
       return assertNever(f);
   }

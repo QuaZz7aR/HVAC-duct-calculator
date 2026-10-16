@@ -36,6 +36,15 @@ function openings(f: Fitting): Opening[] {
       return [rectOpening(f.width, f.height), rectOpening(f.smallWidth, f.smallHeight)];
     case 'rectToRoundReducer':
       return [rectOpening(f.width, f.height), roundOpening(f.smallDiameter)];
+    case 'roundTee':
+    case 'roundTeeRectBranch':
+    case 'rectTee':
+    case 'rectTeeRoundBranch':
+    case 'roundCross':
+    case 'roundCrossRectBranches':
+    case 'rectCross':
+    case 'rectCrossRoundBranches':
+      throw new Error(`not implemented: ${f.kind}`);
     default:
       return assertNever(f);
   }
