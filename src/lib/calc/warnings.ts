@@ -1,8 +1,9 @@
 import type { CalcConfig } from './config';
+import { branchLayout, isTeeCross } from './branch';
 import type { Fitting } from './types';
 
 /** Non-blocking advice about a valid fitting. Never changes a size and never stops the calculation. */
-export type WarningCode = 'aspect.high' | 'aspect.excessive' | 'size.overLimit' | 'elbow.radiusLarge';
+export type WarningCode = 'aspect.high' | 'aspect.excessive' | 'size.overLimit' | 'elbow.radiusLarge' | 'branch.larger';
 
 export interface FittingWarning {
   code: WarningCode;
@@ -20,6 +21,19 @@ function rectEnds(f: Fitting): { w: number; h: number }[] {
     case 'rectElbow':
     case 'rectToRoundReducer':
       return [{ w: f.width, h: f.height }];
+    case 'rectTee':
+    case 'rectCross':
+      // main duct and rect branch
+      return [
+        { w: f.width, h: f.height },
+        { w: f.branchWidth, h: f.branchHeight },
+      ];
+    case 'rectTeeRoundBranch':
+    case 'rectCrossRoundBranches':
+      return [{ w: f.width, h: f.height }];
+    case 'roundTeeRectBranch':
+    case 'roundCrossRectBranches':
+      return [{ w: f.branchWidth, h: f.branchHeight }];
     case 'rectReducer':
       return [
         { w: f.width, h: f.height },
@@ -35,6 +49,7 @@ function allSizes(f: Fitting): number[] {
   const sizes = rectEnds(f).flatMap((e) => [e.w, e.h]);
   if ('diameter' in f) sizes.push(f.diameter);
   if ('smallDiameter' in f) sizes.push(f.smallDiameter);
+  if ('branchDiameter' in f) sizes.push(f.branchDiameter);
   return sizes;
 }
 
@@ -64,6 +79,14 @@ export function fittingWarnings(fitting: Fitting, config: CalcConfig): FittingWa
   const bend = elbowInner(fitting);
   if (bend && bend.inner > elbowInnerRadiusFactor * bend.size) {
     out.push({ code: 'elbow.radiusLarge', level: 'warning', value: bend.inner, limit: elbowInnerRadiusFactor * bend.size });
+  }
+
+  // a branch with a bigger cross-section than the main duct: unusual, and the cut-out may exceed the wall
+  if (isTeeCross(fitting)) {
+    const b = branchLayout(fitting);
+    if (b.branchArea > b.mainArea) {
+      out.push({ code: 'branch.larger', level: 'warning', value: b.branchArea / b.mainArea, limit: 1 });
+    }
   }
   return out;
 }

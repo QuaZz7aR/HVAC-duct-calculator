@@ -53,7 +53,7 @@ Confirmed:
 - **Rect elbow radius is inner** (Ш1). His construction is an annular sector: area of the big circle minus the small one of the inner radius, cut by the angle. Our `perimeter x (arc on the axis + 2 x allowance)` with `center = innerRadius + width / 2` is the same geometry. Closes the former open question 1 (numbers in this section refer to the CLAUDE.md list as of 2026-10-07).
 - **Axis length by geometry** is fine (Ш2), see the deviation above.
 - **`zeta` refers to the mean velocity** of a reducer (Ш6). Closes open question 4.
-- **Tees and crosses subtract the branch opening, in every fitting** (Ш7). Closes open question 2. Still out of v1; the pending fixtures already follow it.
+- **Tees and crosses subtract the branch opening, in every fitting** (Ш7). Closes open question 2. Implemented 2026-10-16, see "Tees and crosses" below.
 - **Branch-ins (Квр, Пвр, ПККр) by geometry** (Ш8, Ш9): he does not remember the formulas and trusts whichever are correct and pass our checks. Out of v1.
 - **Adapter is not needed now** (Ш10).
 - **Thickness** (Ш11): 0.55 mm below 400 mm, 0.7 mm from 400 mm, rect by the larger side. Confirms the table thresholds. A side 2.5-3x the other could be given 0.7 mm, but better warn (done, see Input warnings).
@@ -87,8 +87,18 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `calc/sheet-area.ts` | Cap centerline is 0. Reducer centerline is the axial length (no fixture covers it). `rectToRoundReducer` slant ignores height. Rect elbow `innerRadius` is inner (confirmed 2026-10-16). |
 | `calc/thickness.ts` `thicknessSize` | Reducers are sized by the larger side over both ends, rect-to-round by its rect end (Excel convention); unconfirmed against handbooks. |
 | `form/fields.ts` | Prefilled allowance 50 mm and angle 90 in the form: UI convenience only, the core has no default for allowance. |
+| `calc/sheet-area.ts` tees and crosses | Centerline of the main run is the branch size along the axis `E` (no allowance); the Excel has only the run length `E + 2 x allowance`. |
 | `calc/section.ts` | Reducer friction by the larger end's diameter (our choice); mean-velocity `Pd` confirmed by the engineer. Caps have no friction because their centerline is 0. |
 | `calc/config.ts` warnings | `elbowInnerRadiusFactor` 2 is preliminary; the aspect ratio threshold 3 comes from the engineer's "2.5-3". |
+
+## Tees and crosses (2026-10-16)
+Eight kinds, Excel codes КТ, КПТ, ПТ, ПКТ (tees) and КККр, КПКр, ПККр, ППКр (crosses): `roundTee`, `roundTeeRectBranch`, `rectTee`, `rectTeeRoundBranch` and `roundCross`, `roundCrossRectBranches`, `rectCross`, `rectCrossRoundBranches`. The name is the main shape first, then the branch shape. Fixtures: `__fixtures__/tees-crosses.fixtures.ts`, all from the engineer's corrected Excel.
+- **Area** = main perimeter x (`E` + 2 x `allowance`) + branch perimeter x `allowance` - branch cross-section area; for a cross the collar and the cut-out are counted twice. `E` is the branch size along the main axis (`branchWidth` or `branchDiameter`). The run length is `developedLength`, shared with insulation later.
+- **`allowance` is both** the extra wall at each end of the run and the collar length of a branch (the Excel's column G, "allowance or branch length"). One field, as everywhere.
+- **Cut-out is the flat cross-section.** On a round main the real saddle cut is larger (about +6 % for d200 on D315, +8 % for a 300x200 branch). Known approximation, kept as in the Excel.
+- **No waste factor** (default 1.0, as for every non-elbow). **Thickness** is keyed by the main duct. **Warnings** (aspect ratio, size over 2000 mm) cover the main duct and the branch; `branch.larger` warns when the branch cross-section is bigger than the main one (the area would be wrong; nothing is changed or blocked).
+- **Section assembly**: friction and velocity use the main duct at the given flow and the centerline `E`; the branch flow and its resistance are not modelled, `zeta` is typed by the user (`TODO(confirm)` in `section.ts` and `sheet-area.ts`).
+- Excel template bugs found on the way (M9/M10/M12 and M27-M30) are in "Engineer answers" above.
 
 ## Deferred
 - `npm audit`: 5 high findings, one chain (`braces` <- `micromatch` <- `fast-glob` <- `@next/eslint-plugin-next` <- `eslint-config-next`), dev tooling only, nothing ships to the browser or the server. No non-breaking fix exists: `npm audit fix --force` would downgrade `eslint-config-next` to 14.2.35 (Next 16 here). Wait for a `eslint-config-next` release that updates `fast-glob`/`micromatch`; do not run `npm audit fix`.
@@ -99,4 +109,5 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 - Optional ДБН thickness table as a second config table, after asking the engineer.
 - Fix the Excel template (M9/M10/M12/M27-M30 on both sheets) and tell the engineer; a copy is ready.
 - UI: Russian/English dictionaries, no list persistence, no per-system grouping.
-- Tees, crosses, branch-ins, offsets, adapters, insulation: out of v1, see `CLAUDE.md`.
+- Branch-ins, offsets, adapters, insulation: out of v1, see `CLAUDE.md`.
+- Tees and crosses: branch flow and the branch's own pressure drop are not modelled (see "Tees and crosses"). A hard validation of the branch against the main duct has no source; only the `branch.larger` warning exists.

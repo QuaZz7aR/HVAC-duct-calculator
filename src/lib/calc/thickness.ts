@@ -43,13 +43,15 @@ export function thicknessSize(f: Fitting): ThicknessSize {
       return { shape: 'rect', width: f.width, height: f.height };
     case 'roundTee':
     case 'roundTeeRectBranch':
-    case 'rectTee':
-    case 'rectTeeRoundBranch':
     case 'roundCross':
     case 'roundCrossRectBranches':
+      // the main duct keys the thickness, never the branch
+      return { shape: 'round', diameter: f.diameter };
+    case 'rectTee':
+    case 'rectTeeRoundBranch':
     case 'rectCross':
     case 'rectCrossRoundBranches':
-      throw new Error(`not implemented: ${f.kind}`);
+      return { shape: 'rect', width: f.width, height: f.height };
     default:
       return assertNever(f);
   }
