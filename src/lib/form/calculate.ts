@@ -110,8 +110,11 @@ export function calculate(
           totalLoss,
           warnings: fittingWarnings(p.fitting, config),
         };
-        // sizes near the float limit pass validation but overflow; a size below the first table row has no thickness
-        if (![result.metalArea, result.centerlineLength, totalLoss].every(Number.isFinite)) throw new Error('not finite');
+        // sizes near the float limit pass validation but overflow; a size below the first table row has no thickness;
+        // a branch cut-out larger than the wall (tees, crosses) gives a non-positive area, which is not a duct
+        if (![result.metalArea, result.centerlineLength, totalLoss].every(Number.isFinite) || result.metalArea <= 0) {
+          throw new Error('not a valid section');
+        }
       } catch {
         outcomes.push({ ok: false, id: row.id, issues: [{ code: 'input.invalid', path: [] }] });
         continue;
