@@ -96,7 +96,7 @@ Eight kinds, Excel codes КТ, КПТ, ПТ, ПКТ (tees) and КККр, КПК�
 - **Area** = main perimeter x (`E` + 2 x `allowance`) + branch perimeter x `allowance` - branch cross-section area; for a cross the collar and the cut-out are counted twice. `E` is the branch size along the main axis (`branchWidth` or `branchDiameter`). The run length is `developedLength`, shared with insulation later.
 - **`allowance` is both** the extra wall at each end of the run and the collar length of a branch (the Excel's column G, "allowance or branch length"). One field, as everywhere.
 - **Cut-out is the flat cross-section.** On a round main the real saddle cut is larger (about +6 % for d200 on D315, +8 % for a 300x200 branch). Known approximation, kept as in the Excel.
-- **No waste factor** (default 1.0, as for every non-elbow). **Thickness** is keyed by the main duct. **Warnings** (aspect ratio, size over 2000 mm) cover the main duct and the branch; `branch.larger` warns when the branch cross-section is bigger than the main one (the area would be wrong; nothing is changed or blocked).
+- **No waste factor** (default 1.0, as for every non-elbow). **Thickness** is keyed by the main duct. **Warnings** (aspect ratio, size over 2000 mm) cover the main duct and the branch; `branch.larger` warns when the branch cross-section is bigger than the main one (the area would be wrong; nothing is changed). When the cut-outs exceed the wall (e.g. a 100x100 rect tee with a 100x1000 branch, allowance 0) the area is not positive: the form layer (`calculate`) rejects that row with `input.invalid` instead of showing a negative metal area (2026-10-16).
 - **Section assembly**: friction and velocity use the main duct at the given flow and the centerline `E`; the branch flow and its resistance are not modelled, `zeta` is typed by the user (`TODO(confirm)` in `section.ts` and `sheet-area.ts`).
 - Excel template bugs found on the way (M9/M10/M12 and M27-M30) are in "Engineer answers" above.
 
@@ -110,4 +110,4 @@ Eight kinds, Excel codes КТ, КПТ, ПТ, ПКТ (tees) and КККр, КПК�
 - Fix the Excel template (M9/M10/M12/M27-M30 on both sheets) and tell the engineer; a copy is ready.
 - UI: Russian/English dictionaries, no list persistence, no per-system grouping.
 - Branch-ins, offsets, adapters, insulation: out of v1, see `CLAUDE.md`.
-- Tees and crosses: branch flow and the branch's own pressure drop are not modelled (see "Tees and crosses"). A hard validation of the branch against the main duct has no source; only the `branch.larger` warning exists.
+- Tees and crosses: branch flow and the branch's own pressure drop are not modelled (see "Tees and crosses"). A hard validation of the branch against the main duct has no source; only the `branch.larger` warning exists, plus the form-layer rejection of a non-positive area.
