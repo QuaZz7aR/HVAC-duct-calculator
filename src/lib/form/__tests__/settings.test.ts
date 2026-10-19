@@ -29,10 +29,23 @@ describe('buildConfig', () => {
     expect(buildConfig(text({ thicknessTable: 'engineer' })).config.thickness).toBe(engineerThickness);
   });
 
-  it('accepts a decimal comma and treats empty as 0', () => {
-    const { config } = buildConfig(text({ seamPercent: '2,5', marginPercent: '' }));
+  it('accepts a decimal comma and 0', () => {
+    const { config, issues } = buildConfig(text({ seamPercent: '2,5', marginPercent: '0' }));
+    expect(issues).toEqual([]);
     expect(config.wasteFactor.default).toBeCloseTo(1.025, 12);
     expect(config.order.marginPercent).toBe(0);
+  });
+
+  it('an empty field is required and keeps the base value, never a silent 0', () => {
+    const { config, issues } = buildConfig(text({ marginPercent: ' ' }));
+    expect(issues).toEqual([{ code: 'field.required', path: ['marginPercent'] }]);
+    expect(config.order.marginPercent).toBe(20);
+  });
+
+  it('rejects an absurd percent that would overflow the areas', () => {
+    const { config, issues } = buildConfig(text({ seamPercent: '5000', marginPercent: '99999' }));
+    expect(issues.map((i) => i.path[0])).toEqual(['seamPercent', 'marginPercent']);
+    expect(Number.isFinite(config.wasteFactor.default)).toBe(true);
   });
 
   it('reports a bad percent and keeps the base value', () => {

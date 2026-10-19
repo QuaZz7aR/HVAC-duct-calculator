@@ -1,5 +1,5 @@
 import { defaultConfig, dbnThickness, engineerThickness, type CalcConfig, type SheetSize } from '../calc/config';
-import { parseNumber } from './calculate-input';
+import { parseNumber } from './calculate';
 import type { FormIssue } from './messages';
 
 export type ThicknessTableKey = 'dbn' | 'engineer';
@@ -25,11 +25,15 @@ export function defaultSettings(base: CalcConfig = defaultConfig): SettingsText 
   };
 }
 
-/** A non-negative percent from text; empty means 0. A bad value reports an issue and falls back to `fallback`. */
+const maxPercent = 1000; // far beyond any real margin; stops 1e308 from overflowing the areas
+
+/** A percent from text. An empty, bad or out-of-range value reports an issue and falls back to `fallback`. */
 function percent(text: string, field: string, fallback: number, issues: FormIssue[]): number {
-  const v = parseNumber(text) ?? 0;
-  if (Number.isNaN(v)) issues.push({ code: 'size.notFinite', path: [field] });
+  const v = parseNumber(text);
+  if (v === undefined) issues.push({ code: 'field.required', path: [field] });
+  else if (Number.isNaN(v)) issues.push({ code: 'size.notFinite', path: [field] });
   else if (v < 0) issues.push({ code: 'coefficient.negative', path: [field] });
+  else if (v > maxPercent) issues.push({ code: 'input.invalid', path: [field] });
   else return v;
   return fallback;
 }

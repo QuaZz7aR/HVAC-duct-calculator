@@ -127,7 +127,7 @@ export const defaultConfig: CalcConfig = {
   reducerMinLengthMm: 150,
   thickness: dbnThickness,
   wasteFactor: {
-    version: 'placeholder-1',
+    version: 'placeholder-2', // 2: `default` became the user's seam allowance
     // seam allowance ("запас на фальц") for every kind except elbows: 1 + percent / 100, user-set in the UI (engineer 2026-10-19:
     // "if the coefficient is for seams, then for all elements"). 1.0 = off, because the origin of the coefficients is unconfirmed.
     default: 1.0,
@@ -152,7 +152,8 @@ export const defaultConfig: CalcConfig = {
     maxSizeMm: 2000,
     // TODO(confirm): preliminary threshold (2x width or diameter); the engineer expected inner radii up to 50-150 mm
     elbowInnerRadiusFactor: 2,
-  },  order: {
+  },
+  order: {
     // engineer (2026-10-19): the 20 % is "probably the margin for ordering metal"
     // TODO(confirm): what the 20 % in his «Специфікація» (AJ30, E51) really is
     marginPercent: 20,
