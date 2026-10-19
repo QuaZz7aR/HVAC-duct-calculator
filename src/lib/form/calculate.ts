@@ -1,6 +1,8 @@
 import { airAtConditions } from '../calc/air';
 import { defaultConfig, type CalcConfig } from '../calc/config';
 import { assembleSection } from '../calc/section';
+import { centerlineLength } from '../calc/sheet-area';
+import { metalArea } from '../calc/waste-factor';
 import { orderArea, orderList, type OrderLine } from '../calc/sheet-count';
 import { sheetList } from '../calc/sheet-list';
 import { thickness, thicknessSize } from '../calc/thickness';
@@ -27,8 +29,9 @@ export interface RowResult {
   metalArea: number; // m2, one piece, waste factor included
   metalAreaTotal: number; // m2, times quantity
   centerlineLength: number; // m
-  pressureDrop: PressureDrop;
-  totalLoss: number; // Pa, friction + local, one piece
+  pressureDrop: PressureDrop; // all NaN when `lossesAvailable` is false
+  totalLoss: number; // Pa, friction + local, one piece; NaN when `lossesAvailable` is false
+  lossesAvailable: boolean; // false when the loss calculation overflowed or failed; the area above is still valid
   warnings: FittingWarning[]; // advice only, the numbers above are unchanged
 }
 
@@ -40,7 +43,7 @@ export interface Calculation {
   sheetList: OrderLine[]; // per thickness: computed area, area with the order margin, whole sheets
   totalMetalArea: number; // m2, times quantity, the computed area
   totalMetalAreaToOrder: number; // m2, the computed area plus the order margin (config.order.marginPercent)
-  totalPressureDrop: number; // Pa, times quantity
+  totalPressureDrop: number; // Pa, times quantity; rows with unavailable losses are left out
   skipped: number; // rows left out because of errors
 }
 
@@ -98,23 +101,32 @@ export function calculate(
     } else {
       let result: RowResult;
       try {
+        // the area never depends on the loss calculation: that one may overflow for absurd sizes and then only marks the losses unavailable
+        const area = metalArea(p.fitting, config);
+        let pressureDrop: PressureDrop = { velocity: NaN, reynolds: NaN, dynamicPressure: NaN, frictionFactor: NaN, frictionLoss: NaN, localLoss: NaN };
+        let totalLoss = NaN;
         const s = assembleSection({ fitting: p.fitting, flow: p.flow, localCoefficient: p.zeta }, airResult, config);
-        const totalLoss = s.pressureDrop.frictionLoss + s.pressureDrop.localLoss;
+        const sum = s.pressureDrop.frictionLoss + s.pressureDrop.localLoss;
+        if (Number.isFinite(sum)) {
+          pressureDrop = s.pressureDrop;
+          totalLoss = sum;
+        }
         result = {
           id: row.id,
           fitting: p.fitting,
           quantity: p.quantity,
           thicknessMm: thickness(thicknessSize(p.fitting), config),
-          metalArea: s.metalArea,
-          metalAreaTotal: s.metalArea * p.quantity,
-          centerlineLength: s.centerlineLength,
-          pressureDrop: s.pressureDrop,
+          metalArea: area,
+          metalAreaTotal: area * p.quantity,
+          centerlineLength: centerlineLength(p.fitting),
+          pressureDrop,
           totalLoss,
+          lossesAvailable: Number.isFinite(totalLoss),
           warnings: fittingWarnings(p.fitting, config),
         };
         // sizes near the float limit pass validation but overflow; a size below the first table row has no thickness;
         // a branch cut-out larger than the wall (tees, crosses) gives a non-positive area, which is not a duct
-        if (![result.metalArea, result.centerlineLength, totalLoss].every(Number.isFinite) || result.metalArea <= 0) {
+        if (![result.metalArea, result.metalAreaTotal, result.centerlineLength].every(Number.isFinite) || result.metalArea <= 0) {
           throw new Error('not a valid section');
         }
       } catch {
@@ -123,7 +135,7 @@ export function calculate(
       }
       outcomes.push({ ok: true, result });
       valid.push({ fitting: p.fitting, quantity: p.quantity });
-      totalPressureDrop += p.quantity * result.totalLoss;
+      if (result.lossesAvailable) totalPressureDrop += p.quantity * result.totalLoss;
     }
   }
 

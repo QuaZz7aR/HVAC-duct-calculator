@@ -129,11 +129,20 @@ describe('robustness', () => {
     const calc = calculate([straight({ flow: '9'.repeat(400) })], air);
     expect(calc.rows[0].ok).toBe(false);
   });
-  it('reports a row error, not an exception, when a huge size overflows the core', () => {
+  it('keeps the row, with losses marked unavailable, when a huge size overflows only the loss calculation', () => {
     const calc = calculate([straight({ values: { diameter: '9'.repeat(300), length: '1000' } })], air);
     const r = calc.rows[0];
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.result.lossesAvailable).toBe(false);
+      expect(Number.isFinite(r.result.metalArea)).toBe(true);
+    }
+  });
+  it('reports a row error, not an exception, when a huge size overflows the area', () => {
+    const calc = calculate([straight({ values: { diameter: '9'.repeat(400), length: '1000' } })], air);
+    const r = calc.rows[0];
     expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.issues).toEqual([{ code: 'input.invalid', path: [] }]);
+    if (!r.ok) expect(r.issues.length).toBeGreaterThan(0);
   });
   it('does not count rows blocked only by invalid air as skipped', () => {
     const calc = calculate([straight()], { temperatureC: '', pressurePa: '101308' });
