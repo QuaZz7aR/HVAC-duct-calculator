@@ -9,6 +9,10 @@ export type Fitting =
   | { kind: 'rectStraight'; width: number; height: number; length: number }
   | { kind: 'roundCap'; diameter: number; length: number }
   | { kind: 'rectCap'; width: number; height: number; length: number }
+  // Standalone branch-in collar (Excel Квр, Пвр): a short stub inserted into a cut-out of a main duct; `length` is the stub length (default 100 mm in the form).
+  // The cut-out in the main duct is NOT subtracted here (owner decision 2026-10-19).
+  | { kind: 'roundTap'; diameter: number; length: number }
+  | { kind: 'rectTap'; width: number; height: number; length: number }
   | { kind: 'roundElbow'; diameter: number; centerRadius: number; angle: number; allowance: number }
   | {
       kind: 'rectElbow';

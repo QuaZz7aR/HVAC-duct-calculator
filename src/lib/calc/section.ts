@@ -24,10 +24,12 @@ function openings(f: Fitting): Opening[] {
   switch (f.kind) {
     case 'roundStraight':
     case 'roundCap':
+    case 'roundTap':
     case 'roundElbow':
       return [roundOpening(f.diameter)];
     case 'rectStraight':
     case 'rectCap':
+    case 'rectTap':
     case 'rectElbow':
       return [rectOpening(f.width, f.height)];
     case 'roundReducer':

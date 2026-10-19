@@ -9,6 +9,8 @@ export function developedLength(f: Fitting): number {
     case 'rectStraight':
     case 'roundCap':
     case 'rectCap':
+    case 'roundTap':
+    case 'rectTap':
       return mmToM(f.length);
     case 'roundElbow':
       // bend arc along the center radius plus the connection allowance at both ends
@@ -57,9 +59,11 @@ export function developedLength(f: Fitting): number {
 export function sheetArea(f: Fitting): number {
   switch (f.kind) {
     case 'roundStraight':
-      // cylinder wall: circumference x developed length
+    case 'roundTap':
+      // cylinder wall (a tap is the same stub, its cut-out in the main duct is not subtracted): circumference x developed length
       return Math.PI * mmToM(f.diameter) * developedLength(f);
     case 'rectStraight':
+    case 'rectTap':
       // four walls: perimeter x developed length
       return 2 * (mmToM(f.width) + mmToM(f.height)) * developedLength(f);
     case 'roundCap':
@@ -110,6 +114,10 @@ export function centerlineLength(f: Fitting): number {
     case 'roundCap':
     case 'rectCap':
       // TODO(confirm): cap centerline = 0 (not in CLAUDE.md)
+      return 0;
+    case 'roundTap':
+    case 'rectTap':
+      // TODO(confirm): a tap is a stub off the main flow, so no flow path of its own
       return 0;
     case 'roundElbow':
       // arc of the bend along the center radius

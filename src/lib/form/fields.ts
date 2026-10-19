@@ -18,11 +18,14 @@ export interface FieldDef {
 // TODO(confirm): allowance 50 mm and elbow angle 90 are form prefills only (the fixtures use 50), not core defaults.
 const allowance: FieldDef = { key: 'allowance', initial: '50' };
 const angle: FieldDef = { key: 'angle', initial: '90' };
+// TODO(confirm): the 100 mm tap length is a form prefill only (Excel Квр / Пвр column J), not a core default.
+const tapLength: FieldDef = { key: 'length', initial: '100' };
 const reducerLength: FieldDef = { key: 'length', optional: true };
 
 export const kindOrder: FittingKind[] = [
   'roundStraight', 'rectStraight', 'roundElbow', 'rectElbow',
   'roundReducer', 'rectReducer', 'rectToRoundReducer', 'roundCap', 'rectCap',
+  'roundTap', 'rectTap',
   'roundTee', 'roundTeeRectBranch', 'rectTee', 'rectTeeRoundBranch',
   'roundCross', 'roundCrossRectBranches', 'rectCross', 'rectCrossRoundBranches',
 ];
@@ -40,6 +43,8 @@ export const kindFields: Record<FittingKind, FieldDef[]> = {
   rectStraight: [{ key: 'width' }, { key: 'height' }, { key: 'length' }],
   roundCap: [{ key: 'diameter' }, { key: 'length' }],
   rectCap: [{ key: 'width' }, { key: 'height' }, { key: 'length' }],
+  roundTap: [{ key: 'diameter' }, tapLength],
+  rectTap: [{ key: 'width' }, { key: 'height' }, tapLength],
   roundElbow: [{ key: 'diameter' }, { key: 'centerRadius' }, angle, allowance],
   rectElbow: [{ key: 'width' }, { key: 'height' }, { key: 'innerRadius' }, angle, allowance],
   roundReducer: [{ key: 'diameter' }, { key: 'smallDiameter' }, reducerLength, allowance],

@@ -18,6 +18,7 @@ function rectEnds(f: Fitting): { w: number; h: number }[] {
   switch (f.kind) {
     case 'rectStraight':
     case 'rectCap':
+    case 'rectTap':
     case 'rectElbow':
     case 'rectToRoundReducer':
       return [{ w: f.width, h: f.height }];
