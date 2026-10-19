@@ -8,24 +8,25 @@ Stack: Next.js (App Router), TypeScript strict, Vitest, Zod 4. Core logic is pla
 Engineering decisions, the `TODO(confirm)` register and deferred work: `docs/decisions.md`.
 
 ## Status
-Stage 0 (fittings geometry, pressure drop) and stage 1 core (thickness table, elbow waste factor, air properties, Zod validation, `assembleSection`) are done and merged. Sheet list by thickness (metal m2 per thickness, `sheetList`) is done. First UI is done (split into focused components + `useCalculator` hook): one client-side calculator page (Ukrainian), no backend. Deployed on Vercel (owner's account, Hobby plan, auto-deploy from `main`, previews per PR); Vercel Web Analytics is wired in (`<Analytics />` in `src/app/layout.tsx`, package `@vercel/analytics`, the owner enables it in the Vercel dashboard). Input warnings (aspect ratio, size over 2000 mm, large elbow radius) are done. Tees and crosses (metal area, 8 kinds, see decisions.md) are done. Next, in the engineer's order: insulation, price, aerodynamics as a separate mode; XLSX export waits for the engineer's reference files.
+Stage 0 (fittings geometry, pressure drop) and stage 1 core (thickness table, elbow waste factor, air properties, Zod validation, `assembleSection`) are done and merged. Sheet list by thickness (metal m2 per thickness, `sheetList`) is done. First UI is done (split into focused components + `useCalculator` hook): one client-side calculator page (Ukrainian), no backend. Deployed on Vercel (owner's account, Hobby plan, auto-deploy from `main`, previews per PR); Vercel Web Analytics is wired in (`<Analytics />` in `src/app/layout.tsx`, package `@vercel/analytics`, the owner enables it in the Vercel dashboard). Input warnings (aspect ratio, size over 2000 mm, large elbow radius) are done. Tees and crosses (metal area, 8 kinds, see decisions.md) are done. The engineer's 2026-10-19 answers are in: ДБН thickness table by default (engineer's table selectable), user-set seam allowance for non-elbows, reducer friction by the mean diameter, order margin (default 20 %), sheet size and sheet count (settings block in the UI). Next, in the engineer's order: insulation, price, aerodynamics as a separate mode; XLSX export waits for the engineer's reference files.
 
 ## Code map (`src/lib/`)
 - `calc/units.ts` - `mmToM`, `m3hToM3s`, `degToRad`; the only place that converts.
-- `calc/config.ts` - `CalcConfig` and `defaultConfig`: roughness, reducer length and floor, air constants, thickness table, waste-factor table.
+- `calc/config.ts` - `CalcConfig` and `defaultConfig`: roughness, reducer length and floor, air constants, thickness tables (`dbnThickness` default, `engineerThickness` option), waste-factor table (`default` = seam allowance of non-elbows), `order` (margin, sheet size and the offered sizes).
 - `calc/sheet-area.ts` - `developedLength`, `sheetArea` (pure geometry, no waste), `centerlineLength`. Tees and crosses (`roundTee`, `roundTeeRectBranch`, `rectTee`, `rectTeeRoundBranch` and the four `*Cross*` kinds) go through one `branchLayout` helper: run length `E + 2 x allowance`, collar and cut-out per branch.
-- `calc/waste-factor.ts` - `wasteFactor` (elbows only, other kinds use `table.default`), `metalArea = sheetArea * wasteFactor`.
-- `calc/thickness.ts` - `thickness(size, config)` lookup (tees and crosses: keyed by the main duct, never the branch); `thicknessSize(fitting)` picks the size that keys it (reducers: larger end, rect-to-round: the rect end, as in the Excel).
-- `calc/sheet-list.ts` - `sheetList([{ fitting, quantity }], config)` -> `[{ thicknessMm, area }]` ascending thickness, area in m2 with waste factor times quantity. No sheet count (see decisions.md).
+- `calc/waste-factor.ts` - `wasteFactor` (elbows only, other kinds use `table.default`, the user's seam allowance, 1.0 = off), `metalArea = sheetArea * wasteFactor`.
+- `calc/sheet-count.ts` - `orderArea` (area x (1 + margin / 100)), `sheetCount` (`ceil(area / sheet area)`), `orderList(groups, config.order)` -> per thickness area, order area, sheets.
+- `calc/thickness.ts` - `thickness(size, config)` lookup (`bandStart` decides inclusive or exclusive band edges) (tees and crosses: keyed by the main duct, never the branch); `thicknessSize(fitting)` picks the size that keys it (reducers: larger end, rect-to-round: the rect end, as in the Excel).
+- `calc/sheet-list.ts` - `sheetList([{ fitting, quantity }], config)` -> `[{ thicknessMm, area }]` ascending thickness, area in m2 with waste factor times quantity. Sheet count is in `sheet-count.ts`.
 - `calc/branch.ts` - `branchLayout` / `isTeeCross`: perimeters, areas, branch count and run length of tees and crosses (used by `sheet-area.ts` and `warnings.ts`).
 - `calc/warnings.ts` - `fittingWarnings(fitting, config)` -> non-blocking `FittingWarning[]` (`aspect.high`, `aspect.excessive`, `size.overLimit`, `elbow.radiusLarge`, `branch.larger`); thresholds in `config.warnings`. Advice only, never changes a size.
 - `calc/air.ts` - `airAtConditions(tC, pPa, config)` -> density, kinematic viscosity.
 - `calc/aero.ts` - `pressureDrop` (straight section), `pressureDropAt`, `roundOpening` / `rectOpening`.
-- `calc/section.ts` - `assembleSection({ fitting, flow, localCoefficient }, air, config)` -> `metalArea` (m2), `centerlineLength` (m), `pressureDrop`. Tees and crosses: main duct only, branch flow not modelled (`TODO(confirm)`).
-- `form/` - the layer between the UI and the core (plain TS, tested): `fields.ts` (`kindFields`: which inputs each kind has, form prefills, `FormRow` of raw text), `calculate.ts` (`calculate(rows, airText, config)`: text -> Zod validation (`sheetListItemSchema` for fitting + quantity) -> `assembleSection` / `sheetList`, per-row outcome with `warnings`, totals; a row with a non-positive metal area, e.g. a tee cut-out larger than the wall, is rejected as `input.invalid`), `messages.ts` (`issueMessage`: error code -> text; `warningMessage`: warning -> text with numbers).
+- `calc/section.ts` - `assembleSection({ fitting, flow, localCoefficient }, air, config)` -> `metalArea` (m2), `centerlineLength` (m), `pressureDrop`. Tees and crosses: main duct only, branch flow not modelled (confirmed by the engineer).
+- `form/` - the layer between the UI and the core (plain TS, tested): `fields.ts` (`kindFields`: which inputs each kind has, form prefills, `FormRow` of raw text), `settings.ts` (`SettingsText` -> `buildConfig`: thickness table, seam %, order margin %, sheet size; bad values are reported and keep the default), `calculate-input.ts` (`parseNumber`), `calculate.ts` (`calculate(rows, airText, config)`: text -> Zod validation (`sheetListItemSchema` for fitting + quantity) -> `assembleSection` / `sheetList`, per-row outcome with `warnings`, totals incl. the area to order and `sheetList` as `OrderLine[]`; a row with a non-positive metal area, e.g. a tee cut-out larger than the wall, is rejected as `input.invalid`), `messages.ts` (`issueMessage`: error code -> text; `warningMessage`: warning -> text with numbers).
 - `i18n/uk.ts` - the dictionary: every user-visible string, kind designations (КВ, ПВ, КО, ПО, КП, ПП, ППК, Заглушка) and one message per error code. A new language is one more file with the `Dictionary` shape.
 - `src/components/Calculator.tsx` - the page (client component): lays out the blocks, no logic. `src/app/page.tsx` only renders it.
-- `src/components/calculator/` - the blocks: `useCalculator.ts` (hook: rows and air state, `calculate`, row actions), `AirParams`, `FittingList` > `FittingCard` (one row), `ResultsTable`, `Totals`, `SheetList`, shared `TextField`, `ErrorList` (also `WarningList`), `format.ts` (`fmt`, `rowTitle`), `styles.ts` (Tailwind class strings). Components take props only; calculation stays in `src/lib`.
+- `src/components/calculator/` - the blocks: `useCalculator.ts` (hook: rows, air and settings state, `calculate`, row actions), `AirParams`, `SettingsPanel`, `FittingList` > `FittingCard` (one row), `ResultsTable`, `Totals`, `SheetList`, shared `TextField`, `ErrorList` (also `WarningList`), `format.ts` (`fmt`, `rowTitle`), `styles.ts` (Tailwind class strings). Components take props only; calculation stays in `src/lib`.
 - `validation/` - `createSchemas(config)`, `fittingSchema`, `ductSectionSchema`, `airInputSchema`, `sheetListItemSchema` (`{ fitting, quantity }`), `sheetListSchema` (array of those), `validate`. Errors are stable codes (`codes.ts`), never human text.
 
 ## Commands
@@ -52,14 +53,15 @@ Fixtures with `basis: 'excel'` follow the spreadsheet author's convention and ar
 - `allowance` = extra wall length at each connection, so flanges have somewhere to attach. One field everywhere (elbows, reducers, branches). A flange itself is not modelled.
 - Cone area uses the slant height `sqrt(L^2 + ((D1 - D2) / 2)^2)`, not the axial length.
 - Cutting-waste factor and similar coefficients live in config (`defaultConfig`), never as literals in function bodies. Their source is unconfirmed: keep a `TODO(confirm)` next to each.
-- Sheet thickness is a versioned lookup table (rect: by larger side, round: by diameter), not a formula. Thresholds 400 mm / 0.55 / 0.7 are confirmed by the engineer (2026-10-16); the ДБН В.2.5-67 table differs and is an open question.
+- Sheet thickness is a versioned lookup table (rect: by larger side, round: by diameter), not a formula. Default: ДБН В.2.5-67:2013 додаток Ц (engineer: "do it by ДБН", 2026-10-19), a size between listed ones takes the next larger listed one (`TODO(confirm)`). The engineer's 0.55 / 0.7 at 400 mm is the selectable option `engineerThickness`.
 - Reducer length: default 300 mm, validation floor 150 mm. Never silently clamp what the user typed.
 - Pressure drop: Altshul `lambda = 0.11 * (k/d + 68/Re)^0.25`, equivalent diameter `2ab/(a+b)` for rectangles, `dp_friction = lambda * L/d * Pd`, `dp_local = zeta * Pd`. Default roughness 0.1 mm (steel).
-- Waste factor applies to elbows only (round: by diameter, rect: by equivalent diameter); every other kind uses the config default 1.0. Decided 2026-10-16 (Ш4): no normative source for a general coefficient, and it would double-count `allowance`.
+- Waste factor applies to elbows only (round: by diameter, rect: by equivalent diameter); every other kind uses the config default 1.0, which the user may raise as a seam allowance (default 0 %). Decided 2026-10-16 (Ш4): no normative source for a general coefficient, and it would double-count `allowance`.
+- Order margin (default 20 %) and sheet size (default 1250 x 2500) only feed the "to order" figures and the sheet count = `ceil(order area / sheet area)` per thickness; the computed area never includes them.
 - Input problems that are unusual but not wrong (aspect ratio >= 3 / > 6.3, a size over 2000 mm, a large elbow radius) are warnings, never validation errors, and never change what the user typed.
 - Pressure drop stays out of the main output in the long run: the engineer's order is metal, insulation, price, then aerodynamics as a separate mode.
 - `rectReducer` is exact per-face geometry (`developedLength` is the area-equivalent length). `rectToRoundReducer` is a project approximation (slant from width only). The Excel is a reference, not the truth.
-- Reducer sections in `assembleSection` follow the Excel: friction by the larger end's diameter, velocity is the mean of both ends, `dp_local = zeta * Pd` at that mean velocity (`TODO(confirm)`, handbooks use the small section).
+- Reducer sections in `assembleSection`: friction by the mean of the end hydraulic diameters (engineer, 2026-10-19), velocity is the mean of both ends, `dp_local = zeta * Pd` at that mean velocity (engineer, 2026-10-16).
 
 ## Guardrails in `.claude/settings.json`
 - `Edit`/`Write` are denied for `**/*.fixtures.ts`, `**/__fixtures__/pending/**`, `__tests__/sheet-area.test.ts` and `__tests__/aero.test.ts`. The other tests are not blocked by the harness but the "one rule" still applies to them.
@@ -76,9 +78,11 @@ Branch-in fittings (round and rect: the "ring" in the Excel formula contradicts 
 
 ## Open questions (waiting for the spreadsheet author - do not guess)
 1. Cutting coefficients (1.15 / 1.2 / 1.1): the engineer calls them a flange allowance for all fittings but is unsure and gave no values. We keep elbows only (no source). Revisit with values and a source.
-2. Sheet size (for a sheet count) and the «Специфікація» totals (Ш13): not answered.
+2. «Специфікація» totals (Ш13): the 20 % is probably the order margin (engineer, unsure); his totals rows 30 and 46 are still unexplained. Sheet size is a parameter now.
 3. Elbow inner-radius warning threshold (preliminary 2 x width or diameter) and the aspect-ratio threshold (3).
-4. Thickness: add the ДБН В.2.5-67:2013 table (no 0.55; rect 0.5 / 0.7 / 0.9) as a second config option? Ask the engineer.
+4. ДБН thickness: the rule for sizes between the listed ones, and whether a custom table is wanted later.
+
+Closed 2026-10-19: thickness table (ДБН default, engineer's option), reducer friction by the mean diameter, tee flow for the main duct only.
 
 Closed 2026-10-16: rect elbow radius is inner; tees and crosses subtract the branch opening everywhere (implemented, `tees-crosses.fixtures.ts`); `zeta` of a reducer is at the mean velocity.
 

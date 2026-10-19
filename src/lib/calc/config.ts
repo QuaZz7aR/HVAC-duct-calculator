@@ -6,6 +6,8 @@ export interface ThicknessRow {
 
 export interface ThicknessTable {
   version: string; // bumped on ANY row change
+  /** `inclusive`: a band holds sizes >= fromMm. `exclusive`: sizes > fromMm (norm tables that list upper limits, "up to 200 incl."). */
+  bandStart: 'inclusive' | 'exclusive';
   round: ThicknessRow[]; // keyed by diameter, ascending fromMm
   rect: ThicknessRow[]; // keyed by larger side, ascending fromMm
 }
@@ -42,6 +44,19 @@ export interface WarningConfig {
   elbowInnerRadiusFactor: number; // inner radius above this x width (rect) or diameter (round) -> warning
 }
 
+/** A standard sheet of metal, mm. */
+export interface SheetSize {
+  widthMm: number;
+  heightMm: number;
+}
+
+/** Ordering of metal: sheet size and the margin on top of the computed area. */
+export interface OrderConfig {
+  marginPercent: number; // extra metal when ordering, % of the computed area; never changes the computed area
+  sheet: SheetSize; // the sheet the count is based on
+  sheetSizes: SheetSize[]; // the sizes the UI offers
+}
+
 /** Boundary-unit defaults (mm). Convert with units.ts before use in the core. */
 export interface CalcConfig {
   air: AirConfig;
@@ -51,7 +66,51 @@ export interface CalcConfig {
   thickness: ThicknessTable;
   wasteFactor: WasteFactorTable;
   warnings: WarningConfig;
+  order: OrderConfig;
 }
+
+/**
+ * ДБН В.2.5-67:2013, додаток Ц, п. Ц.2: the sheet thickness is "not more than" the listed value for the listed sizes.
+ * Sizes between the listed ones take the next larger listed size (the safe side), so each band starts above the previous limit.
+ * TODO(confirm): the between-sizes rule is ours; the norm is a reference table, and it does not cover fire-resistant ducts (at least 0.8 mm, п. 7.11.5).
+ * Above 2000 mm the thickness is by calculation (warning `size.overLimit`); the last band is used meanwhile.
+ */
+export const dbnThickness: ThicknessTable = {
+  version: 'dbn-v-2-5-67-2013-1',
+  bandStart: 'exclusive',
+  // round, by diameter: up to 200 -> 0.5; 250-450 -> 0.6; 500-800 -> 0.7; 900-1250 -> 1.0; 1400-1600 -> 1.2; 1800-2000 -> 1.4
+  round: [
+    { fromMm: 0, thicknessMm: 0.5 },
+    { fromMm: 200, thicknessMm: 0.6 },
+    { fromMm: 450, thicknessMm: 0.7 },
+    { fromMm: 800, thicknessMm: 1.0 },
+    { fromMm: 1250, thicknessMm: 1.2 },
+    { fromMm: 1600, thicknessMm: 1.4 },
+  ],
+  // rect, by the larger side: up to 250 -> 0.5; 300-1000 -> 0.7; 1250-2000 -> 0.9
+  rect: [
+    { fromMm: 0, thicknessMm: 0.5 },
+    { fromMm: 250, thicknessMm: 0.7 },
+    { fromMm: 1000, thicknessMm: 0.9 },
+  ],
+};
+
+/**
+ * The engineer's own table: 0.55 mm below 400 mm, 0.7 mm from 400 mm (confirmed 2026-10-16). An option next to the ДБН default.
+ * TODO(confirm): rect keyed by the larger side (the Excel used the equivalent diameter, a simplification the engineer acknowledged).
+ */
+export const engineerThickness: ThicknessTable = {
+  version: 'engineer-1',
+  bandStart: 'inclusive',
+  round: [
+    { fromMm: 0, thicknessMm: 0.55 },
+    { fromMm: 400, thicknessMm: 0.7 },
+  ],
+  rect: [
+    { fromMm: 0, thicknessMm: 0.55 },
+    { fromMm: 400, thicknessMm: 0.7 },
+  ],
+};
 
 export const defaultConfig: CalcConfig = {
   air: {
@@ -66,21 +125,11 @@ export const defaultConfig: CalcConfig = {
   roughnessMm: 0.1,
   reducerLengthMm: 300,
   reducerMinLengthMm: 150,
-  thickness: {
-    version: 'placeholder-1',
-    // TODO(confirm): thresholds 400 mm / 0.55 / 0.7 confirmed by the engineer (2026-10-16); ДБН В.2.5-67:2013 додаток Ц has a different table (no 0.55), possible second option
-    round: [
-      { fromMm: 0, thicknessMm: 0.55 },
-      { fromMm: 400, thicknessMm: 0.7 },
-    ],
-    // TODO(confirm): rect keyed by the larger side (CLAUDE.md); Excel used equivalent diameter
-    rect: [
-      { fromMm: 0, thicknessMm: 0.55 },
-      { fromMm: 400, thicknessMm: 0.7 },
-    ],
-  },
+  thickness: dbnThickness,
   wasteFactor: {
-    version: 'placeholder-1',
+    version: 'placeholder-2', // 2: `default` became the user's seam allowance
+    // seam allowance ("запас на фальц") for every kind except elbows: 1 + percent / 100, user-set in the UI (engineer 2026-10-19:
+    // "if the coefficient is for seams, then for all elements"). 1.0 = off, because the origin of the coefficients is unconfirmed.
     default: 1.0,
     // TODO(confirm): thresholds and factors were copied by the engineer from websites as a safety margin; what they cover (waste, seams, both) is still open (decisions.md, Engineer answers)
     round: [
@@ -103,5 +152,18 @@ export const defaultConfig: CalcConfig = {
     maxSizeMm: 2000,
     // TODO(confirm): preliminary threshold (2x width or diameter); the engineer expected inner radii up to 50-150 mm
     elbowInnerRadiusFactor: 2,
+  },
+  order: {
+    // engineer (2026-10-19): the 20 % is "probably the margin for ordering metal"
+    // TODO(confirm): what the 20 % in his «Специфікація» (AJ30, E51) really is
+    marginPercent: 20,
+    // standard sheet sizes are a user choice (engineer, 2026-10-19: "google it and make it a parameter")
+    // TODO(confirm): 1250 x 2500 is the common default; the list is not from a supplier
+    sheet: { widthMm: 1250, heightMm: 2500 },
+    sheetSizes: [
+      { widthMm: 1000, heightMm: 2000 },
+      { widthMm: 1250, heightMm: 2500 },
+      { widthMm: 1500, heightMm: 3000 },
+    ],
   },
 };

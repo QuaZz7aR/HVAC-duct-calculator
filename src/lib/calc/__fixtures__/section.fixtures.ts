@@ -12,8 +12,8 @@
  *  - pressureDrop: aero.fixtures.ts where the case matches it, otherwise recomputed with the same model
  *    (Altshul, Math.PI - so these do NOT carry the Excel pi = 3.14 artefact, tolerance is still AERO_REL_TOLERANCE).
  *
- * Reducers (decided default, TODO(confirm)): friction as in the Excel -
- * hydraulic diameter of the LARGER end, velocity = arithmetic mean of the velocities at both ends,
+ * Reducers (engineer 2026-10-19 for the diameter, 2026-10-16 for the velocity):
+ * friction by the MEAN hydraulic diameter of both ends (engineer, 2026-10-19), velocity = arithmetic mean of the velocities at both ends,
  * Pd = rho * vMean^2 / 2 used for friction AND local loss. Non-reducers use their own section velocity.
  */
 import type { Fitting, PressureDrop } from '../types';
@@ -93,12 +93,12 @@ export const sectionCases: SectionCase[] = [
         expected: {
             metalArea: 0.09898729,
             centerlineLength: 0.15,
-            pressureDrop: { velocity: 6.768997271, reynolds: 67037.474624, dynamicPressure: 27.413121968, frictionFactor: 0.022273384, frictionLoss: 0.610582997, localLoss: 2.741312197 },
+            pressureDrop: { velocity: 6.768997271, reynolds: 55862.728822, dynamicPressure: 27.413121968, frictionFactor: 0.023312222, frictionLoss: 0.766872964, localLoss: 2.741312197 },
         },
         basis: 'excel',
         derivation:
             'metal = sheet-area round-reducer-d150-d100 x 1.0. centerline = axial 0.15. v1 = (265/3600)/(pi*0.15^2/4) = 4.165536782, v2 = (265/3600)/(pi*0.1^2/4) = 9.372457760, vMean = 6.768997271. ' +
-            'd = 0.15 (larger end). Re = vMean * 0.15 / 1.5146e-5; Pd = 1.1965747 * vMean^2 / 2; friction = lambda * 0.15 / 0.15 * Pd; local = 0.1 * Pd.',
+            'd = (0.15 + 0.1) / 2 = 0.125 (mean of the ends). Re = vMean * 0.125 / 1.5146e-5; Pd = 1.1965747 * vMean^2 / 2; friction = lambda * 0.15 / 0.125 * Pd; local = 0.1 * Pd.',
     },
     {
         id: 'rect-reducer-600x400-400x300-L400',
@@ -110,12 +110,12 @@ export const sectionCases: SectionCase[] = [
         expected: {
             metalArea: 0.8617305,
             centerlineLength: 0.4,
-            pressureDrop: { velocity: 2.604166667, reynolds: 82530.040935, dynamicPressure: 4.057395766, frictionFactor: 0.019717035, frictionLoss: 0.066666513, localLoss: 0.405739577 },
+            pressureDrop: { velocity: 2.604166667, reynolds: 70737.713539, dynamicPressure: 4.057395766, frictionFactor: 0.020491849, frictionLoss: 0.080834003, localLoss: 0.405739577 },
         },
         basis: 'excel',
         derivation:
             'metal = sheet-area rect-reducer-600x400-400x300 x 1.0. centerline = axial 0.4. v1 = (1500/3600)/(0.6*0.4) = 1.736111, v2 = (1500/3600)/(0.4*0.3) = 3.472222, vMean = 2.604167. ' +
-            'd = 2*0.6*0.4/(0.6+0.4) = 0.48 (larger end by Dh; small end Dh = 0.342857). Re = vMean * 0.48 / 1.5146e-5; friction = lambda * 0.4 / 0.48 * Pd; local = 0.1 * Pd.',
+            'Dh1 = 2*0.6*0.4/(0.6+0.4) = 0.48, Dh2 = 0.342857, d = mean = 0.411429. Re = vMean * 0.411429 / 1.5146e-5; friction = lambda * 0.4 / 0.411429 * Pd; local = 0.1 * Pd.',
     },
     {
         id: 'rect-to-round-200x150-d150-L250',
@@ -123,11 +123,11 @@ export const sectionCases: SectionCase[] = [
         expected: {
             metalArea: 0.205697011,
             centerlineLength: 0.25,
-            pressureDrop: { velocity: 4.995653197, reynolds: 56542.829189, dynamicPressure: 14.931188681, frictionFactor: 0.022613132, frictionLoss: 0.492393029, localLoss: 1.493118868 },
+            pressureDrop: { velocity: 4.995653197, reynolds: 53007.162717, dynamicPressure: 14.931188681, frictionFactor: 0.022981072, frictionLoss: 0.533765147, localLoss: 1.493118868 },
         },
         basis: 'excel',
         derivation:
             'metal = sheet-area rect-to-round-200x150-d150 x 1.0. centerline = axial 0.25. v1 = (400/3600)/(0.2*0.15) = 3.703704, v2 = (400/3600)/(pi*0.15^2/4) = 6.287603, vMean = 4.995653. ' +
-            'Larger end by Dh: rect 2*0.2*0.15/0.35 = 0.171429 > round 0.15, so d = 0.171429. Re = vMean * d / 1.5146e-5; friction = lambda * 0.25 / d * Pd; local = 0.1 * Pd.',
+            'Dh rect 2*0.2*0.15/0.35 = 0.171429, Dh round 0.15, d = mean = 0.160714. Re = vMean * d / 1.5146e-5; friction = lambda * 0.25 / d * Pd; local = 0.1 * Pd.',
     },
 ];

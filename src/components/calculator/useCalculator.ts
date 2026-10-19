@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { defaultConfig } from "@/lib/calc/config";
 import { calculate, type RowOutcome } from "@/lib/form/calculate";
+import { buildConfig, defaultSettings, type SettingsText } from "@/lib/form/settings";
 import { initialValues, newRow, type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
 
 export interface AirText {
@@ -19,7 +20,10 @@ export function useCalculator() {
     pressurePa: String(defaultConfig.air.airPressurePa),
   });
 
-  const calc = useMemo(() => calculate(rows, air), [rows, air]);
+  const [settings, setSettings] = useState<SettingsText>(() => defaultSettings());
+  const built = useMemo(() => buildConfig(settings), [settings]);
+
+  const calc = useMemo(() => calculate(rows, air, built.config), [rows, air, built.config]);
   const outcomes = useMemo(
     () => new Map<number, RowOutcome>(calc.rows.map((r) => [r.ok ? r.result.id : r.id, r])),
     [calc],
@@ -37,5 +41,5 @@ export function useCalculator() {
   };
   const removeRow = (id: number) => setRows((rs) => rs.filter((r) => r.id !== id));
 
-  return { rows, air, setAir, calc, outcome, update, setKind, setValue, addRow, removeRow };
+  return { rows, air, setAir, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, addRow, removeRow };
 }

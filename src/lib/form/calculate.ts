@@ -1,10 +1,11 @@
 import { airAtConditions } from '../calc/air';
 import { defaultConfig, type CalcConfig } from '../calc/config';
 import { assembleSection } from '../calc/section';
+import { orderArea, orderList, type OrderLine } from '../calc/sheet-count';
 import { sheetList } from '../calc/sheet-list';
 import { thickness, thicknessSize } from '../calc/thickness';
 import { fittingWarnings, type FittingWarning } from '../calc/warnings';
-import type { Fitting, PressureDrop, ThicknessGroup } from '../calc/types';
+import type { Fitting, PressureDrop } from '../calc/types';
 import { airInputSchema, createSchemas, validate } from '../validation';
 import { kindFields, type FormRow } from './fields';
 import type { FormIssue } from './messages';
@@ -36,8 +37,9 @@ export type RowOutcome = { ok: true; result: RowResult } | { ok: false; id: numb
 export interface Calculation {
   air: { ok: true } | { ok: false; issues: FormIssue[] };
   rows: RowOutcome[];
-  sheetList: ThicknessGroup[];
-  totalMetalArea: number; // m2, times quantity
+  sheetList: OrderLine[]; // per thickness: computed area, area with the order margin, whole sheets
+  totalMetalArea: number; // m2, times quantity, the computed area
+  totalMetalAreaToOrder: number; // m2, the computed area plus the order margin (config.order.marginPercent)
   totalPressureDrop: number; // Pa, times quantity
   skipped: number; // rows left out because of errors
 }
@@ -126,11 +128,13 @@ export function calculate(
   }
 
   const groups = sheetList(valid, config);
+  const totalMetalArea = groups.reduce((sum, g) => sum + g.area, 0);
   return {
     air: air.ok ? { ok: true } : { ok: false, issues: air.issues },
     rows: outcomes,
-    sheetList: groups,
-    totalMetalArea: groups.reduce((sum, g) => sum + g.area, 0),
+    sheetList: orderList(groups, config.order),
+    totalMetalArea,
+    totalMetalAreaToOrder: orderArea(totalMetalArea, config.order.marginPercent),
     totalPressureDrop,
     // rows blocked only by invalid air carry no issues of their own and are not counted
     skipped: outcomes.filter((o) => !o.ok && o.issues.length > 0).length,

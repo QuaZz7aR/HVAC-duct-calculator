@@ -105,7 +105,7 @@ describe('calculate', () => {
   it('groups by thickness', () => {
     const big: FormRow = { ...straight({ id: 2 }), values: { diameter: '500', length: '1000' } };
     const calc = calculate([straight(), big], air);
-    expect(calc.sheetList.map((g) => g.thicknessMm)).toEqual([0.55, 0.7]);
+    expect(calc.sheetList.map((g) => g.thicknessMm)).toEqual([0.5, 0.7]);
   });
 });
 

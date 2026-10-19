@@ -58,8 +58,8 @@ describe('tee and cross geometry', () => {
 
 describe('tee and cross thickness', () => {
   it.each([
-    ['round main D399 -> 0.55', { kind: 'roundTee', diameter: 399, branchDiameter: 600, allowance: 50 }, 0.55],
-    ['round main D400 -> 0.7', { kind: 'roundCross', diameter: 400, branchDiameter: 100, allowance: 50 }, 0.7],
+    ['round main D450 -> 0.6', { kind: 'roundTee', diameter: 450, branchDiameter: 600, allowance: 50 }, 0.6],
+    ['round main D451 -> 0.7', { kind: 'roundCross', diameter: 451, branchDiameter: 100, allowance: 50 }, 0.7],
     ['rect main keyed by its larger side', { kind: 'rectTeeRoundBranch', width: 400, height: 100, branchDiameter: 100, allowance: 50 }, 0.7],
   ] as [string, Fitting, number][])('%s', (_, fitting, expected) => {
     // the main duct keys the thickness, never the branch
@@ -69,7 +69,7 @@ describe('tee and cross thickness', () => {
   it('sheet list groups a tee by its main duct thickness', () => {
     const tee: Fitting = { kind: 'roundTee', diameter: 150, branchDiameter: 150, allowance: 50 };
     const [group] = sheetList([{ fitting: tee, quantity: 2 }], defaultConfig);
-    expect(group.thicknessMm).toBe(0.55);
+    expect(group.thicknessMm).toBe(0.5);
     expect(group.area).toBeCloseTo(2 * 0.123700211, 6);
   });
 });

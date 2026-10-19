@@ -13,7 +13,8 @@ export function thickness(size: ThicknessSize, config: CalcConfig): number {
     throw new Error(`invalid duct size for thickness: ${JSON.stringify(size)}`);
   }
   const rows = size.shape === 'round' ? config.thickness.round : config.thickness.rect;
-  const row = rows.findLast((r) => r.fromMm <= key);
+  const exclusive = config.thickness.bandStart === 'exclusive';
+  const row = rows.findLast((r) => (exclusive ? r.fromMm < key : r.fromMm <= key));
   if (!row) {
     throw new Error(`thickness table ${config.thickness.version} has no row for ${size.shape} size ${key}`);
   }

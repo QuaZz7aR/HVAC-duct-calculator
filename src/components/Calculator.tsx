@@ -3,6 +3,7 @@
 import { uk as dict } from "@/lib/i18n/uk";
 import { AirParams } from "./calculator/AirParams";
 import { FittingList } from "./calculator/FittingList";
+import { SettingsPanel } from "./calculator/SettingsPanel";
 import { ResultsTable } from "./calculator/ResultsTable";
 import { SheetList } from "./calculator/SheetList";
 import { mutedClass } from "./calculator/styles";
@@ -10,7 +11,7 @@ import { Totals } from "./calculator/Totals";
 import { useCalculator } from "./calculator/useCalculator";
 
 export function Calculator() {
-  const { rows, air, setAir, calc, outcome, update, setKind, setValue, addRow, removeRow } = useCalculator();
+  const { rows, air, setAir, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, addRow, removeRow } = useCalculator();
 
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 space-y-6 px-4 py-8">
@@ -20,6 +21,7 @@ export function Calculator() {
       </header>
 
       <AirParams air={air} onChange={setAir} status={calc.air} />
+      <SettingsPanel settings={settings} onChange={setSettings} issues={settingsIssues} />
       <FittingList
         rows={rows}
         outcome={outcome}

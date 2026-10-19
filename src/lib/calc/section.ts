@@ -40,7 +40,7 @@ function openings(f: Fitting): Opening[] {
     case 'roundTeeRectBranch':
     case 'roundCross':
     case 'roundCrossRectBranches':
-      // TODO(confirm): the flow runs through the main duct; the branch flow and the branch's own resistance are not modelled
+      // the flow runs through the main duct only (engineer, 2026-10-19); the branch flow and the branch's own resistance are not modelled
       return [roundOpening(f.diameter)];
     case 'rectTee':
     case 'rectTeeRoundBranch':
@@ -66,10 +66,11 @@ export function assembleSection(input: SectionInput, air: AirConditions, config:
   // friction runs along the centerline; caps have centerline 0 (TODO(confirm) in sheet-area.ts), so no friction
   const length = centerlineLength(fitting);
 
-  // TODO(confirm): reducers follow the engineer's Excel - hydraulic diameter of the larger end and
-  // the arithmetic mean of the end velocities, which also sets the dynamic pressure of the local loss.
-  const velocity = ends.reduce((sum, o) => sum + q / o.area, 0) / ends.length;
-  const dh = Math.max(...ends.map((o) => o.dh));
+  // reducers: friction by the mean of the end hydraulic diameters (engineer, 2026-10-19), and the mean of the end velocities,
+  // which also sets the dynamic pressure of the local loss (engineer, 2026-10-16)
+  const mean = (xs: number[]) => xs.reduce((sum, x) => sum + x, 0) / xs.length;
+  const velocity = mean(ends.map((o) => q / o.area));
+  const dh = mean(ends.map((o) => o.dh));
 
   return {
     metalArea: metalArea(fitting, config),
