@@ -29,6 +29,7 @@ export function thicknessSize(f: Fitting): ThicknessSize {
   switch (f.kind) {
     case 'roundStraight':
     case 'roundCap':
+    case 'roundTap':
     case 'roundElbow':
       return { shape: 'round', diameter: f.diameter };
     case 'roundReducer':
@@ -39,6 +40,7 @@ export function thicknessSize(f: Fitting): ThicknessSize {
       return { shape: 'rect', width: Math.max(f.width, f.smallWidth), height: Math.max(f.height, f.smallHeight) };
     case 'rectStraight':
     case 'rectCap':
+    case 'rectTap':
     case 'rectElbow':
     case 'rectToRoundReducer':
       return { shape: 'rect', width: f.width, height: f.height };

@@ -54,7 +54,7 @@ Confirmed:
 - **Axis length by geometry** is fine (Ш2), see the deviation above.
 - **`zeta` refers to the mean velocity** of a reducer (Ш6). Closes open question 4.
 - **Tees and crosses subtract the branch opening, in every fitting** (Ш7). Closes open question 2. Implemented 2026-10-16, see "Tees and crosses" below.
-- **Branch-ins (Квр, Пвр, ПККр) by geometry** (Ш8, Ш9): he does not remember the formulas and trusts whichever are correct and pass our checks. Out of v1.
+- **Branch-ins (Квр, Пвр, ПККр) by geometry** (Ш8, Ш9): he does not remember the formulas and trusts whichever are correct and pass our checks. Standalone collars (Квр, Пвр) were then done as taps, see "Branch-in taps" below; ПККр is a cross, done with the crosses.
 - **Adapter is not needed now** (Ш10).
 - **Thickness** (Ш11): 0.55 mm below 400 mm, 0.7 mm from 400 mm, rect by the larger side. Confirms the table thresholds. A side 2.5-3x the other could be given 0.7 mm, but better warn (done, see Input warnings).
 
@@ -99,6 +99,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `calc/sheet-area.ts` | Cap centerline is 0. Reducer centerline is the axial length (no fixture covers it). `rectToRoundReducer` slant ignores height. Rect elbow `innerRadius` is inner (confirmed 2026-10-16). |
 | `calc/thickness.ts` `thicknessSize` | Reducers are sized by the larger side over both ends, rect-to-round by its rect end (Excel convention); unconfirmed against handbooks. |
 | `form/fields.ts` | Prefilled allowance 50 mm and angle 90 in the form: UI convenience only, the core has no default for allowance. |
+| `calc/sheet-area.ts` taps (`roundTap`, `rectTap`) | Centerline 0 (a stub off the main flow); the 100 mm length is only a form prefill. |
 | `calc/sheet-area.ts` tees and crosses | Centerline of the main run is the branch size along the axis `E` (no allowance); the Excel has only the run length `E + 2 x allowance`. |
 | `calc/section.ts` | Reducer friction by the mean diameter and mean-velocity `Pd`: both from the engineer (2026-10-19, 2026-10-16). Caps have no friction because their centerline is 0. |
 | `calc/config.ts` warnings | `elbowInnerRadiusFactor` 2 is preliminary; the aspect ratio threshold 3 comes from the engineer's "2.5-3". |
@@ -112,6 +113,14 @@ Eight kinds, Excel codes КТ, КПТ, ПТ, ПКТ (tees) and КККр, КПК�
 - **Section assembly**: friction and velocity use the main duct at the given flow and the centerline `E`; the branch flow and its resistance are not modelled (confirmed by the engineer, 2026-10-19), `zeta` is typed by the user. The centerline `E` is still `TODO(confirm)` in `sheet-area.ts`.
 - Excel template bugs found on the way (M9/M10/M12 and M27-M30) are in "Engineer answers" above.
 
+## Branch-in taps (2026-10-19)
+Two kinds, Excel codes Квр and Пвр: `roundTap` (`diameter`, `length`) and `rectTap` (`width`, `height`, `length`). A tap is a stand-alone short stub inserted into a cut-out of a main duct (the engineer's real specification lists them as separate lines: "Врезка Д150" 0.05 m2, "Врезка Д100" 0.02, "Врезка 300х100" 0.07). Fixtures: `__fixtures__/taps.fixtures.ts`.
+- Area = perimeter x stub length (the form prefills 100 mm, the Excel's column J). No allowance, no waste factor (1.0 like every non-elbow), thickness by the tap's own size.
+- The Excel "ring" term of Квр, pi(d/2+50)^2 - pi d^2/4, is not used: it contradicts the definition of `allowance`. The Пвр collar as a difference of perimeters is a formula error (see the cross-check). The engineer: use whichever formulas are correct (Ш8).
+- **The cut-out in the main duct is not subtracted** (owner, 2026-10-19), unlike tees where branch and main are one fitting. Their metal differs in thickness, so the credit would belong to another line.
+- Comparison with the specification: Д150 0.047 (0.05), 300x100 0.080 (0.07), Д100 0.031 (0.02; the specification implies about 65 mm of length). The figures are his rounded ones, not fixtures.
+- `centerlineLength` is 0 (a stub off the main flow, `TODO(confirm)`, like the cap); no flow of its own is modelled. The 100 mm prefill is a form default only, `TODO(confirm)`. The form still asks for a flow for every row, so a tap row needs one; with an empty zeta it adds no pressure drop.
+
 ## Deferred
 - `npm audit`: 5 high findings, one chain (`braces` <- `micromatch` <- `fast-glob` <- `@next/eslint-plugin-next` <- `eslint-config-next`), dev tooling only, nothing ships to the browser or the server. No non-breaking fix exists: `npm audit fix --force` would downgrade `eslint-config-next` to 14.2.35 (Next 16 here). Wait for a `eslint-config-next` release that updates `fast-glob`/`micromatch`; do not run `npm audit fix`.
 - eslint 9 -> 10: blocked upstream. `eslint-config-next` 16.3.8 itself allows `eslint >=9`, but the plugins it bundles (`eslint-plugin-react` 7.37.5, `eslint-plugin-import` 2.32.0, `eslint-plugin-jsx-a11y` 6.10.2, all at their latest releases) declare peers only up to `^9`. Retry when those publish eslint 10 support; do not force it with overrides.
@@ -122,5 +131,6 @@ Eight kinds, Excel codes КТ, КПТ, ПТ, ПКТ (tees) and КККр, КПК�
 - Fire-resistant ducts (thickness at least 0.8 mm, ДБН п. 7.11.5) are not a mode.
 - Fix the Excel template (M9/M10/M12/M27-M30 on both sheets) and tell the engineer; a copy is ready.
 - UI: Russian/English dictionaries, no list persistence, no per-system grouping.
-- Branch-ins, offsets, adapters, insulation: out of v1, see `CLAUDE.md`.
+- Offsets, adapters, insulation: out of v1, see `CLAUDE.md`.
+- Taps: subtracting the cut-out from the main duct (an option or a separate credit line) is not modelled; the main duct's thickness differs from the tap's, so it needs its own design.
 - Tees and crosses: branch flow and the branch's own pressure drop are not modelled (see "Tees and crosses"). A hard validation of the branch against the main duct has no source; only the `branch.larger` warning exists, plus the form-layer rejection of a non-positive area.

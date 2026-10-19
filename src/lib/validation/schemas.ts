@@ -37,6 +37,8 @@ export function createSchemas(config: CalcConfig) {
       obj({ kind: z.literal('rectStraight'), width: size(), height: size(), length: size() }),
       obj({ kind: z.literal('roundCap'), diameter: size(), length: size() }),
       obj({ kind: z.literal('rectCap'), width: size(), height: size(), length: size() }),
+      obj({ kind: z.literal('roundTap'), diameter: size(), length: size() }),
+      obj({ kind: z.literal('rectTap'), width: size(), height: size(), length: size() }),
       obj({
         kind: z.literal('roundElbow'),
         diameter: size(),

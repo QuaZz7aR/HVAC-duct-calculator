@@ -36,6 +36,8 @@ export const uk = {
     rectStraight: { designation: 'ПВ', name: 'Прямокутний повітровод' },
     roundCap: { designation: 'Заглушка', name: 'Заглушка кругла' },
     rectCap: { designation: 'Заглушка', name: 'Заглушка прямокутна' },
+    roundTap: { designation: 'Квр', name: 'Врізка кругла' },
+    rectTap: { designation: 'Пвр', name: 'Врізка прямокутна' },
     roundElbow: { designation: 'КО', name: 'Круглий відвід' },
     rectElbow: { designation: 'ПО', name: 'Прямокутний відвід' },
     roundReducer: { designation: 'КП', name: 'Круглий перехід' },
