@@ -17,7 +17,7 @@ function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outco
     return (
       <tr className="border-t border-zinc-200 text-zinc-400 dark:border-zinc-800">
         <td className="py-1 pr-3">{index + 1}. {rowTitle(row)}</td>
-        <td colSpan={9} className="px-2 text-right">—</td>
+        <td colSpan={4} className="px-2 text-right">—</td>
       </tr>
     );
   }
@@ -28,12 +28,7 @@ function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outco
       <td className={numCell}>{r.quantity}</td>
       <td className={numCell}>{fmt(r.thicknessMm, 2)}</td>
       <td className={numCell}>{fmt(r.metalArea)}</td>
-      <td className={numCell}>{fmt(r.metalAreaTotal)}</td>
-      <td className={numCell}>{fmt(r.centerlineLength)}</td>
-      <td className={numCell}>{fmt(r.pressureDrop.velocity, 2)}</td>
-      <td className={numCell}>{fmt(r.pressureDrop.frictionLoss, 2)}</td>
-      <td className={numCell}>{fmt(r.pressureDrop.localLoss, 2)}</td>
-      <td className="pl-2 text-right tabular-nums">{fmt(r.totalLoss, 2)}</td>
+      <td className="pl-2 text-right tabular-nums">{fmt(r.metalAreaTotal)}</td>
     </tr>
   );
 }
@@ -53,12 +48,7 @@ export function ResultsTable({ rows, outcome, calc }: Props) {
                 <th className="px-2 text-right">{dict.quantity}</th>
                 <th className="px-2 text-right">{dict.results.thickness}</th>
                 <th className="px-2 text-right">{dict.results.metalArea}</th>
-                <th className="px-2 text-right">{dict.results.metalAreaTotal}</th>
-                <th className="px-2 text-right">{dict.results.centerline}</th>
-                <th className="px-2 text-right">{dict.results.velocity}</th>
-                <th className="px-2 text-right">{dict.results.friction}</th>
-                <th className="px-2 text-right">{dict.results.local}</th>
-                <th className="pl-2 text-right">{dict.results.pressureDrop}</th>
+                <th className="pl-2 text-right">{dict.results.metalAreaTotal}</th>
               </tr>
             </thead>
             <tbody>

@@ -17,7 +17,7 @@ interface Props {
   onRemove: () => void;
 }
 
-/** One fitting: kind selector, the size fields that kind needs, quantity, flow, zeta. */
+/** One fitting: kind selector, the size fields that kind needs, quantity. */
 export function FittingCard({ row, index, outcome, onKindChange, onValueChange, onPatch, onRemove }: Props) {
   return (
     <div className={cardClass}>
@@ -44,8 +44,6 @@ export function FittingCard({ row, index, outcome, onKindChange, onValueChange, 
           />
         ))}
         <TextField label={dict.quantity} inputMode="numeric" value={row.quantity} onChange={(quantity) => onPatch({ quantity })} />
-        <TextField label={dict.flow} value={row.flow} onChange={(flow) => onPatch({ flow })} />
-        <TextField label={`${dict.zeta} (${dict.optional})`} value={row.zeta} onChange={(zeta) => onPatch({ zeta })} />
       </div>
       {outcome && !outcome.ok && <ErrorList issues={outcome.issues} />}
       {outcome?.ok && <WarningList warnings={outcome.result.warnings} />}
