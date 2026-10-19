@@ -6,10 +6,6 @@ import { uk as dict } from "@/lib/i18n/uk";
 function fieldLabel(issue: FormIssue) {
   const key = String(issue.path[0]);
   if (key === "quantity") return dict.quantity;
-  if (key === "flow") return dict.flow;
-  if (key === "zeta") return dict.zeta;
-  if (key === "temperatureC") return dict.airTemperature;
-  if (key === "pressurePa") return dict.airPressure;
   if (key === "seamPercent") return dict.settings.seamPercent;
   if (key === "marginPercent") return dict.settings.marginPercent;
   return dict.fields[key as FieldKey] ?? key;

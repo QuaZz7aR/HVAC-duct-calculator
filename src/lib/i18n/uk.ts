@@ -9,10 +9,7 @@ import type { FormIssueCode } from '../form/messages';
 export const uk = {
   appTitle: 'Калькулятор повітроводів',
   appSubtitle:
-    'Список фасонних частин → площа металу, товщина, довжина по осі та втрати тиску. Усе рахується в браузері.',
-  airTitle: 'Параметри повітря',
-  airTemperature: 'Температура, °C',
-  airPressure: 'Тиск, Па',
+    'Список фасонних частин → площа металу та товщина. Усе рахується в браузері.',
   settings: {
     title: 'Параметри розрахунку',
     thicknessTable: 'Таблиця товщин металу',
@@ -28,8 +25,6 @@ export const uk = {
   removeItem: 'Видалити',
   kind: 'Тип',
   quantity: 'Кількість, шт',
-  flow: 'Витрата, м³/год',
-  zeta: 'ζ (місцевий опір)',
   optional: 'необов’язково',
   kinds: {
     roundStraight: { designation: 'КВ', name: 'Круглий повітровод' },
@@ -74,11 +69,6 @@ export const uk = {
     thickness: 'Товщина металу, мм',
     metalArea: 'Площа, м² (шт.)',
     metalAreaTotal: 'Сума площі, м²',
-    centerline: 'Довжина по осі, м',
-    velocity: 'Швидкість, м/с',
-    friction: 'Падіння тиску на тертя, Па',
-    local: 'Місцеве падіння тиску, Па',
-    pressureDrop: 'Загальне падіння тиску, Па (шт.)',
     empty: 'Додайте деталь, щоб побачити розрахунок.',
     skipped: (n: number) => `Не враховано позицій з помилками: ${n}.`,
   },
@@ -86,8 +76,6 @@ export const uk = {
     title: 'Разом',
     metalArea: 'Площа металу, м²',
     metalAreaToOrder: 'Площа до замовлення (із запасом), м²',
-    pressureDrop: 'Сума втрат тиску, Па',
-    pressureDropNote: 'Сума по всіх позиціях з урахуванням кількості, як для однієї послідовної ділянки.',
   },
   sheetList: {
     title: 'Відомість металу за товщиною',
