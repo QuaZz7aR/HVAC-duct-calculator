@@ -10,6 +10,8 @@ function fieldLabel(issue: FormIssue) {
   if (key === "zeta") return dict.zeta;
   if (key === "temperatureC") return dict.airTemperature;
   if (key === "pressurePa") return dict.airPressure;
+  if (key === "seamPercent") return dict.settings.seamPercent;
+  if (key === "marginPercent") return dict.settings.marginPercent;
   return dict.fields[key as FieldKey] ?? key;
 }
 

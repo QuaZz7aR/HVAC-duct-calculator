@@ -9,13 +9,15 @@ export function SheetList({ groups }: { groups: Calculation["sheetList"] }) {
       <h2 id="sheets-title" className="mb-3 font-medium">{dict.sheetList.title}</h2>
       <table className="w-full text-sm">
         <thead className={`text-left text-xs ${mutedClass}`}>
-          <tr><th className="py-1">{dict.sheetList.thickness}</th><th className="text-right">{dict.sheetList.area}</th></tr>
+          <tr><th className="py-1">{dict.sheetList.thickness}</th><th className="text-right">{dict.sheetList.area}</th><th className="text-right">{dict.sheetList.orderArea}</th><th className="text-right">{dict.sheetList.sheets}</th></tr>
         </thead>
         <tbody>
           {groups.map((g) => (
             <tr key={g.thicknessMm} className="border-t border-zinc-200 dark:border-zinc-800">
               <td className="py-1 tabular-nums">{fmt(g.thicknessMm, 2)}</td>
               <td className="text-right tabular-nums">{fmt(g.area)}</td>
+              <td className="text-right tabular-nums">{fmt(g.orderArea)}</td>
+              <td className="text-right tabular-nums">{g.sheets}</td>
             </tr>
           ))}
         </tbody>
