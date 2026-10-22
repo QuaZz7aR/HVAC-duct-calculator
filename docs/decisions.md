@@ -73,6 +73,13 @@ Relayed by the owner; the engineer answered in a messenger and did not remember 
 - **Sheet size and sheet count** (3.2): the standard sheet is a selectable parameter, 1000 x 2000, 1250 x 2500 (default) and 1500 x 3000 mm (`config.order.sheetSizes`, not from a supplier, `TODO(confirm)`). **Sheets per thickness = ceil(order area / sheet area)**, sheet area = width x height in m2; a float epsilon of 1e-9 sheets stops rounding noise from adding a sheet. No nesting or offcut model, so it is a lower estimate of what a cutting plan needs.
 - **Thickness by ДБН** (3.4): `dbnThickness` is the default table (`config.ts`): round by diameter up to 200 -> 0.5, 250-450 -> 0.6, 500-800 -> 0.7, 900-1250 -> 1.0, 1400-1600 -> 1.2, 1800-2000 -> 1.4; rect by the larger side up to 250 -> 0.5, 300-1000 -> 0.7, 1250-2000 -> 0.9. The norm lists only some sizes, so a size in between takes the next larger listed one (the safe side): 201-450 -> 0.6, 1001-2000 rect -> 0.9 (`TODO(confirm)`, our rule). Above 2000 mm the thickness is by calculation: the last band is used and the `size.overLimit` warning fires. Fire-resistant ducts (at least 0.8 mm, п. 7.11.5) are not modelled. The engineer's 0.55 / 0.7 table stays as `engineerThickness`, selectable in the UI; "a custom table maybe later" is deferred. This changes the thickness of most rows against the earlier default.
 - **Elbow radius** (3.3): he does not remember; the 2 x width threshold stays preliminary (`TODO(confirm)`).
+
+## Elbow radius suggested from the size (2026-10-22)
+The engineer asked for editable inputs everywhere, with defaults that scale with the part size. The form now suggests the elbow radius (`config.elbowRadius`, form layer only; the core, fixtures and validation are unchanged):
+- Round elbow: centre-line radius = 1.0 x D. Rect elbow: inner radius = 0.5 x W (W = the bend-plane side), i.e. centre-line R = 1.0 x W. For W 100-300 mm this gives 50-150 mm, in line with what the engineer expected.
+- The field follows the size until the user types in it; after that it is never overwritten. Clearing the field or "скинути до авто" hands it back. A kind change resets it. No valid size yet: the field stays empty.
+- `TODO(confirm)`: common practice (round R = D in manufacturer catalogues and our fixtures; rect R/W >= 1.0 without vanes in SMACNA-style specs), not a norm. No radius rule was found in ДБН В.2.5-67:2013 or EN 1505/1506 in open sources. To ask the engineer: are R = D and inner 0.5 x W the typical values. Research: `ui-engineer-advice-2026-10-22.md` in the project files.
+- Deferred: air block back in the UI (with the aerodynamics mode; pressure kPa / atm conversion then), a sketch for each fitting kind.
 - **Tees and crosses** (3.5): the flow is counted for the main duct only, confirmed (he added that there are nuances). The `TODO(confirm)` on this in `section.ts` is removed.
 - **Warnings** (2.3): "some warning, need context"; the warnings stay as decided on 2026-10-16.
 
@@ -102,6 +109,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `calc/sheet-area.ts` taps (`roundTap`, `rectTap`) | Centerline 0 (a stub off the main flow); the 100 mm length is only a form prefill. |
 | `calc/sheet-area.ts` tees and crosses | Centerline of the main run is the branch size along the axis `E` (no allowance); the Excel has only the run length `E + 2 x allowance`. |
 | `calc/section.ts` | Reducer friction by the mean diameter and mean-velocity `Pd`: both from the engineer (2026-10-19, 2026-10-16). Caps have no friction because their centerline is 0. |
+| `calc/config.ts` elbowRadius | 1.0 D (round centre line) and 0.5 W (rect inner) are common practice, not a norm; form suggestion only. |
 | `calc/config.ts` warnings | `elbowInnerRadiusFactor` 2 is preliminary; the aspect ratio threshold 3 comes from the engineer's "2.5-3". |
 
 ## Tees and crosses (2026-10-16)

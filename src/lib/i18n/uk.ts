@@ -26,6 +26,8 @@ export const uk = {
   kind: 'Тип',
   quantity: 'Кількість, шт',
   optional: 'необов’язково',
+  autoValue: 'авто',
+  resetAuto: 'скинути до авто',
   kinds: {
     roundStraight: { designation: 'КВ', name: 'Круглий повітровод' },
     rectStraight: { designation: 'ПВ', name: 'Прямокутний повітровод' },

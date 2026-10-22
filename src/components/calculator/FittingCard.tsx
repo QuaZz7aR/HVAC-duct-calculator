@@ -1,4 +1,5 @@
 import { defaultConfig } from "@/lib/calc/config";
+import { autoKey, isAuto } from "@/lib/form/auto-defaults";
 import { kindFields, kindOrder, type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
 import type { RowOutcome } from "@/lib/form/calculate";
 import { uk as dict } from "@/lib/i18n/uk";
@@ -13,12 +14,13 @@ interface Props {
   outcome: RowOutcome | undefined;
   onKindChange: (kind: FittingKind) => void;
   onValueChange: (key: FieldKey, value: string) => void;
+  onReset: (key: FieldKey) => void;
   onPatch: (patch: Partial<FormRow>) => void;
   onRemove: () => void;
 }
 
 /** One fitting: kind selector, the size fields that kind needs, quantity. */
-export function FittingCard({ row, index, outcome, onKindChange, onValueChange, onPatch, onRemove }: Props) {
+export function FittingCard({ row, index, outcome, onKindChange, onValueChange, onReset, onPatch, onRemove }: Props) {
   return (
     <div className={cardClass}>
       <div className="mb-3 flex items-end justify-between gap-3">
@@ -41,6 +43,8 @@ export function FittingCard({ row, index, outcome, onKindChange, onValueChange, 
             label={`${dict.fields[f.key]}${f.optional ? ` (${dict.optional}: ${defaultConfig.reducerLengthMm})` : ""}`}
             value={row.values[f.key] ?? ""}
             onChange={(v) => onValueChange(f.key, v)}
+            hint={autoKey(row.kind) === f.key ? (isAuto(row, f.key) ? dict.autoValue : undefined) : undefined}
+            action={autoKey(row.kind) === f.key && !isAuto(row, f.key) ? { label: dict.resetAuto, onClick: () => onReset(f.key) } : undefined}
           />
         ))}
         <TextField label={dict.quantity} inputMode="numeric" value={row.quantity} onChange={(quantity) => onPatch({ quantity })} />

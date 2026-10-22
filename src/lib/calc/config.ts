@@ -44,6 +44,12 @@ export interface WarningConfig {
   elbowInnerRadiusFactor: number; // inner radius above this x width (rect) or diameter (round) -> warning
 }
 
+/** Form suggestions for the bend radius of elbows, scaled by the duct size. Never applied to what the user typed. */
+export interface ElbowRadiusConfig {
+  roundCenterFactor: number; // round elbow: centre-line radius = factor x diameter
+  rectInnerFactor: number; // rect elbow: inner radius = factor x width (the bend-plane side)
+}
+
 /** A standard sheet of metal, mm. */
 export interface SheetSize {
   widthMm: number;
@@ -67,6 +73,7 @@ export interface CalcConfig {
   wasteFactor: WasteFactorTable;
   warnings: WarningConfig;
   order: OrderConfig;
+  elbowRadius: ElbowRadiusConfig;
 }
 
 /**
@@ -152,6 +159,12 @@ export const defaultConfig: CalcConfig = {
     maxSizeMm: 2000,
     // TODO(confirm): preliminary threshold (2x width or diameter); the engineer expected inner radii up to 50-150 mm
     elbowInnerRadiusFactor: 2,
+  },
+  elbowRadius: {
+    // TODO(confirm): common practice, not a norm (no radius rule found in ДБН В.2.5-67:2013 or EN 1505/1506): round R = 1.0 D on the
+    // centre line (manufacturer catalogues, the fixtures use it); rect inner radius 0.5 W, i.e. centre-line R = 1.0 W (SMACNA-style minimum without vanes)
+    roundCenterFactor: 1,
+    rectInnerFactor: 0.5,
   },
   order: {
     // engineer (2026-10-19): the 20 % is "probably the margin for ordering metal"
