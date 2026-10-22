@@ -62,6 +62,8 @@ export interface FormRow {
   quantity: string;
   flow: string;
   zeta: string;
+  /** Auto-filled fields (see auto-defaults.ts) that the user has typed over; they stop following the size. */
+  manual?: FieldKey[];
 }
 
 export function initialValues(kind: FittingKind): FormRow['values'] {

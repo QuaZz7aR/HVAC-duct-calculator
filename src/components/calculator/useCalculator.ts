@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { defaultConfig } from "@/lib/calc/config";
 import { calculate, type RowOutcome } from "@/lib/form/calculate";
 import { buildConfig, defaultSettings, type SettingsText } from "@/lib/form/settings";
+import { resetToAuto, setFieldValue, withKind } from "@/lib/form/auto-defaults";
 import { initialValues, newRow, type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
 
 /**
@@ -39,14 +40,18 @@ export function useCalculator() {
 
   const update = (id: number, patch: Partial<FormRow>) =>
     setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch } : r)));
-  const setKind = (id: number, kind: FittingKind) => update(id, { kind, values: initialValues(kind) });
+  const setKind = (id: number, kind: FittingKind) =>
+    setRows((rs) => rs.map((r) => (r.id === id ? withKind(r, kind, initialValues(kind), built.config) : r)));
+  // size-dependent fields (elbow radius) follow the size until the user types over them
   const setValue = (id: number, key: FieldKey, value: string) =>
-    setRows((rs) => rs.map((r) => (r.id === id ? { ...r, values: { ...r.values, [key]: value } } : r)));
+    setRows((rs) => rs.map((r) => (r.id === id ? setFieldValue(r, key, value, built.config) : r)));
+  const resetValue = (id: number, key: FieldKey) =>
+    setRows((rs) => rs.map((r) => (r.id === id ? resetToAuto(r, key, built.config) : r)));
   const addRow = () => {
     const id = nextId.current++; // outside the updater, which React may run twice
     setRows((rs) => [...rs, newRow(id)]);
   };
   const removeRow = (id: number) => setRows((rs) => rs.filter((r) => r.id !== id));
 
-  return { rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, addRow, removeRow };
+  return { rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, removeRow };
 }

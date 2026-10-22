@@ -102,6 +102,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `calc/sheet-area.ts` taps (`roundTap`, `rectTap`) | Centerline 0 (a stub off the main flow); the 100 mm length is only a form prefill. |
 | `calc/sheet-area.ts` tees and crosses | Centerline of the main run is the branch size along the axis `E` (no allowance); the Excel has only the run length `E + 2 x allowance`. |
 | `calc/section.ts` | Reducer friction by the mean diameter and mean-velocity `Pd`: both from the engineer (2026-10-19, 2026-10-16). Caps have no friction because their centerline is 0. |
+| `calc/config.ts` elbowRadius | 1.0 D (round centre line) and 0.5 W (rect inner) are common practice, not a norm; form suggestion only. |
 | `calc/config.ts` warnings | `elbowInnerRadiusFactor` 2 is preliminary; the aspect ratio threshold 3 comes from the engineer's "2.5-3". |
 
 ## Tees and crosses (2026-10-16)
@@ -140,3 +141,10 @@ Two kinds, Excel codes Квр and Пвр: `roundTap` (`diameter`, `length`) and 
 - UI only. `assembleSection`, `calculate` (still returns `pressureDrop`, `totalLoss`, `centerlineLength`, `totalPressureDrop`), the validation and all tests and fixtures are unchanged. `useCalculator` feeds `calculate` a fixed flow (1 m3/h), empty zeta and the default air, so area, thickness and the sheet list do not depend on them and no loss-input error can appear.
 - The row's area never depends on the loss calculation (owner, 2026-10-19): if the losses overflow or throw (sizes from about 1e157 mm, far beyond any duct), `calculate` keeps the row, sets `lossesAvailable: false` and NaN losses, and leaves it out of `totalPressureDrop`. A row is rejected only when its metal area is not finite or not positive. The old robustness test for a 9x300 mm diameter now expects the row to stay (changed with the owner's approval); a 9x400 mm diameter, which overflows the area itself, is still an error.
 - Bringing losses back (the separate aerodynamics mode, after insulation and price): re-add an air block and per-row flow / zeta inputs, drop `hiddenLossInputs` in the hook, restore the removed dictionary strings from git history (`AirParams.tsx`, `airTitle`, `flow`, `zeta`, `results.velocity|friction|local|pressureDrop|centerline`, `totals.pressureDrop*`).
+
+## Elbow radius suggested from the size (2026-10-22)
+The engineer asked for editable inputs everywhere, with defaults that scale with the part size. The form now suggests the elbow radius (`config.elbowRadius`, form layer only; the core, fixtures and validation are unchanged):
+- Round elbow: centre-line radius = 1.0 x D. Rect elbow: inner radius = 0.5 x W (W = the bend-plane side), i.e. centre-line R = 1.0 x W. For W 100-300 mm this gives 50-150 mm, in line with what the engineer expected.
+- The field follows the size until the user types in it; after that it is never overwritten. Clearing the field keeps it empty (so it can be retyped); "скинути до авто" hands it back. A kind change resets it. No valid size yet: the field stays empty.
+- `TODO(confirm)`: common practice (round R = D in manufacturer catalogues and our fixtures; rect R/W >= 1.0 without vanes in SMACNA-style specs), not a norm. No radius rule was found in ДБН В.2.5-67:2013 or EN 1505/1506 in open sources. To ask the engineer: are R = D and inner 0.5 x W the typical values. Sources seen: Lindab Safe catalogue (BFU 90 bend, centre-line R about 1 x d), SMACNA-style project specs (R/W 1.0-1.5; 0.5 only with vanes).
+- Deferred: air block back in the UI (with the aerodynamics mode; pressure kPa / atm conversion then), a sketch for each fitting kind.

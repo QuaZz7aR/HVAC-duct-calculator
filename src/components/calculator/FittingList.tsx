@@ -8,12 +8,13 @@ interface Props {
   outcome: (id: number) => RowOutcome | undefined;
   onKindChange: (id: number, kind: FittingKind) => void;
   onValueChange: (id: number, key: FieldKey, value: string) => void;
+  onReset: (id: number, key: FieldKey) => void;
   onPatch: (id: number, patch: Partial<FormRow>) => void;
   onRemove: (id: number) => void;
   onAdd: () => void;
 }
 
-export function FittingList({ rows, outcome, onKindChange, onValueChange, onPatch, onRemove, onAdd }: Props) {
+export function FittingList({ rows, outcome, onKindChange, onValueChange, onReset, onPatch, onRemove, onAdd }: Props) {
   return (
     <section aria-labelledby="items-title" className="space-y-3">
       <h2 id="items-title" className="font-medium">{dict.itemsTitle}</h2>
@@ -25,6 +26,7 @@ export function FittingList({ rows, outcome, onKindChange, onValueChange, onPatc
           outcome={outcome(row.id)}
           onKindChange={(kind) => onKindChange(row.id, kind)}
           onValueChange={(key, value) => onValueChange(row.id, key, value)}
+          onReset={(key) => onReset(row.id, key)}
           onPatch={(patch) => onPatch(row.id, patch)}
           onRemove={() => onRemove(row.id)}
         />
