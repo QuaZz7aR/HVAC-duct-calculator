@@ -67,7 +67,7 @@ export function FittingSketch({ kind }: { kind: FittingKind }) {
       {shape === "elbow" && (
         <>
           <path d="M 60 80 L 90 80 A 60 60 0 0 0 30 20 L 30 50 A 30 30 0 0 1 60 80 Z" className={body} />
-          <Label x={75} y={72}>{main}</Label>
+          <Label x={75} y={96}>{main}</Label>
           {/* radius from the bend centre: inner for a rect elbow, centre line for a round one */}
           <g className={dim} strokeWidth={1}>
             <line x1={30} y1={80} x2={roundMain ? 30 + 45 * Math.SQRT1_2 : 30 + 30 * Math.SQRT1_2} y2={roundMain ? 80 - 45 * Math.SQRT1_2 : 80 - 30 * Math.SQRT1_2} />

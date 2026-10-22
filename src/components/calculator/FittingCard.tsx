@@ -5,6 +5,7 @@ import type { RowOutcome } from "@/lib/form/calculate";
 import { uk as dict } from "@/lib/i18n/uk";
 import { kindTitle } from "./format";
 import { FittingSketch } from "./FittingSketch";
+import { sketchLegend } from "./sketch-spec";
 import { ErrorList, WarningList } from "./ErrorList";
 import { cardClass, inputClass, labelClass } from "./styles";
 import { TextField } from "./TextField";
@@ -40,21 +41,23 @@ export function FittingCard({ row, index, outcome, onKindChange, onValueChange, 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
         <div className="shrink-0">
           <FittingSketch kind={row.kind} />
-          <p className="max-w-40 text-[10px] leading-tight text-zinc-500 dark:text-zinc-400">{dict.sketch.note}</p>
+          <p className="max-w-40 text-[10px] leading-tight text-zinc-500 dark:text-zinc-400">
+            {dict.sketch.note} {sketchLegend(row.kind).join("; ")}.
+          </p>
         </div>
-      <div className="grid flex-1 grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        {kindFields[row.kind].map((f) => (
-          <TextField
-            key={f.key}
-            label={`${dict.fields[f.key]}${f.optional ? ` (${dict.optional}: ${defaultConfig.reducerLengthMm})` : ""}`}
-            value={row.values[f.key] ?? ""}
-            onChange={(v) => onValueChange(f.key, v)}
-            hint={autoKey(row.kind) === f.key ? (isAuto(row, f.key) && (row.values[f.key] ?? "") !== "" ? dict.autoValue : undefined) : undefined}
-            action={autoKey(row.kind) === f.key && !isAuto(row, f.key) ? { label: dict.resetAuto, onClick: () => onReset(f.key) } : undefined}
-          />
-        ))}
-        <TextField label={dict.quantity} inputMode="numeric" value={row.quantity} onChange={(quantity) => onPatch({ quantity })} />
-      </div>
+        <div className="grid flex-1 grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {kindFields[row.kind].map((f) => (
+            <TextField
+              key={f.key}
+              label={`${dict.fields[f.key]}${f.optional ? ` (${dict.optional}: ${defaultConfig.reducerLengthMm})` : ""}`}
+              value={row.values[f.key] ?? ""}
+              onChange={(v) => onValueChange(f.key, v)}
+              hint={autoKey(row.kind) === f.key ? (isAuto(row, f.key) && (row.values[f.key] ?? "") !== "" ? dict.autoValue : undefined) : undefined}
+              action={autoKey(row.kind) === f.key && !isAuto(row, f.key) ? { label: dict.resetAuto, onClick: () => onReset(f.key) } : undefined}
+            />
+          ))}
+          <TextField label={dict.quantity} inputMode="numeric" value={row.quantity} onChange={(quantity) => onPatch({ quantity })} />
+        </div>
       </div>
       {outcome && !outcome.ok && <ErrorList issues={outcome.issues} />}
       {outcome?.ok && <WarningList warnings={outcome.result.warnings} />}

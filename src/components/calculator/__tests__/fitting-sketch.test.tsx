@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { kindOrder } from "@/lib/form/fields";
 import { uk as dict } from "@/lib/i18n/uk";
 import { FittingSketch } from "../FittingSketch";
-import { sketchSpecs } from "../sketch-spec";
+import { sketchLegend, sketchSpecs } from "../sketch-spec";
 
 describe("FittingSketch", () => {
   it("has a drawing for every fitting kind", () => {
@@ -25,5 +25,19 @@ describe("FittingSketch", () => {
     expect(reducer).toContain(">Ш × В<");
     expect(reducer).toContain(">д<");
     expect(renderToStaticMarkup(<FittingSketch kind="roundTeeRectBranch" />)).toContain(">ш × в<");
+  });
+
+  it("draws each kind with its own shape", () => {
+    const shapes = Object.fromEntries(kindOrder.map((k) => [k, sketchSpecs[k].shape]));
+    expect(shapes).toMatchObject({
+      roundStraight: "straight", rectCap: "cap", roundTap: "tap", rectElbow: "elbow",
+      rectToRoundReducer: "reducer", rectTeeRoundBranch: "tee", roundCrossRectBranches: "cross",
+    });
+  });
+
+  it("explains the radius of each elbow in the wording of its field", () => {
+    expect(sketchLegend("roundElbow")).toContain(dict.sketch.legend.centerRadius);
+    expect(sketchLegend("rectElbow")).toContain(dict.sketch.legend.innerRadius);
+    expect(sketchLegend("rectTee")).toEqual([dict.sketch.legend.rect, dict.sketch.legend.smallRect]);
   });
 });

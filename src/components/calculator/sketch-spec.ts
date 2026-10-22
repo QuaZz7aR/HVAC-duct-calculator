@@ -1,4 +1,5 @@
 import type { FittingKind } from "@/lib/form/fields";
+import { uk as dict } from "@/lib/i18n/uk";
 
 export type SketchShape = "straight" | "cap" | "tap" | "elbow" | "reducer" | "tee" | "cross";
 
@@ -32,3 +33,25 @@ export const sketchSpecs: Record<FittingKind, SketchSpec> = {
   rectCross: { shape: "cross", roundMain: false, roundSmall: false },
   rectCrossRoundBranches: { shape: "cross", roundMain: false, roundSmall: true },
 };
+
+/** The letters a sketch uses, each with what it stands for, in the wording of the input fields. */
+export function sketchLegend(kind: FittingKind): string[] {
+  const { shape, roundMain, roundSmall } = sketchSpecs[kind];
+  const l = dict.sketch.legend;
+  const main = roundMain ? l.diameter : l.rect;
+  const small = roundSmall ? l.smallDiameter : l.smallRect;
+  switch (shape) {
+    case "straight":
+    case "cap":
+      return [main, l.length];
+    case "tap":
+      return [main, l.tapLength];
+    case "elbow":
+      return [main, roundMain ? l.centerRadius : l.innerRadius, l.angle];
+    case "reducer":
+      return [main, small, l.length];
+    case "tee":
+    case "cross":
+      return [main, small];
+  }
+}
