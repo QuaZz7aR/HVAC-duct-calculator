@@ -25,8 +25,8 @@ export function SettingsPanel({ settings, onChange, issues }: Props) {
             value={settings.thicknessTable}
             onChange={(e) => onChange({ ...settings, thicknessTable: e.target.value as ThicknessTableKey })}
           >
-            <option value="dbn" className="text-black">{dict.settings.thicknessDbn}</option>
-            <option value="engineer" className="text-black">{dict.settings.thicknessEngineer}</option>
+            <option value="dbn" className="bg-panel text-foreground">{dict.settings.thicknessDbn}</option>
+            <option value="engineer" className="bg-panel text-foreground">{dict.settings.thicknessEngineer}</option>
           </select>
         </label>
         <TextField label={dict.settings.seamPercent} value={settings.seamPercent} onChange={(seamPercent) => onChange({ ...settings, seamPercent })} />
@@ -35,7 +35,7 @@ export function SettingsPanel({ settings, onChange, issues }: Props) {
           <span className={labelClass}>{dict.settings.sheet}</span>
           <select className={inputClass} value={settings.sheet} onChange={(e) => onChange({ ...settings, sheet: e.target.value })}>
             {defaultConfig.order.sheetSizes.map((s) => (
-              <option key={sheetKey(s)} value={sheetKey(s)} className="text-black">{s.widthMm} × {s.heightMm}</option>
+              <option key={sheetKey(s)} value={sheetKey(s)} className="bg-panel text-foreground">{s.widthMm} × {s.heightMm}</option>
             ))}
           </select>
         </label>

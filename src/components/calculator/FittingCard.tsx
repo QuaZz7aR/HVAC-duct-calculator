@@ -33,7 +33,7 @@ export function FittingCard({ row, index, outcome, onKindChange, onValueChange, 
           <span className={labelClass}>{index + 1}. {dict.kind}</span>
           <select className={inputClass} value={row.kind} onChange={(e) => onKindChange(e.target.value as FittingKind)}>
             {kindOrder.map((k) => (
-              <option key={k} value={k} className="text-black">{kindTitle(k)}</option>
+              <option key={k} value={k} className="bg-panel text-foreground">{kindTitle(k)}</option>
             ))}
           </select>
         </label>
