@@ -28,6 +28,8 @@ export const uk = {
   expandCard: 'Розгорнути',
   collapseAll: 'Згорнути всі',
   expandAll: 'Розгорнути всі',
+  collapseGroup: 'Згорнути розділ',
+  expandGroup: 'Розгорнути розділ',
   showAllSketches: 'Показати всі схеми',
   hideAllSketches: 'Сховати всі схеми',
   kind: 'Тип',
