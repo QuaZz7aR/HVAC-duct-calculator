@@ -29,8 +29,8 @@ export function FittingCard({ row, index, outcome, onKindChange, onValueChange, 
   const [showSketch, setShowSketch] = useState(sketchesOpenByDefault);
   const fieldLabel = (f: (typeof kindFields)[FittingKind][number]) =>
     `${dict.fields[f.key]}${f.optional ? ` (${dict.optional}: ${defaultConfig.reducerLengthMm})` : ""}`;
-  // the (авто) hint can sit after the label, so reserve room for it on the suggested field
-  const labels = [...kindFields[row.kind].map((f) => fieldLabel(f) + (autoKey(row.kind) === f.key ? ` (${dict.autoValue})` : "")), dict.quantity];
+  // the (авто) hint or the reset link sits after the label, so reserve room for the longer one on the suggested field
+  const labels = [...kindFields[row.kind].map((f) => fieldLabel(f) + (autoKey(row.kind) === f.key ? ` ${dict.autoValue.length > dict.resetAuto.length ? `(${dict.autoValue})` : dict.resetAuto}` : "")), dict.quantity];
   return (
     <div className={cardClass}>
       <div className="mb-4 flex items-end justify-between gap-3">
