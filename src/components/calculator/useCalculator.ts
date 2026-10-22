@@ -51,7 +51,18 @@ export function useCalculator() {
     const id = nextId.current++; // outside the updater, which React may run twice
     setRows((rs) => [...rs, newRow(id)]);
   };
+  // the copy goes right after the original, so it lands next to it (and in its kind section)
+  const cloneRow = (id: number) => {
+    const copyId = nextId.current++;
+    setRows((rs) => {
+      const at = rs.findIndex((r) => r.id === id);
+      if (at < 0) return rs;
+      const src = rs[at];
+      const copy: FormRow = { ...src, id: copyId, values: { ...src.values }, manual: src.manual && [...src.manual] };
+      return [...rs.slice(0, at + 1), copy, ...rs.slice(at + 1)];
+    });
+  };
   const removeRow = (id: number) => setRows((rs) => rs.filter((r) => r.id !== id));
 
-  return { rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, removeRow };
+  return { rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, cloneRow, removeRow };
 }

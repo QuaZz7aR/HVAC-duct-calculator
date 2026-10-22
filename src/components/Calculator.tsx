@@ -10,7 +10,7 @@ import { Totals } from "./calculator/Totals";
 import { useCalculator } from "./calculator/useCalculator";
 
 export function Calculator() {
-  const { rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, removeRow } = useCalculator();
+  const { rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, cloneRow, removeRow } = useCalculator();
 
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 space-y-6 px-4 py-8">
@@ -27,6 +27,7 @@ export function Calculator() {
         onValueChange={setValue}
         onReset={resetValue}
         onPatch={update}
+        onClone={cloneRow}
         onRemove={removeRow}
         onAdd={addRow}
       />
