@@ -95,7 +95,7 @@ function Side({ kind }: { kind: FittingKind }) {
         <>
           <polygon points="80,20 230,50 230,90 80,120" className={body} strokeWidth={1.6} />
           <DimV x={70} y1={20} y2={120} label={main} side="left" />
-          <DimV x={244} y1={50} y2={90} label={small} side="right" />
+          <DimV x={236} y1={50} y2={90} label={small} side="right" />
           <DimH x1={80} x2={230} y={140} label="L" />
         </>
       );
@@ -159,7 +159,6 @@ export function FittingSketch({ kind, view = "side" }: { kind: FittingKind; view
   const label = `${kindTitle(kind)}: ${view === "side" ? dict.sketch.sideTitle : dict.sketch.profileTitle}`;
   return (
     <svg viewBox="0 0 300 176" role="img" aria-label={label} className="h-auto w-full max-w-sm">
-      <title>{label}</title>
       {view === "side" ? <Side kind={kind} /> : <Profile kind={kind} />}
     </svg>
   );
