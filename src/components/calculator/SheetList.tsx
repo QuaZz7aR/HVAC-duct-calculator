@@ -13,7 +13,7 @@ export function SheetList({ groups }: { groups: Calculation["sheetList"] }) {
         </thead>
         <tbody>
           {groups.map((g) => (
-            <tr key={g.thicknessMm} className="border-t border-zinc-200 dark:border-zinc-800">
+            <tr key={g.thicknessMm} className="border-t border-line">
               <td className="py-1 tabular-nums">{fmt(g.thicknessMm, 2)}</td>
               <td className="text-right tabular-nums">{fmt(g.area)}</td>
               <td className="text-right tabular-nums">{fmt(g.orderArea)}</td>

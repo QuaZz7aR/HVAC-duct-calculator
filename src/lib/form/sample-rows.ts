@@ -31,3 +31,6 @@ export function sampleRows(config: CalcConfig): FormRow[] {
     applyAutoDefaults({ ...newRow(i + 1, kind), values: { ...initialValues(kind), ...sampleValues[kind] } }, config),
   );
 }
+
+/** Beta: the sketches of a card are open when it appears (also for added rows). Set to false when the beta ends. */
+export const sketchesOpenByDefault = true;

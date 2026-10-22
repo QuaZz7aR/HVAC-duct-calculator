@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { defaultConfig } from "@/lib/calc/config";
+import { sketchesOpenByDefault } from "@/lib/form/sample-rows";
 import { autoKey, isAuto } from "@/lib/form/auto-defaults";
 import { kindFields, kindOrder, type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
 import type { RowOutcome } from "@/lib/form/calculate";
@@ -24,7 +25,7 @@ interface Props {
 
 /** One fitting: kind selector, the size fields that kind needs, quantity. */
 export function FittingCard({ row, index, outcome, onKindChange, onValueChange, onReset, onPatch, onRemove }: Props) {
-  const [showSketch, setShowSketch] = useState(true) // beta: sketches are open by default;
+  const [showSketch, setShowSketch] = useState(sketchesOpenByDefault);
   return (
     <div className={cardClass}>
       <div className="mb-4 flex items-end justify-between gap-3">
