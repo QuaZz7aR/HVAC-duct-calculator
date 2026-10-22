@@ -23,11 +23,12 @@ interface Props {
   onValueChange: (key: FieldKey, value: string) => void;
   onReset: (key: FieldKey) => void;
   onPatch: (patch: Partial<FormRow>) => void;
+  onClone: () => void;
   onRemove: () => void;
 }
 
 /** One fitting: kind selector, the size fields that kind needs, quantity. */
-export function FittingCard({ row, index, showSketch, collapsed, onToggleSketch, onToggleCollapsed, outcome, onKindChange, onValueChange, onReset, onPatch, onRemove }: Props) {
+export function FittingCard({ row, index, showSketch, collapsed, onToggleSketch, onToggleCollapsed, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove }: Props) {
   const fieldLabel = (f: (typeof kindFields)[FittingKind][number]) =>
     `${dict.fields[f.key]}${f.optional ? ` (${dict.optional}: ${defaultConfig.reducerLengthMm})` : ""}`;
   // the (авто) hint or the reset link sits after the label, so reserve room for the longer one on the suggested field
@@ -40,6 +41,9 @@ export function FittingCard({ row, index, showSketch, collapsed, onToggleSketch,
         <button type="button" className="min-w-0 flex-1 text-left" onClick={onToggleCollapsed} aria-expanded={false} title={`${dict.expandCard}: ${kindTitle(row.kind)}`}>
           <span className="block text-sm font-medium leading-tight">{outcome && !outcome.ok && <span className="mr-1 text-red-600 dark:text-red-400" aria-label={dict.cardHasErrors} title={dict.cardHasErrors}>⚠</span>}{index + 1}. {kindTitle(row.kind)}</span>
           <span className="block truncate font-mono text-xs text-muted">{summary}</span>
+        </button>
+        <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1`} onClick={onClone} aria-label={dict.cloneItem} title={dict.cloneItem}>
+          ⧉
         </button>
         <button type="button" className={`${dangerButtonClass} shrink-0 !px-2 !py-1`} onClick={onRemove} aria-label={dict.removeItem} title={dict.removeItem}>
           ×
@@ -61,6 +65,9 @@ export function FittingCard({ row, index, showSketch, collapsed, onToggleSketch,
         <div className="flex gap-2">
           <button type="button" className={buttonClass} onClick={onToggleCollapsed}>
             {dict.collapseCard}
+          </button>
+          <button type="button" className={buttonClass} onClick={onClone}>
+            {dict.cloneItem}
           </button>
           <button type="button" className={dangerButtonClass} onClick={onRemove}>
             {dict.removeItem}

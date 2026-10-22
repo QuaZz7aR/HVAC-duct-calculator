@@ -23,6 +23,7 @@ export const uk = {
   itemsTitle: 'Деталі',
   addItem: 'Додати деталь',
   removeItem: 'Видалити',
+  cloneItem: 'Клонувати',
   collapseCard: 'Згорнути',
   cardHasErrors: 'У деталі є помилки',
   expandCard: 'Розгорнути',

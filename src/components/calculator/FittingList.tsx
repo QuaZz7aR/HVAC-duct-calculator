@@ -14,6 +14,7 @@ interface Props {
   onValueChange: (id: number, key: FieldKey, value: string) => void;
   onReset: (id: number, key: FieldKey) => void;
   onPatch: (id: number, patch: Partial<FormRow>) => void;
+  onClone: (id: number) => void;
   onRemove: (id: number) => void;
   onAdd: () => void;
 }
@@ -29,7 +30,7 @@ function groupByKind(rows: FormRow[]) {
   return [...groups.entries()];
 }
 
-export function FittingList({ rows, outcome, onKindChange, onValueChange, onReset, onPatch, onRemove, onAdd }: Props) {
+export function FittingList({ rows, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove, onAdd }: Props) {
   // view state only: per card, whether its sketches are open and whether it is folded to a tile; new rows follow the defaults
   const [sketches, setSketches] = useState<Record<number, boolean>>({});
   const [folded, setFolded] = useState<Record<number, boolean>>({});
@@ -44,6 +45,25 @@ export function FittingList({ rows, outcome, onKindChange, onValueChange, onRese
     setSketches(Object.fromEntries(rows.map((r) => [r.id, open])));
   };
   const setAllFolded = (value: boolean) => setFolded(Object.fromEntries(rows.map((r) => [r.id, value])));
+
+  const card = (row: FormRow, index: number) => (
+    <FittingCard
+      key={row.id}
+      row={row}
+      index={index}
+      showSketch={sketchOpen(row.id)}
+      collapsed={isFolded(row.id)}
+      onToggleSketch={() => setSketches((s) => ({ ...s, [row.id]: !sketchOpen(row.id) }))}
+      onToggleCollapsed={() => setFolded((f) => ({ ...f, [row.id]: !isFolded(row.id) }))}
+      outcome={outcome(row.id)}
+      onKindChange={(k) => onKindChange(row.id, k)}
+      onValueChange={(key, value) => onValueChange(row.id, key, value)}
+      onReset={(key) => onReset(row.id, key)}
+      onPatch={(patch) => onPatch(row.id, patch)}
+      onClone={() => onClone(row.id)}
+      onRemove={() => onRemove(row.id)}
+    />
+  );
 
   return (
     <section aria-labelledby="items-title" className="space-y-3">
@@ -60,12 +80,13 @@ export function FittingList({ rows, outcome, onKindChange, onValueChange, onRese
           </div>
         )}
       </div>
-      {groupByKind(rows).map(([kind, items]) => {
-        const grouped = items.length > 1;
-        const groupFolded = items.every((i) => isFolded(i.row.id));
-        return (
-          <div key={kind} className={grouped ? "space-y-3 rounded-lg border border-line p-3" : undefined}>
-            {grouped && (
+      {/* one grid for the page: single cards and folded tiles share the 1-3 columns, a repeated kind is a full-width section with a grid of its own; open cards span the full width */}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {groupByKind(rows).map(([kind, items]) => {
+          if (items.length === 1) return card(items[0].row, items[0].index);
+          const groupFolded = items.every((i) => isFolded(i.row.id));
+          return (
+            <div key={kind} className="col-span-full space-y-3 rounded-lg border border-line p-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h3 className="text-sm font-medium">
                   {kindTitle(kind)} <span className="text-muted">× {items.length}</span>
@@ -78,30 +99,11 @@ export function FittingList({ rows, outcome, onKindChange, onValueChange, onRese
                   {groupFolded ? dict.expandGroup : dict.collapseGroup}
                 </button>
               </div>
-            )}
-            {/* folded cards are tiles in a grid so many of them fit one screen; open cards span the full width */}
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {items.map(({ row, index }) => (
-                <FittingCard
-                  key={row.id}
-                  row={row}
-                  index={index}
-                  showSketch={sketchOpen(row.id)}
-                  collapsed={isFolded(row.id)}
-                  onToggleSketch={() => setSketches((s) => ({ ...s, [row.id]: !sketchOpen(row.id) }))}
-                  onToggleCollapsed={() => setFolded((f) => ({ ...f, [row.id]: !isFolded(row.id) }))}
-                  outcome={outcome(row.id)}
-                  onKindChange={(k) => onKindChange(row.id, k)}
-                  onValueChange={(key, value) => onValueChange(row.id, key, value)}
-                  onReset={(key) => onReset(row.id, key)}
-                  onPatch={(patch) => onPatch(row.id, patch)}
-                  onRemove={() => onRemove(row.id)}
-                />
-              ))}
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{items.map(({ row, index }) => card(row, index))}</div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
       <button type="button" className={primaryButtonClass} onClick={onAdd}>
         + {dict.addItem}
       </button>
