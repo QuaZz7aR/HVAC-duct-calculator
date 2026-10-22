@@ -43,7 +43,7 @@ export function FittingCard({ row, index, outcome, onKindChange, onValueChange, 
             label={`${dict.fields[f.key]}${f.optional ? ` (${dict.optional}: ${defaultConfig.reducerLengthMm})` : ""}`}
             value={row.values[f.key] ?? ""}
             onChange={(v) => onValueChange(f.key, v)}
-            hint={autoKey(row.kind) === f.key ? (isAuto(row, f.key) ? dict.autoValue : undefined) : undefined}
+            hint={autoKey(row.kind) === f.key ? (isAuto(row, f.key) && (row.values[f.key] ?? "") !== "" ? dict.autoValue : undefined) : undefined}
             action={autoKey(row.kind) === f.key && !isAuto(row, f.key) ? { label: dict.resetAuto, onClick: () => onReset(f.key) } : undefined}
           />
         ))}

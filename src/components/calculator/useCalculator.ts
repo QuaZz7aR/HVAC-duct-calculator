@@ -23,9 +23,10 @@ export function useCalculator() {
   const [rows, setRows] = useState<FormRow[]>([
     { ...newRow(1), values: { diameter: "150", length: "1000" } },
   ]);
+  const nextId = useRef(2);
+
   const [settings, setSettings] = useState<SettingsText>(() => defaultSettings());
   const built = useMemo(() => buildConfig(settings), [settings]);
-  const nextId = useRef(2);
 
   const calc = useMemo(
     () => calculate(rows.map((r) => ({ ...r, flow: hiddenLossInputs.flow, zeta: hiddenLossInputs.zeta })), hiddenLossInputs.air, built.config),

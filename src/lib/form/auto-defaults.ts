@@ -2,7 +2,7 @@ import type { CalcConfig } from '../calc/config';
 import type { FieldKey, FittingKind, FormRow } from './fields';
 import { parseNumber } from './calculate';
 
-/** Suggested fields: the value follows the duct size until the user types over it. Everything else is a plain input. */
+/** Suggested fields (rect elbow: `width` is the bend-plane side, confirmed by the engineer 2026-10-16): the value follows the duct size until the user types over it. Everything else is a plain input. */
 const autoRule: Partial<Record<FittingKind, { key: FieldKey; sizeKey: FieldKey; factor: (c: CalcConfig) => number }>> = {
   roundElbow: { key: 'centerRadius', sizeKey: 'diameter', factor: (c) => c.elbowRadius.roundCenterFactor },
   rectElbow: { key: 'innerRadius', sizeKey: 'width', factor: (c) => c.elbowRadius.rectInnerFactor },
@@ -22,7 +22,7 @@ function suggest(row: FormRow, config: CalcConfig): string {
   const rule = autoRule[row.kind];
   if (!rule) return '';
   const size = parseNumber(row.values[rule.sizeKey]);
-  if (size === undefined || !(size > 0)) return ''; // no valid size yet: leave the field empty, never guess
+  if (size === undefined || !Number.isFinite(size) || !(size > 0)) return ''; // no valid size yet: leave the field empty, never guess
   return String(Math.round(size * rule.factor(config) * 10) / 10);
 }
 
@@ -34,14 +34,13 @@ export function applyAutoDefaults(row: FormRow, config: CalcConfig): FormRow {
 }
 
 /**
- * Sets one field. Typing in the auto field makes it manual; clearing it hands it back to the auto value.
+ * Sets one field. Typing in the auto field (also clearing it, so it can be edited) makes it manual; only "reset" hands it back.
  * Any other field is stored as typed and the auto value follows the new size.
  */
 export function setFieldValue(row: FormRow, key: FieldKey, value: string, config: CalcConfig): FormRow {
   let next: FormRow = { ...row, values: { ...row.values, [key]: value } };
   if (autoKey(row.kind) === key) {
-    const rest = (row.manual ?? []).filter((k) => k !== key);
-    next = { ...next, manual: value.trim() === '' ? rest : [...rest, key] };
+    next = { ...next, manual: [...(row.manual ?? []).filter((k) => k !== key), key] };
   }
   return applyAutoDefaults(next, config);
 }

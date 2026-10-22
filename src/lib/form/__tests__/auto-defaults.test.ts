@@ -40,11 +40,20 @@ describe('auto defaults for elbow radius', () => {
     expect(row.values.centerRadius).toBe('300');
   });
 
-  it('clearing the field or resetting returns it to auto', () => {
+  it('clearing the field keeps it empty and manual, so it can be retyped', () => {
+    const row = setFieldValue(setFieldValue(round(), 'diameter', '250', c), 'centerRadius', '', c);
+    expect(row.values.centerRadius).toBe('');
+    expect(isAuto(row, 'centerRadius')).toBe(false);
+  });
+
+  it('ignores a non-finite size', () => {
+    expect(setFieldValue(round(), 'diameter', '9'.repeat(400), c).values.centerRadius).toBe('');
+  });
+
+  it('resetting returns it to auto', () => {
     let row = setFieldValue(setFieldValue(round(), 'diameter', '250', c), 'centerRadius', '300', c);
     row = setFieldValue(row, 'diameter', '400', c);
     expect(resetToAuto(row, 'centerRadius', c).values.centerRadius).toBe('400');
-    expect(setFieldValue(row, 'centerRadius', '', c).values.centerRadius).toBe('400');
   });
 
   it('a kind change drops the manual marks', () => {
