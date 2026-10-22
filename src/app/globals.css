@@ -59,3 +59,15 @@ body {
 .select-chevron:open {
   background-image: var(--chevron-up);
 }
+
+/* Tailwind v4 resets buttons to the default cursor; every interactive control shows the pointer. */
+button:not(:disabled),
+select:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+summary {
+  cursor: pointer;
+}
+button:disabled,
+select:disabled {
+  cursor: not-allowed;
+}
