@@ -37,7 +37,7 @@ export function Calculator() {
         <SheetList groups={calc.sheetList} />
       </div>
 
-      <footer className="text-xs text-zinc-500">{dict.footer}</footer>
+      <footer className="text-xs text-muted">{dict.footer}</footer>
     </main>
   );
 }

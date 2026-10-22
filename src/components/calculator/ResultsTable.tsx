@@ -15,7 +15,7 @@ const numCell = "px-2 text-right tabular-nums";
 function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outcome: RowOutcome | undefined }) {
   if (!outcome?.ok) {
     return (
-      <tr className="border-t border-zinc-200 text-zinc-400 dark:border-zinc-800">
+      <tr className="border-t border-line text-muted">
         <td className="py-1 pr-3">{index + 1}. {rowTitle(row)}</td>
         <td colSpan={4} className="px-2 text-right">—</td>
       </tr>
@@ -23,7 +23,7 @@ function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outco
   }
   const r = outcome.result;
   return (
-    <tr className="border-t border-zinc-200 dark:border-zinc-800">
+    <tr className="border-t border-line">
       <td className="py-1 pr-3">{index + 1}. {rowTitle(row)}</td>
       <td className={numCell}>{r.quantity}</td>
       <td className={numCell}>{fmt(r.thicknessMm, 2)}</td>
