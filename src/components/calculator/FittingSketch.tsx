@@ -123,31 +123,33 @@ function Profile({ kind }: { kind: FittingKind }) {
   const { shape, roundMain, roundSmall } = sketchSpecs[kind];
   const main = roundMain ? dict.sketch.diameter : dict.sketch.rect;
   const hasSmall = shape === "reducer" || shape === "tee" || shape === "cross";
+  // the main size is measured below and on the left, the small end or branch above and on the right, so no two dimensions share a row
+  const cy = 76;
   return (
     <>
       {roundMain ? (
         <>
-          <circle cx={150} cy={62} r={44} className={body} strokeWidth={1.6} />
-          <DimH x1={106} x2={194} y={122} label={main} />
+          <circle cx={150} cy={cy} r={44} className={body} strokeWidth={1.6} />
+          <DimH x1={106} x2={194} y={134} label={main} />
         </>
       ) : (
         <>
-          <rect x={100} y={30} width={100} height={64} className={body} strokeWidth={1.6} />
-          <DimH x1={100} x2={200} y={118} label="Ш" />
-          <DimV x={88} y1={30} y2={94} label="В" side="left" />
+          <rect x={100} y={44} width={100} height={64} className={body} strokeWidth={1.6} />
+          <DimH x1={100} x2={200} y={134} label="Ш" />
+          <DimV x={88} y1={44} y2={108} label="В" side="left" />
         </>
       )}
       {hasSmall && roundSmall && (
         <>
-          <circle cx={150} cy={62} r={roundMain ? 26 : 22} strokeDasharray="5 4" className={hidden} strokeWidth={1.4} />
-          <DimH x1={roundMain ? 124 : 128} x2={roundMain ? 176 : 172} y={150} label="д" />
+          <circle cx={150} cy={cy} r={roundMain ? 26 : 22} strokeDasharray="5 4" className={hidden} strokeWidth={1.4} />
+          <DimH x1={roundMain ? 124 : 128} x2={roundMain ? 176 : 172} y={22} label="д" above />
         </>
       )}
       {hasSmall && !roundSmall && (
         <>
-          <rect x={126} y={46} width={48} height={32} strokeDasharray="5 4" className={hidden} strokeWidth={1.4} />
-          <DimH x1={126} x2={174} y={150} label="ш" />
-          <DimV x={214} y1={46} y2={78} label="в" side="right" />
+          <rect x={126} y={60} width={48} height={32} strokeDasharray="5 4" className={hidden} strokeWidth={1.4} />
+          <DimH x1={126} x2={174} y={22} label="ш" above />
+          <DimV x={214} y1={60} y2={92} label="в" side="right" />
         </>
       )}
     </>
@@ -158,7 +160,7 @@ function Profile({ kind }: { kind: FittingKind }) {
 export function FittingSketch({ kind, view = "side" }: { kind: FittingKind; view?: SketchView }) {
   const label = `${kindTitle(kind)}: ${view === "side" ? dict.sketch.sideTitle : dict.sketch.profileTitle}`;
   return (
-    <svg viewBox="0 0 300 176" role="img" aria-label={label} className="h-auto w-full max-w-sm">
+    <svg viewBox="0 0 300 184" role="img" aria-label={label} className="h-auto w-full max-w-sm">
       {view === "side" ? <Side kind={kind} /> : <Profile kind={kind} />}
     </svg>
   );

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { defaultConfig } from "@/lib/calc/config";
 import { sketchesOpenByDefault } from "@/lib/form/sample-rows";
 import { autoKey, isAuto } from "@/lib/form/auto-defaults";
+import { fieldColumns } from "@/lib/form/layout";
 import { kindFields, kindOrder, type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
 import type { RowOutcome } from "@/lib/form/calculate";
 import { uk as dict } from "@/lib/i18n/uk";
@@ -26,6 +27,10 @@ interface Props {
 /** One fitting: kind selector, the size fields that kind needs, quantity. */
 export function FittingCard({ row, index, outcome, onKindChange, onValueChange, onReset, onPatch, onRemove }: Props) {
   const [showSketch, setShowSketch] = useState(sketchesOpenByDefault);
+  const fieldLabel = (f: (typeof kindFields)[FittingKind][number]) =>
+    `${dict.fields[f.key]}${f.optional ? ` (${dict.optional}: ${defaultConfig.reducerLengthMm})` : ""}`;
+  // the (авто) hint can sit after the label, so reserve room for it on the suggested field
+  const labels = [...kindFields[row.kind].map((f) => fieldLabel(f) + (autoKey(row.kind) === f.key ? ` (${dict.autoValue})` : "")), dict.quantity];
   return (
     <div className={cardClass}>
       <div className="mb-4 flex items-end justify-between gap-3">
@@ -41,11 +46,14 @@ export function FittingCard({ row, index, outcome, onKindChange, onValueChange, 
           {dict.removeItem}
         </button>
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      <div
+        className="grid grid-cols-2 gap-3 sm:[grid-template-columns:repeat(var(--cols),minmax(0,1fr))]"
+        style={{ "--cols": fieldColumns(labels) } as React.CSSProperties}
+      >
         {kindFields[row.kind].map((f) => (
           <TextField
             key={f.key}
-            label={`${dict.fields[f.key]}${f.optional ? ` (${dict.optional}: ${defaultConfig.reducerLengthMm})` : ""}`}
+            label={fieldLabel(f)}
             value={row.values[f.key] ?? ""}
             onChange={(v) => onValueChange(f.key, v)}
             hint={autoKey(row.kind) === f.key ? (isAuto(row, f.key) && (row.values[f.key] ?? "") !== "" ? dict.autoValue : undefined) : undefined}
