@@ -3,7 +3,7 @@ import type { FormIssue } from "@/lib/form/messages";
 import { sheetKey, type SettingsText, type ThicknessTableKey } from "@/lib/form/settings";
 import { uk as dict } from "@/lib/i18n/uk";
 import { ErrorList } from "./ErrorList";
-import { cardClass, inputClass, labelClass, mutedClass } from "./styles";
+import { cardClass, selectClass, labelClass, mutedClass } from "./styles";
 import { TextField } from "./TextField";
 
 interface Props {
@@ -21,7 +21,7 @@ export function SettingsPanel({ settings, onChange, issues }: Props) {
         <label>
           <span className={labelClass}>{dict.settings.thicknessTable}</span>
           <select
-            className={inputClass}
+            className={selectClass}
             value={settings.thicknessTable}
             onChange={(e) => onChange({ ...settings, thicknessTable: e.target.value as ThicknessTableKey })}
           >
@@ -33,7 +33,7 @@ export function SettingsPanel({ settings, onChange, issues }: Props) {
         <TextField label={dict.settings.marginPercent} value={settings.marginPercent} onChange={(marginPercent) => onChange({ ...settings, marginPercent })} />
         <label>
           <span className={labelClass}>{dict.settings.sheet}</span>
-          <select className={inputClass} value={settings.sheet} onChange={(e) => onChange({ ...settings, sheet: e.target.value })}>
+          <select className={selectClass} value={settings.sheet} onChange={(e) => onChange({ ...settings, sheet: e.target.value })}>
             {defaultConfig.order.sheetSizes.map((s) => (
               <option key={sheetKey(s)} value={sheetKey(s)} className="bg-panel text-foreground">{s.widthMm} × {s.heightMm}</option>
             ))}

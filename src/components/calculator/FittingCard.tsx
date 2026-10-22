@@ -9,7 +9,7 @@ import { kindTitle } from "./format";
 import { FittingSketch } from "./FittingSketch";
 import { profileLegend, sketchLegend } from "./sketch-spec";
 import { ErrorList, WarningList } from "./ErrorList";
-import { buttonClass, cardClass, dangerButtonClass, inputClass, labelClass } from "./styles";
+import { buttonClass, cardClass, dangerButtonClass, selectClass, labelClass } from "./styles";
 import { TextField } from "./TextField";
 
 interface Props {
@@ -31,7 +31,7 @@ export function FittingCard({ row, index, outcome, onKindChange, onValueChange, 
       <div className="mb-4 flex items-end justify-between gap-3">
         <label className="min-w-0 flex-1 sm:max-w-sm">
           <span className={labelClass}>{index + 1}. {dict.kind}</span>
-          <select className={inputClass} value={row.kind} onChange={(e) => onKindChange(e.target.value as FittingKind)}>
+          <select className={selectClass} value={row.kind} onChange={(e) => onKindChange(e.target.value as FittingKind)}>
             {kindOrder.map((k) => (
               <option key={k} value={k} className="bg-panel text-foreground">{kindTitle(k)}</option>
             ))}

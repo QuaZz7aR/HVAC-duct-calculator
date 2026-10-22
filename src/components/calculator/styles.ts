@@ -10,3 +10,4 @@ export const primaryButtonClass =
   "rounded-md bg-accent px-3.5 py-2 text-sm font-medium text-background hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 export const dangerButtonClass =
   "rounded-md border border-red-300 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-red-500 dark:border-red-900 dark:text-red-300 dark:hover:bg-red-950";
+export const selectClass = `${inputClass} select-chevron`;
