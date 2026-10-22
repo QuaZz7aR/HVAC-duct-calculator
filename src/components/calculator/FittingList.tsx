@@ -2,6 +2,7 @@ import type { RowOutcome } from "@/lib/form/calculate";
 import type { FieldKey, FittingKind, FormRow } from "@/lib/form/fields";
 import { uk as dict } from "@/lib/i18n/uk";
 import { FittingCard } from "./FittingCard";
+import { primaryButtonClass } from "./styles";
 
 interface Props {
   rows: FormRow[];
@@ -31,7 +32,7 @@ export function FittingList({ rows, outcome, onKindChange, onValueChange, onRese
           onRemove={() => onRemove(row.id)}
         />
       ))}
-      <button type="button" className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700" onClick={onAdd}>
+      <button type="button" className={primaryButtonClass} onClick={onAdd}>
         + {dict.addItem}
       </button>
     </section>

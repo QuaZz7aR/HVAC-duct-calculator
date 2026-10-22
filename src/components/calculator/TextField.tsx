@@ -15,9 +15,9 @@ export function TextField({ label, value, onChange, inputMode = "decimal", hint,
     <label>
       <span className={labelClass}>
         {label}
-        {hint && <span className="ml-1 text-blue-600 dark:text-blue-400">({hint})</span>}
+        {hint && <span className="ml-1 text-accent">({hint})</span>}
         {action && (
-          <button type="button" className="ml-1 text-blue-600 hover:underline dark:text-blue-400" onClick={action.onClick}>
+          <button type="button" className="ml-1 text-accent underline" onClick={action.onClick}>
             {action.label}
           </button>
         )}

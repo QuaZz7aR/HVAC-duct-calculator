@@ -3,7 +3,8 @@ import { defaultConfig } from "@/lib/calc/config";
 import { calculate, type RowOutcome } from "@/lib/form/calculate";
 import { buildConfig, defaultSettings, type SettingsText } from "@/lib/form/settings";
 import { resetToAuto, setFieldValue, withKind } from "@/lib/form/auto-defaults";
-import { initialValues, newRow, type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
+import { sampleRows } from "@/lib/form/sample-rows";
+import { initialValues, kindOrder, newRow, type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
 
 /**
  * The page shows areas only; pressure losses are hidden for now (docs/decisions.md). The core still needs a flow and
@@ -20,10 +21,9 @@ const hiddenLossInputs = {
 
 /** Form state (rows, settings) and the derived calculation; the components only render and call the actions. */
 export function useCalculator() {
-  const [rows, setRows] = useState<FormRow[]>([
-    { ...newRow(1), values: { diameter: "150", length: "1000" } },
-  ]);
-  const nextId = useRef(2);
+  // beta: the page opens with one example row of every fitting kind
+  const [rows, setRows] = useState<FormRow[]>(() => sampleRows(defaultConfig));
+  const nextId = useRef(kindOrder.length + 1);
 
   const [settings, setSettings] = useState<SettingsText>(() => defaultSettings());
   const built = useMemo(() => buildConfig(settings), [settings]);

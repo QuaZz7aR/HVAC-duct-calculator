@@ -8,7 +8,7 @@ import { kindTitle } from "./format";
 import { FittingSketch } from "./FittingSketch";
 import { profileLegend, sketchLegend } from "./sketch-spec";
 import { ErrorList, WarningList } from "./ErrorList";
-import { cardClass, inputClass, labelClass } from "./styles";
+import { buttonClass, cardClass, dangerButtonClass, inputClass, labelClass } from "./styles";
 import { TextField } from "./TextField";
 
 interface Props {
@@ -24,10 +24,10 @@ interface Props {
 
 /** One fitting: kind selector, the size fields that kind needs, quantity. */
 export function FittingCard({ row, index, outcome, onKindChange, onValueChange, onReset, onPatch, onRemove }: Props) {
-  const [showSketch, setShowSketch] = useState(false);
+  const [showSketch, setShowSketch] = useState(true) // beta: sketches are open by default;
   return (
     <div className={cardClass}>
-      <div className="mb-3 flex items-end justify-between gap-3">
+      <div className="mb-4 flex items-end justify-between gap-3">
         <label className="min-w-0 flex-1 sm:max-w-sm">
           <span className={labelClass}>{index + 1}. {dict.kind}</span>
           <select className={inputClass} value={row.kind} onChange={(e) => onKindChange(e.target.value as FittingKind)}>
@@ -36,7 +36,7 @@ export function FittingCard({ row, index, outcome, onKindChange, onValueChange, 
             ))}
           </select>
         </label>
-        <button type="button" className="text-sm text-red-600 hover:underline dark:text-red-400" onClick={onRemove}>
+        <button type="button" className={dangerButtonClass} onClick={onRemove}>
           {dict.removeItem}
         </button>
       </div>
@@ -55,24 +55,24 @@ export function FittingCard({ row, index, outcome, onKindChange, onValueChange, 
       </div>
       <button
         type="button"
-        className="mt-3 text-sm text-blue-600 underline hover:text-blue-700 dark:text-blue-400"
+        className={`mt-4 ${buttonClass}`}
         aria-expanded={showSketch}
         onClick={() => setShowSketch((v) => !v)}
       >
         {showSketch ? dict.sketch.hide : dict.sketch.show}
       </button>
       {showSketch && (
-        <div className="mt-3 grid gap-4 sm:grid-cols-2">
+        <div className="mt-4 grid gap-4 rounded-md bg-background p-4 sm:grid-cols-2">
           {([["side", dict.sketch.sideTitle, sketchLegend(row.kind)], ["profile", dict.sketch.profileTitle, profileLegend(row.kind)]] as const).map(([view, title, legend]) => (
             <figure key={view} className="min-w-0">
               <FittingSketch kind={row.kind} view={view} />
-              <figcaption className="mt-1 text-sm leading-snug">
-                <strong className="block text-xs uppercase tracking-wide text-zinc-600 dark:text-zinc-400">{title}</strong>
-                <span className="text-zinc-600 dark:text-zinc-400">{legend.join("; ")}.</span>
+              <figcaption className="mt-1 text-[15px] leading-snug">
+                <strong className="block text-[13px] font-semibold uppercase tracking-wide text-muted">{title}</strong>
+                <span className="text-sm text-muted">{legend.join("; ")}.</span>
               </figcaption>
             </figure>
           ))}
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 sm:col-span-2">{dict.sketch.note}</p>
+          <p className="text-sm text-muted sm:col-span-2">{dict.sketch.note}</p>
         </div>
       )}
       {outcome && !outcome.ok && <ErrorList issues={outcome.issues} />}
