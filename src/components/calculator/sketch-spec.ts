@@ -55,3 +55,13 @@ export function sketchLegend(kind: FittingKind): string[] {
       return [main, small];
   }
 }
+
+/** Legend of the cross-section: the main size, and the dashed outline of the small end or the branch. */
+export function profileLegend(kind: FittingKind): string[] {
+  const { shape, roundMain, roundSmall } = sketchSpecs[kind];
+  const l = dict.sketch;
+  const out = [roundMain ? l.profileDiameter : l.profileRect];
+  if (shape === "reducer") out.push(l.dashedSmall, roundSmall ? l.legend.smallDiameter : l.legend.smallRect);
+  if (shape === "tee" || shape === "cross") out.push(l.dashedBranch, roundSmall ? l.legend.smallDiameter : l.legend.smallRect);
+  return out;
+}
