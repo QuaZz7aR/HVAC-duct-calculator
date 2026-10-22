@@ -26,6 +26,13 @@ export const uk = {
   kind: 'Тип',
   quantity: 'Кількість, шт',
   optional: 'необов’язково',
+  sketch: {
+    diameter: 'Д',
+    rect: 'Ш × В',
+    smallDiameter: 'д',
+    smallRect: 'ш × в',
+    note: 'Схема умовна, без масштабу. Д — діаметр, Ш × В — ширина × висота, L — довжина, R — радіус, α — кут, l — довжина врізки.',
+  },
   autoValue: 'авто',
   resetAuto: 'скинути до авто',
   kinds: {
