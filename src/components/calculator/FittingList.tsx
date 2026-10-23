@@ -1,14 +1,17 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import type { RowOutcome } from "@/lib/form/calculate";
 import type { FieldKey, FittingKind, FormRow } from "@/lib/form/fields";
-import { sketchesOpenByDefault } from "@/lib/form/sample-rows";
 import { uk as dict } from "@/lib/i18n/uk";
 import { FittingCard } from "./FittingCard";
 import { kindTitle } from "./format";
-import { buttonClass, primaryButtonClass } from "./styles";
+import { buttonClass } from "./styles";
+import type { CardView } from "./useCardView";
 
 interface Props {
   rows: FormRow[];
+  view: CardView;
+  /** the row added last: the list scrolls to it and marks it */
+  lastAddedId: number | null;
   outcome: (id: number) => RowOutcome | undefined;
   onKindChange: (id: number, kind: FittingKind) => void;
   onValueChange: (id: number, key: FieldKey, value: string) => void;
@@ -16,7 +19,6 @@ interface Props {
   onPatch: (id: number, patch: Partial<FormRow>) => void;
   onClone: (id: number) => void;
   onRemove: (id: number) => void;
-  onAdd: () => void;
 }
 
 /** Rows of one kind next to each other, kinds in the order they first appear; each row keeps its list number. */
@@ -30,31 +32,25 @@ function groupByKind(rows: FormRow[]) {
   return [...groups.entries()];
 }
 
-export function FittingList({ rows, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove, onAdd }: Props) {
-  // view state only: per card, whether its sketches are open and whether it is folded to a tile; new rows follow the defaults
-  const [sketches, setSketches] = useState<Record<number, boolean>>({});
-  const [folded, setFolded] = useState<Record<number, boolean>>({});
-  const [sketchDefault, setSketchDefault] = useState(sketchesOpenByDefault);
-  const sketchOpen = (id: number) => sketches[id] ?? sketchDefault;
-  const isFolded = (id: number) => folded[id] ?? false;
-  const allSketchesOpen = rows.every((r) => sketchOpen(r.id));
-  const allFolded = rows.length > 0 && rows.every((r) => isFolded(r.id));
+export function FittingList({ rows, view, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove, lastAddedId }: Props) {
+  const { sketchOpen, isFolded, allSketchesOpen, allFolded, setAllSketches, setAllFolded, setFoldedMany } = view;
 
-  const setAllSketches = (open: boolean) => {
-    setSketchDefault(open);
-    setSketches(Object.fromEntries(rows.map((r) => [r.id, open])));
-  };
-  const setAllFolded = (value: boolean) => setFolded(Object.fromEntries(rows.map((r) => [r.id, value])));
+  useEffect(() => {
+    if (lastAddedId === null) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.getElementById(`fitting-${lastAddedId}`)?.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
+  }, [lastAddedId]);
 
   const card = (row: FormRow, index: number) => (
     <FittingCard
       key={row.id}
       row={row}
       index={index}
+      justAdded={row.id === lastAddedId}
       showSketch={sketchOpen(row.id)}
       collapsed={isFolded(row.id)}
-      onToggleSketch={() => setSketches((s) => ({ ...s, [row.id]: !sketchOpen(row.id) }))}
-      onToggleCollapsed={() => setFolded((f) => ({ ...f, [row.id]: !isFolded(row.id) }))}
+      onToggleSketch={() => view.toggleSketch(row.id)}
+      onToggleCollapsed={() => view.toggleFolded(row.id)}
       outcome={outcome(row.id)}
       onKindChange={(k) => onKindChange(row.id, k)}
       onValueChange={(key, value) => onValueChange(row.id, key, value)}
@@ -68,9 +64,15 @@ export function FittingList({ rows, outcome, onKindChange, onValueChange, onRese
   return (
     <section aria-labelledby="items-title" className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="items-title" className="font-medium">{dict.itemsTitle}</h2>
+        <div>
+          <h2 id="items-title" className="font-medium">{dict.itemsTitle}</h2>
+          <p className="text-sm text-muted">
+            <span className="hidden lg:inline">{dict.palette.hintRail}</span>
+            <span className="lg:hidden">{dict.palette.hintBar}</span>
+          </p>
+        </div>
         {rows.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 lg:hidden">
             <button type="button" className={buttonClass} onClick={() => setAllSketches(!allSketchesOpen)}>
               {allSketchesOpen ? dict.hideAllSketches : dict.showAllSketches}
             </button>
@@ -94,7 +96,7 @@ export function FittingList({ rows, outcome, onKindChange, onValueChange, onRese
                 <button
                   type="button"
                   className={buttonClass}
-                  onClick={() => setFolded((f) => ({ ...f, ...Object.fromEntries(items.map((i) => [i.row.id, !groupFolded])) }))}
+                  onClick={() => setFoldedMany(items.map((i) => i.row.id), !groupFolded)}
                 >
                   {groupFolded ? dict.expandGroup : dict.collapseGroup}
                 </button>
@@ -104,9 +106,6 @@ export function FittingList({ rows, outcome, onKindChange, onValueChange, onRese
           );
         })}
       </div>
-      <button type="button" className={primaryButtonClass} onClick={onAdd}>
-        + {dict.addItem}
-      </button>
     </section>
   );
 }
