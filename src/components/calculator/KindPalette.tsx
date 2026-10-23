@@ -136,22 +136,38 @@ export function Sheet({ found, query, setQuery, count, onClose, onAdd }: { found
       document.body.style.overflow = prev;
     };
   }, []);
+  // the on-screen keyboard shrinks the visual viewport, not the layout one: lift the sheet's bottom edge above it
+  const [lift, setLift] = useState(0);
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const update = () => setLift(Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)));
+    update();
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
+    return () => {
+      vv.removeEventListener("resize", update);
+      vv.removeEventListener("scroll", update);
+    };
+  }, []);
   return (
     <>
       <div className="fixed inset-0 z-40 bg-black/50" aria-hidden="true" />
-      <div ref={ref} role="dialog" aria-modal="true" aria-label={dict.palette.title} className="fixed inset-x-0 bottom-0 top-16 z-50 flex flex-col gap-2 overscroll-contain rounded-t-2xl border-t border-line bg-panel px-4 pb-4 pt-3 shadow-2xl">
+      <div ref={ref} role="dialog" aria-modal="true" aria-label={dict.palette.title} className="fixed inset-x-0 bottom-0 top-16 z-50 flex flex-col gap-2 overscroll-contain rounded-t-2xl border-t border-line bg-panel px-4 pb-4 pt-3 shadow-2xl" style={{ bottom: lift }}>
         <div className="flex items-center justify-between">
           <h3 className="font-medium">{dict.palette.title}</h3>
           <button type="button" className={buttonClass} onClick={onClose}>{dict.palette.close}</button>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-          {found.length === 0 && <p className="py-4 text-sm text-muted">{dict.palette.nothingFound}</p>}
-          {found.map((g) => (
-            <div key={g.id} className="mb-2">
-              <h4 className="mb-1 mt-2 text-xs uppercase tracking-wider text-muted">{dict.kindGroups[g.id]}</h4>
-              <div className={kindListGrid}>{g.kinds.map((kind) => <KindItem key={kind} kind={kind} count={count(kind)} onPick={() => onAdd(kind)} />)}</div>
-            </div>
-          ))}
+          <div className="flex min-h-full flex-col justify-end">
+            {found.length === 0 && <p className="py-4 text-sm text-muted">{dict.palette.nothingFound}</p>}
+            {found.map((g) => (
+              <div key={g.id} className="mb-2">
+                <h4 className="mb-1 mt-2 text-xs uppercase tracking-wider text-muted">{dict.kindGroups[g.id]}</h4>
+                <div className={kindListGrid}>{g.kinds.map((kind) => <KindItem key={kind} kind={kind} count={count(kind)} onPick={() => onAdd(kind)} />)}</div>
+              </div>
+            ))}
+          </div>
         </div>
         <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={dict.palette.search} aria-label={dict.palette.search} className={inputClass} />
       </div>
