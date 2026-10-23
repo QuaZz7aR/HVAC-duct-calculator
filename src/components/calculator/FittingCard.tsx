@@ -59,7 +59,7 @@ export function FittingCard({ row, index, justAdded, showSketch, collapsed, onTo
         <h3 className="min-w-0 flex-1 text-base font-medium leading-snug">
           <span className="text-muted">{index + 1}.</span> {kindTitle(row.kind)}
         </h3>
-        <div className="flex gap-2">
+        <div className="flex max-w-full flex-wrap gap-2">
           <button type="button" className={buttonClass} onClick={onToggleCollapsed}>
             {dict.collapseCard}
           </button>
