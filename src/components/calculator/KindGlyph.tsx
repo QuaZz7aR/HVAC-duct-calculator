@@ -4,15 +4,20 @@ import { sketchSpecs } from "./sketch-spec";
 /** Small pictogram of a kind for the side panel: the shape of the part, the end drawn round or rect. Decorative. */
 export function KindGlyph({ kind, className }: { kind: FittingKind; className?: string }) {
   const { shape, roundMain } = sketchSpecs[kind];
-  const end = roundMain ? <ellipse cx={6} cy={14} rx={2.2} ry={5} /> : <rect x={4} y={9} width={4} height={10} />;
+  // ends of a straight-like part: an ellipse (round) or a plain edge (rect)
+  const end = roundMain ? <ellipse cx={6} cy={14} rx={2.2} ry={5} /> : null;
   const parts: Record<typeof shape, React.ReactNode> = {
-    straight: <><path d="M6 9h28M6 19h28" />{end}</>,
-    elbow: <path d="M6 9h14a10 10 0 0 1 10 10v7M6 19h6a2 2 0 0 0 2-2" />,
-    reducer: <><path d="M6 7l28 4v6L6 21z" />{end}</>,
-    cap: <><path d="M6 9h24v10H6M30 6v16" />{end}</>,
-    tap: <path d="M6 12h28M6 22h12M24 22h10M18 22V6M24 22V6" />,
-    tee: <path d="M6 14h28M6 24h8M20 24h14M14 24V6M20 24V6" />,
-    cross: <path d="M4 11h10V3M22 3v8h14M4 19h10v8M22 27v-8h14" />,
+    straight: <><path d="M6 9h28v10H6z" />{end}</>,
+    // bend of a duct: inner and outer wall around the centre of the bend
+    elbow: <path d="M4 15H20A3 3 0 0 0 23 12V2H33V12A13 13 0 0 1 20 25H4Z" />,
+    reducer: <><path d="M6 5l28 5v8L6 23z" />{roundMain ? <ellipse cx={6} cy={14} rx={2.5} ry={9} /> : null}</>,
+    cap: <><path d="M6 9h24v10H6z" /><path d="M30 5v18" strokeWidth={3} />{end}</>,
+    // a short collar with its mounting flange: only the stub, no main duct
+    tap: <><path d="M14 4h12v16H14z" /><path d="M10 20h20" strokeWidth={3} /></>,
+    // main run with one branch
+    tee: <path d="M4 16H15V4H25V16H36V26H4Z" />,
+    // main run with a branch on each side
+    cross: <path d="M15 2H25V10H36V18H25V26H15V18H4V10H15Z" />,
   };
   return (
     <svg viewBox="0 0 40 28" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" aria-hidden="true" className={className}>
