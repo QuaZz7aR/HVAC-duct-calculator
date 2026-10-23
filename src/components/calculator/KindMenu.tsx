@@ -16,7 +16,7 @@ export function KindMenu({ kind, onChange }: { kind: FittingKind; onChange: (kin
         ⋯
       </button>
       {open && (
-        <div className="absolute right-0 top-full z-30 mt-1 max-h-80 w-72 overflow-y-auto rounded-lg border border-line bg-panel p-1.5 shadow-xl shadow-black/30">
+        <div className="absolute right-0 top-full z-30 mt-1 max-h-80 w-80 overflow-y-auto rounded-lg border border-line bg-panel p-1.5 shadow-xl shadow-black/30">
           <p className="px-1.5 pb-1 text-xs uppercase tracking-wider text-muted">{dict.palette.changeKindTo}</p>
           {kindGroups.flatMap((g) => g.kinds).map((k) => (
             <button
