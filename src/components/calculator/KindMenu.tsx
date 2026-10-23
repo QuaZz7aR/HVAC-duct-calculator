@@ -16,8 +16,9 @@ export function KindMenu({ kind, onChange }: { kind: FittingKind; onChange: (kin
         ⋯
       </button>
       {open && (
-        <div className="absolute right-0 top-full z-30 mt-1 max-h-80 w-72 overflow-y-auto rounded-lg border border-line bg-panel p-1.5 shadow-xl shadow-black/30">
+        <div className="absolute right-0 top-full z-30 mt-1 max-h-80 w-80 overflow-y-auto rounded-lg border border-line bg-panel p-1.5 shadow-xl shadow-black/30">
           <p className="px-1.5 pb-1 text-xs uppercase tracking-wider text-muted">{dict.palette.changeKindTo}</p>
+          <div className="grid grid-cols-[auto_1fr] gap-x-3">
           {kindGroups.flatMap((g) => g.kinds).map((k) => (
             <button
               key={k}
@@ -27,12 +28,13 @@ export function KindMenu({ kind, onChange }: { kind: FittingKind; onChange: (kin
                 setOpen(false);
                 onChange(k);
               }}
-              className="grid w-full grid-cols-[4.5rem_1fr] gap-2 rounded-md px-1.5 py-1.5 text-left text-sm hover:bg-accent-soft disabled:opacity-50 disabled:hover:bg-transparent"
+              className="col-span-2 grid w-full grid-cols-subgrid rounded-md px-1.5 py-1.5 text-left text-sm hover:bg-accent-soft disabled:opacity-50 disabled:hover:bg-transparent"
             >
-              <span className="font-mono text-xs text-accent">{dict.kinds[k].designation}</span>
+              <span className="font-mono text-sm text-accent">{dict.kinds[k].designation}</span>
               <span className="leading-tight">{dict.kinds[k].name}</span>
             </button>
           ))}
+          </div>
         </div>
       )}
     </div>

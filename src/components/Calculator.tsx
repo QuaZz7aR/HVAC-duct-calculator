@@ -17,7 +17,7 @@ export function Calculator() {
   const view = useCardView(rows);
 
   return (
-    <div className="mx-auto w-full max-w-7xl flex-1 gap-6 px-4 py-8 lg:grid lg:grid-cols-[11rem_minmax(0,1fr)]">
+    <div className="mx-auto w-full max-w-7xl flex-1 gap-6 px-4 py-8 lg:grid lg:grid-cols-[15rem_minmax(0,1fr)]">
       <KindRail count={countOf} onAdd={addRow} view={view} hasRows={rows.length > 0} />
       <main className="min-w-0 space-y-6">
         <header>
