@@ -16,3 +16,10 @@ export function fieldColumns(labels: string[]): number {
   const rows = Math.ceil(n / perRow);
   return Math.ceil(n / rows);
 }
+
+/** Longest label text (with its note or action) that still fits on one line in half a phone card; a longer one gets the full width so it does not push its neighbour down. */
+const halfCardChars = 17;
+
+export function isLongLabel(text: string): boolean {
+  return text.length > halfCardChars;
+}

@@ -83,3 +83,15 @@ select:disabled {
 @media (prefers-reduced-motion: reduce) {
   .flash-card { animation: none; }
 }
+
+/* Phone "+" menu: the round kind buttons fly out from the "+" button along two arcs. --dx / --dy is the final offset. */
+@keyframes fan-in {
+  from { transform: translate(0, 0) scale(0.4); opacity: 0; }
+  to { transform: translate(var(--dx), var(--dy)); opacity: 1; }
+}
+.fan-item {
+  animation: fan-in 0.18s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fan-item { animation: none; transform: translate(var(--dx), var(--dy)); }
+}

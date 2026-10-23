@@ -1,8 +1,10 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FittingKind } from "@/lib/form/fields";
-import { kindGroups, quickKinds, searchKinds, type KindGroupId } from "@/lib/form/kind-groups";
+import { kindGroups, searchKinds, type KindGroupId } from "@/lib/form/kind-groups";
 import { uk as dict } from "@/lib/i18n/uk";
 import { KindGlyph } from "./KindGlyph";
+import { scrollToTop } from "./scrollToTop";
+import { FoldIcon, SketchesIcon, UpIcon } from "./ViewIcons";
 import { buttonClass, inputClass } from "./styles";
 import type { CardView } from "./useCardView";
 import { useDismiss } from "./useDismiss";
@@ -83,21 +85,21 @@ export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardVi
           <div className={railBox}>
             <p className="px-0.5 pt-0.5 text-center text-xs uppercase tracking-wider text-muted">{dict.palette.viewTitle}</p>
             <button type="button" onClick={() => view.setAllSketches(!view.allSketchesOpen)} className={railAction}>
-              <svg viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-5 w-8 text-accent">
-                <path d="M1.5 8S5 2 12 2s10.5 6 10.5 6S19 14 12 14 1.5 8 1.5 8z" />
-                <circle cx="12" cy="8" r="2.5" />
-                {view.allSketchesOpen && <path d="M3 15L21 1" />}
-              </svg>
+              <SketchesIcon crossed={view.allSketchesOpen} className="h-5 w-8 text-accent" />
               {view.allSketchesOpen ? dict.hideAllSketches : dict.showAllSketches}
             </button>
             <button type="button" onClick={() => view.setAllFolded(!view.allFolded)} className={railAction}>
-              <svg viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-5 w-8 text-accent">
-                {view.allFolded ? <path d="M6 6l6-4 6 4M6 10l6 4 6-4" /> : <path d="M6 2l6 4 6-4M6 14l6-4 6 4" />}
-              </svg>
+              <FoldIcon folded={view.allFolded} className="h-5 w-8 text-accent" />
               {view.allFolded ? dict.palette.expandCards : dict.palette.collapseCards}
             </button>
           </div>
         )}
+        <div className={railBox}>
+          <button type="button" onClick={scrollToTop} className={railAction}>
+            <UpIcon className="h-5 w-8 text-accent" />
+            {dict.palette.toTop}
+          </button>
+        </div>
       </div>
       {group && (
         <div style={{ top }} className="absolute left-full z-30 ml-2 w-max min-w-64 max-w-[28rem] rounded-lg border border-line bg-panel p-2 shadow-xl shadow-black/30">
@@ -122,54 +124,79 @@ export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardVi
   );
 }
 
-/** Phone: a sticky row of quick buttons and "all kinds", which opens a bottom sheet with search. */
-export function KindQuickBar({ count, onAdd }: Props) {
-  const [sheet, setSheet] = useState(false);
-  const [query, setQuery] = useState("");
-  const close = () => {
-    setSheet(false);
-    setQuery("");
-  };
-  const found = searchKinds(query);
-  return (
-    <div className="sticky top-0 z-20 -mx-4 border-b border-line bg-panel lg:hidden">
-      <div className="flex gap-1.5 overflow-x-auto px-4 py-2" role="toolbar" aria-label={dict.palette.title}>
-        {quickKinds.map((kind) => (
-          <button key={kind} type="button" onClick={() => onAdd(kind)} title={dict.kinds[kind].name} className="flex-none whitespace-nowrap rounded-full border border-line bg-background px-3 py-1 text-sm hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent">
-            <span className="mr-1 font-mono text-accent">+</span>
-            {dict.kinds[kind].designation}
-          </button>
-        ))}
-        <button type="button" onClick={() => setSheet(true)} aria-haspopup="dialog" className="flex-none whitespace-nowrap rounded-full border border-accent bg-accent-soft px-3 py-1 text-sm text-accent focus-visible:outline-2 focus-visible:outline-accent">
-          {dict.palette.allKinds}
-        </button>
-      </div>
-      {sheet && <Sheet found={found} query={query} setQuery={setQuery} count={count} onClose={close} onAdd={(k) => { onAdd(k); close(); }} />}
-    </div>
-  );
-}
-
-function Sheet({ found, query, setQuery, count, onClose, onAdd }: { found: ReturnType<typeof searchKinds>; query: string; setQuery: (q: string) => void; count: Props["count"]; onClose: () => void; onAdd: (k: FittingKind) => void }) {
+/** Phone: a bottom sheet with every kind and, at the bottom within thumb reach, a search (not focused on open, so the keyboard stays down). */
+export function Sheet({ found, query, setQuery, count, onClose, onAdd }: { found: ReturnType<typeof searchKinds>; query: string; setQuery: (q: string) => void; count: Props["count"]; onClose: () => void; onAdd: (k: FittingKind) => void }) {
   const ref = useRef<HTMLDivElement>(null);
   useDismiss(ref, true, onClose);
+  // The page behind must not scroll while the sheet is open. iOS ignores overflow:hidden on the body and chains touches from a
+  // list that does not scroll (few results) or that is at its end, so touches that would move the page are cancelled here.
+  const listRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const dialog = ref.current;
+    let startY = 0;
+    const onStart = (e: TouchEvent) => {
+      startY = e.touches[0].clientY;
+    };
+    const onMove = (e: TouchEvent) => {
+      const list = listRef.current;
+      if (!list || !(e.target instanceof Node) || !list.contains(e.target)) return e.preventDefault();
+      const dy = e.touches[0].clientY - startY;
+      const atTop = list.scrollTop <= 0;
+      const atBottom = list.scrollTop + list.clientHeight >= list.scrollHeight - 1;
+      if (list.scrollHeight <= list.clientHeight || (dy > 0 && atTop) || (dy < 0 && atBottom)) e.preventDefault();
+    };
+    dialog?.addEventListener("touchstart", onStart, { passive: true });
+    dialog?.addEventListener("touchmove", onMove, { passive: false });
+    return () => {
+      document.body.style.overflow = prev;
+      dialog?.removeEventListener("touchstart", onStart);
+      dialog?.removeEventListener("touchmove", onMove);
+    };
+  }, []);
+  // The on-screen keyboard shrinks the visual viewport, not the layout one, and iOS pans the visual viewport over the page:
+  // while the keyboard is up the sheet is fitted to exactly what is visible (top and bottom), so its list can always be scrolled.
+  const [fit, setFit] = useState<{ top: number; height: number } | null>(null);
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const update = () => {
+      const keyboard = window.innerHeight - vv.height > 120;
+      if (!keyboard) return setFit(null);
+      const top = Math.round(vv.offsetTop) + 8;
+      setFit({ top, height: Math.max(160, Math.round(vv.offsetTop + vv.height) - top) });
+    };
+    update();
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
+    return () => {
+      vv.removeEventListener("resize", update);
+      vv.removeEventListener("scroll", update);
+    };
+  }, []);
   return (
     <>
       <div className="fixed inset-0 z-40 bg-black/50" aria-hidden="true" />
-      <div ref={ref} role="dialog" aria-modal="true" aria-label={dict.palette.title} className="fixed inset-x-0 bottom-0 top-16 z-50 flex flex-col gap-2 rounded-t-2xl border-t border-line bg-panel px-4 pb-4 pt-3 shadow-2xl">
+      <div ref={ref} role="dialog" aria-modal="true" aria-label={dict.palette.title} className="fixed inset-x-0 bottom-0 top-16 z-50 flex flex-col gap-2 overscroll-contain rounded-t-2xl border-t border-line bg-panel px-4 pb-4 pt-3 shadow-2xl" style={fit ? { top: fit.top, height: fit.height, bottom: "auto" } : undefined}>
         <div className="flex items-center justify-between">
           <h3 className="font-medium">{dict.palette.title}</h3>
           <button type="button" className={buttonClass} onClick={onClose}>{dict.palette.close}</button>
         </div>
-        <input type="search" autoFocus value={query} onChange={(e) => setQuery(e.target.value)} placeholder={dict.palette.search} aria-label={dict.palette.search} className={inputClass} />
-        <div className="min-h-0 flex-1 overflow-y-auto">
-          {found.length === 0 && <p className="py-4 text-sm text-muted">{dict.palette.nothingFound}</p>}
-          {found.map((g) => (
-            <div key={g.id} className="mb-2">
-              <h4 className="mb-1 mt-2 text-xs uppercase tracking-wider text-muted">{dict.kindGroups[g.id]}</h4>
-              <div className={kindListGrid}>{g.kinds.map((kind) => <KindItem key={kind} kind={kind} count={count(kind)} onPick={() => onAdd(kind)} />)}</div>
-            </div>
-          ))}
+        <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <div className="flex min-h-full flex-col">
+            {/* a spacer, not justify-end: a short list sits low, a long one still scrolls up to its first item */}
+            <div className="flex-1" aria-hidden="true" />
+            {found.length === 0 && <p className="py-4 text-sm text-muted">{dict.palette.nothingFound}</p>}
+            {found.map((g) => (
+              <div key={g.id} className="mb-2">
+                <h4 className="mb-1 mt-2 text-xs uppercase tracking-wider text-muted">{dict.kindGroups[g.id]}</h4>
+                <div className={kindListGrid}>{g.kinds.map((kind) => <KindItem key={kind} kind={kind} count={count(kind)} onPick={() => onAdd(kind)} />)}</div>
+              </div>
+            ))}
+          </div>
         </div>
+        <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={dict.palette.search} aria-label={dict.palette.search} className={inputClass} />
       </div>
     </>
   );
