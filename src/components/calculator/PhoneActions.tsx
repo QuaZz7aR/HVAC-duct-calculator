@@ -9,12 +9,13 @@ import { useDismiss } from "./useDismiss";
 import { FoldIcon, SketchesIcon, UpIcon } from "./ViewIcons";
 
 const round =
-  "grid h-11 w-11 place-items-center rounded-full border border-line bg-panel text-accent shadow-lg shadow-black/30 hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
+  "grid h-12 w-12 place-items-center rounded-full border border-line bg-panel text-accent shadow-lg shadow-black/30 hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
 
-/** Where the buttons of the "+" menu sit: two arcs around the "+" button, angle 0 = straight left, 90 = straight up; the outer arc reaches the middle of a phone screen. Items fill the inner arc first. */
+/** Where the buttons of the "+" menu sit: three arcs around the "+" button, angle 0 = straight left, 90 = straight up. Items are 48 px round buttons, at least ~60 px apart centre to centre, so a thumb does not hit a neighbour. Items fill the inner arc first. */
 const arcs = [
-  { radius: 88, angles: [15, 45, 75] },
-  { radius: 158, angles: [0, 18, 36, 54, 72, 90] },
+  { radius: 72, angles: [20, 70] },
+  { radius: 135, angles: [0, 45, 90] },
+  { radius: 198, angles: [15, 40, 65, 90] },
 ];
 const fanSlots = arcs.flatMap(({ radius, angles }) =>
   angles.map((deg) => ({ dx: -Math.round(radius * Math.cos((deg * Math.PI) / 180)), dy: -Math.round(radius * Math.sin((deg * Math.PI) / 180)) })),
@@ -28,7 +29,7 @@ interface Props {
   onAdd: (kind: FittingKind) => void;
 }
 
-/** Phone: a column of small round buttons at the right edge, within reach of a thumb. Closed: the two view toggles, "to top" after a short scroll down, and "+". Opened by "+": the quick kinds and "..." (the sheet with every kind and a search) fan out along two arcs. The column sits a quarter of the screen above the bottom edge. */
+/** Phone: a column of small round buttons at the right edge, within reach of a thumb. Closed: the two view toggles, "to top" after a short scroll down, and "+". Opened by "+": the quick kinds and "..." (the sheet with every kind and a search) fan out along three arcs. The column sits 15 % of the screen height above the bottom edge. */
 export function PhoneActions({ view, hasRows, count, onAdd }: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -59,7 +60,7 @@ export function PhoneActions({ view, hasRows, count, onAdd }: Props) {
       <div
         ref={ref}
         className="fixed z-30 flex flex-col gap-2 lg:hidden"
-        style={{ right: "max(1rem, env(safe-area-inset-right, 0px))", bottom: "max(1rem, calc(env(safe-area-inset-bottom, 0px) + 25svh))" }}
+        style={{ right: "max(1rem, env(safe-area-inset-right, 0px))", bottom: "max(1rem, calc(env(safe-area-inset-bottom, 0px) + 15svh))" }}
       >
         {!open && hasRows && (
           <>
@@ -76,7 +77,7 @@ export function PhoneActions({ view, hasRows, count, onAdd }: Props) {
             <UpIcon className="h-5 w-7" />
           </button>
         )}
-        <div className="relative h-11 w-11 self-end">
+        <div className="relative h-12 w-12 self-end">
           {open && (
             <div role="toolbar" aria-label={dict.palette.title}>
               {items.map((item, i) => (
@@ -87,7 +88,7 @@ export function PhoneActions({ view, hasRows, count, onAdd }: Props) {
                   aria-label={item.label}
                   title={item.label}
                   aria-haspopup={item.kind ? undefined : "dialog"}
-                  className={`${round} fan-item absolute left-0 top-0 font-mono text-[13px] font-semibold`}
+                  className={`${round} fan-item absolute left-0 top-0 font-mono text-sm font-semibold`}
                   style={{ "--dx": `${fanSlots[i].dx}px`, "--dy": `${fanSlots[i].dy}px` } as CSSProperties}
                 >
                   {item.text}
@@ -101,7 +102,7 @@ export function PhoneActions({ view, hasRows, count, onAdd }: Props) {
             aria-expanded={open}
             aria-label={open ? dict.palette.closeMenu : dict.palette.addButton}
             title={open ? dict.palette.closeMenu : dict.palette.addButton}
-            className="relative grid h-11 w-11 place-items-center rounded-full bg-accent text-2xl font-light leading-none text-background shadow-lg shadow-black/30 focus-visible:outline-2 focus-visible:outline-accent"
+            className="relative grid h-12 w-12 place-items-center rounded-full bg-accent text-2xl font-light leading-none text-background shadow-lg shadow-black/30 focus-visible:outline-2 focus-visible:outline-accent"
           >
             {open ? "×" : "+"}
           </button>
