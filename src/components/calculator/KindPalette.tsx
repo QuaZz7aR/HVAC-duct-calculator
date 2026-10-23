@@ -41,9 +41,6 @@ function KindItem({ kind, count, onPick }: { kind: FittingKind; count: number; o
 
 const railBox = "flex flex-col gap-1 rounded-lg border border-line bg-panel p-1.5";
 
-const barAction =
-  "flex items-center gap-1.5 rounded-md border border-line bg-background px-2 py-1.5 text-left text-[13px] leading-tight hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
-
 const railAction =
   "grid grid-cols-[auto_1fr] items-center gap-2 rounded-md border border-line px-2.5 py-2 text-left text-sm leading-tight hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
 
@@ -128,7 +125,7 @@ export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardVi
 }
 
 /** Phone: a sticky row of quick buttons and "all kinds", which opens a bottom sheet with search. */
-export function KindQuickBar({ count, onAdd, view, hasRows }: Props & { view: CardView; hasRows: boolean }) {
+export function KindQuickBar({ count, onAdd }: Props) {
   const [sheet, setSheet] = useState(false);
   const [query, setQuery] = useState("");
   const close = () => {
@@ -149,18 +146,6 @@ export function KindQuickBar({ count, onAdd, view, hasRows }: Props & { view: Ca
           {dict.palette.allKinds}
         </button>
       </div>
-      {hasRows && (
-        <div className="grid grid-cols-2 gap-1.5 border-t border-line px-4 py-1.5">
-          <button type="button" onClick={() => view.setAllSketches(!view.allSketchesOpen)} className={barAction}>
-            <SketchesIcon crossed={view.allSketchesOpen} className="h-4 w-5 flex-none text-accent" />
-            {view.allSketchesOpen ? dict.hideAllSketches : dict.showAllSketches}
-          </button>
-          <button type="button" onClick={() => view.setAllFolded(!view.allFolded)} className={barAction}>
-            <FoldIcon folded={view.allFolded} className="h-4 w-5 flex-none text-accent" />
-            {view.allFolded ? dict.palette.expandCards : dict.palette.collapseCards}
-          </button>
-        </div>
-      )}
       {sheet && <Sheet found={found} query={query} setQuery={setQuery} count={count} onClose={close} onAdd={(k) => { onAdd(k); close(); }} />}
     </div>
   );

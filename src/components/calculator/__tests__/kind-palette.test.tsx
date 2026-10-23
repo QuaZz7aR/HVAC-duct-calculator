@@ -4,7 +4,7 @@ import { kindOrder } from "@/lib/form/fields";
 import { uk as dict } from "@/lib/i18n/uk";
 import { KindGlyph } from "../KindGlyph";
 import { KindMenu } from "../KindMenu";
-import { ScrollTopButton } from "../ScrollTopButton";
+import { PhoneActions } from "../PhoneActions";
 import { KindQuickBar, KindRail } from "../KindPalette";
 import type { CardView } from "../useCardView";
 
@@ -25,12 +25,15 @@ describe("kind palette", () => {
     expect(rail).toContain(dict.palette.collapseCards);
     expect(rail).toContain(dict.palette.toTop);
     expect(renderToStaticMarkup(<KindRail count={() => 0} onAdd={() => {}} view={view} hasRows={false} />)).not.toContain(dict.hideAllSketches);
-    const bar = renderToStaticMarkup(<KindQuickBar count={() => 0} onAdd={() => {}} view={view} hasRows />);
+    const bar = renderToStaticMarkup(<KindQuickBar count={() => 0} onAdd={() => {}} />);
     expect(bar).toContain(dict.palette.allKinds);
     expect(bar).toContain(dict.kinds.roundStraight.designation);
-    expect(bar).toContain(dict.hideAllSketches);
-    expect(bar).toContain(dict.palette.collapseCards);
-    expect(renderToStaticMarkup(<ScrollTopButton />)).toBe("");
+    expect(bar).not.toContain(dict.hideAllSketches);
+    const phone = renderToStaticMarkup(<PhoneActions view={view} hasRows />);
+    expect(phone).toContain(dict.hideAllSketches);
+    expect(phone).toContain(dict.palette.collapseCards);
+    expect(phone).not.toContain(dict.palette.toTop);
+    expect(renderToStaticMarkup(<PhoneActions view={view} hasRows={false} />)).toBe("");
   });
 
   it("keeps the kind menu closed until opened", () => {

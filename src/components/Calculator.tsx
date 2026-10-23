@@ -8,7 +8,7 @@ import { SheetList } from "./calculator/SheetList";
 import { KindQuickBar, KindRail } from "./calculator/KindPalette";
 import { mutedClass } from "./calculator/styles";
 import { Totals } from "./calculator/Totals";
-import { ScrollTopButton } from "./calculator/ScrollTopButton";
+import { PhoneActions } from "./calculator/PhoneActions";
 import { useCalculator } from "./calculator/useCalculator";
 import { useCardView } from "./calculator/useCardView";
 
@@ -27,7 +27,7 @@ export function Calculator() {
         </header>
 
         <SettingsPanel settings={settings} onChange={setSettings} issues={settingsIssues} />
-        <KindQuickBar count={countOf} onAdd={addRow} view={view} hasRows={rows.length > 0} />
+        <KindQuickBar count={countOf} onAdd={addRow} />
         <FittingList
           rows={rows}
           view={view}
@@ -49,7 +49,7 @@ export function Calculator() {
 
         <footer className="text-xs text-muted">{dict.footer}</footer>
       </main>
-      <ScrollTopButton />
+      <PhoneActions view={view} hasRows={rows.length > 0} />
     </div>
   );
 }
