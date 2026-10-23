@@ -11,11 +11,10 @@ import { FoldIcon, SketchesIcon, UpIcon } from "./ViewIcons";
 const round =
   "grid h-12 w-12 place-items-center rounded-full border border-line bg-panel text-accent shadow-lg shadow-black/30 hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
 
-/** Where the buttons of the "+" menu sit: three arcs around the "+" button, angle 0 = straight left, 90 = straight up. Items are 48 px round buttons, at least ~68 px apart centre to centre, every arc symmetric about the 45 degree line, so a thumb does not hit a neighbour. Items fill the inner arc first. */
+/** Where the buttons of the "+" menu sit: a fan of two arcs around the "+" button, angle 0 = straight left, 90 = straight up. Each arc has an even angular step and both end on the horizontal and vertical rays; buttons are 48 px, at least ~60 px apart centre to centre, so a thumb does not hit a neighbour. Items fill the inner arc first. */
 const arcs = [
-  { radius: 80, angles: [18, 72] },
-  { radius: 145, angles: [0, 45, 90] },
-  { radius: 210, angles: [7.5, 32.5, 57.5, 82.5] },
+  { radius: 120, angles: [0, 30, 60, 90] },
+  { radius: 200, angles: [0, 22.5, 45, 67.5, 90] },
 ];
 const fanSlots = arcs.flatMap(({ radius, angles }) =>
   angles.map((deg) => ({ dx: -Math.round(radius * Math.cos((deg * Math.PI) / 180)), dy: -Math.round(radius * Math.sin((deg * Math.PI) / 180)) })),
@@ -29,7 +28,7 @@ interface Props {
   onAdd: (kind: FittingKind) => void;
 }
 
-/** Phone: a column of small round buttons at the right edge, within reach of a thumb. Closed: the two view toggles, "to top" after a short scroll down, and "+". Opened by "+": the quick kinds and "..." (the sheet with every kind and a search) fan out along three arcs. The column sits 15 % of the screen height above the bottom edge. */
+/** Phone: a column of small round buttons at the right edge, within reach of a thumb. Closed: the two view toggles, "to top" after a short scroll down, and "+". Opened by "+": the quick kinds and "..." (the sheet with every kind and a search) fan out along two arcs. The column sits 15 % of the screen height above the bottom edge. */
 export function PhoneActions({ view, hasRows, count, onAdd }: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
