@@ -20,9 +20,9 @@ describe("kind palette", () => {
   it("shows a rail button per group and quick buttons with the all-kinds entry", () => {
     const rail = renderToStaticMarkup(<KindRail count={() => 0} onAdd={() => {}} view={view} hasRows />);
     for (const name of Object.values(dict.kindGroups)) expect(rail).toContain(name);
-    expect(rail).toContain(dict.palette.sketches);
-    expect(rail).toContain(dict.palette.collapseShort);
-    expect(renderToStaticMarkup(<KindRail count={() => 0} onAdd={() => {}} view={view} hasRows={false} />)).not.toContain(dict.palette.sketches);
+    expect(rail).toContain(dict.palette.hideSketches);
+    expect(rail).toContain(dict.collapseAll);
+    expect(renderToStaticMarkup(<KindRail count={() => 0} onAdd={() => {}} view={view} hasRows={false} />)).not.toContain(dict.palette.hideSketches);
     const bar = renderToStaticMarkup(<KindQuickBar count={() => 0} onAdd={() => {}} />);
     expect(bar).toContain(dict.palette.allKinds);
     expect(bar).toContain(dict.kinds.roundStraight.designation);

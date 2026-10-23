@@ -34,8 +34,8 @@ function KindItem({ kind, count, onPick }: { kind: FittingKind; count: number; o
   );
 }
 
-const railToggle = (on: boolean) =>
-  `rounded-md border px-0.5 py-1.5 text-center text-[11px] leading-tight hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent ${on ? "border-accent bg-accent-soft text-foreground" : "border-line text-muted"}`;
+const railAction =
+  "grid justify-items-center gap-0.5 rounded-md border border-line px-0.5 py-1.5 text-center text-[11px] leading-tight hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
 
 /** Desktop: a narrow rail of the kind groups, always in view; a group opens a list of its kinds beside the rail. */
 export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardView; hasRows: boolean }) {
@@ -72,11 +72,20 @@ export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardVi
         ))}
         {hasRows && (
           <div className="mt-1 grid gap-1 border-t border-line pt-2">
-            <button type="button" aria-pressed={view.allSketchesOpen} title={view.allSketchesOpen ? dict.hideAllSketches : dict.showAllSketches} onClick={() => view.setAllSketches(!view.allSketchesOpen)} className={railToggle(view.allSketchesOpen)}>
-              {dict.palette.sketches}
+            <p className="text-center text-[11px] uppercase tracking-wider text-muted">{dict.palette.viewTitle}</p>
+            <button type="button" onClick={() => view.setAllSketches(!view.allSketchesOpen)} className={railAction}>
+              <svg viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-4 w-6 text-accent">
+                <rect x="2" y="3" width="14" height="8" rx="1" />
+                <path d="M2 14h14M2 12.5v3M16 12.5v3" />
+                {view.allSketchesOpen && <path d="M3 22L21 2" transform="translate(0 -3)" />}
+              </svg>
+              {view.allSketchesOpen ? dict.palette.hideSketches : dict.palette.showSketches}
             </button>
-            <button type="button" aria-pressed={view.allFolded} title={view.allFolded ? dict.expandAll : dict.collapseAll} onClick={() => view.setAllFolded(!view.allFolded)} className={railToggle(view.allFolded)}>
-              {view.allFolded ? dict.palette.expandShort : dict.palette.collapseShort}
+            <button type="button" onClick={() => view.setAllFolded(!view.allFolded)} className={railAction}>
+              <svg viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-4 w-6 text-accent">
+                {view.allFolded ? <path d="M6 2l6 5 6-5M6 9l6 5 6-5" /> : <path d="M6 6l6-5 6 5M6 14l6-5 6 5" />}
+              </svg>
+              {view.allFolded ? dict.expandAll : dict.collapseAll}
             </button>
           </div>
         )}

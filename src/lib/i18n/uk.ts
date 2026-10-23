@@ -24,9 +24,9 @@ export const uk = {
   addItem: 'Додати деталь',
   palette: {
     title: 'Додати деталь',
-    sketches: 'Схеми',
-    collapseShort: 'Згорнути',
-    expandShort: 'Розгорнути',
+    viewTitle: 'Вигляд',
+    showSketches: 'Показати схеми',
+    hideSketches: 'Сховати схеми',
     hintRail: 'Щоб додати деталь, оберіть її тип у панелі зліва.',
     hintBar: 'Щоб додати деталь, натисніть кнопку з типом над списком.',
     close: 'Закрити',
