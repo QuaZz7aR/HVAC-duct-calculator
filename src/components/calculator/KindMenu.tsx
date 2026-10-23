@@ -20,8 +20,6 @@ export function KindMenu({ kind, onChange }: { kind: FittingKind; onChange: (kin
     const edge = 8;
     const width = document.documentElement.clientWidth;
     setShift(left < edge ? edge - left : right > width - edge ? width - edge - right : 0);
-    // a tall menu opening near the bottom of the screen is brought into view
-    menu.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }, [open]);
   return (
     <div ref={ref} className="relative">
@@ -29,13 +27,13 @@ export function KindMenu({ kind, onChange }: { kind: FittingKind; onChange: (kin
         ⋯
       </button>
       {open && (
-        <div ref={menuRef} style={{ transform: `translateX(${shift}px)` }} className="absolute right-0 top-full z-40 mt-1 max-h-[calc(100svh-6rem)] w-[calc(100vw-1rem)] overflow-y-auto rounded-lg border border-line bg-panel p-2 shadow-xl shadow-black/30 sm:max-h-none sm:w-[44rem] sm:overflow-visible sm:p-3 lg:w-[60rem]">
+        <div ref={menuRef} style={{ transform: `translateX(${shift}px)` }} className="absolute right-0 top-full z-30 mt-1 max-h-80 w-80 max-w-[calc(100vw-1rem)] overflow-y-auto rounded-lg border border-line bg-panel p-1.5 shadow-xl shadow-black/30 sm:max-h-none sm:w-[44rem] sm:overflow-visible sm:p-3 lg:w-[60rem]">
           <p className="px-1.5 pb-1 text-xs uppercase tracking-wider text-muted sm:pb-2">{dict.palette.changeKindTo}</p>
-          {/* the groups flow into columns (2, 2, 3 by width) so the list does not scroll; on a phone a button stacks the designation over the name */}
-          <div className="columns-2 gap-x-3 sm:gap-x-6 lg:columns-3">
+          {/* phone: one list, one designation column; desktop: the groups flow into columns, no scrolling */}
+          <div className="grid grid-cols-[auto_1fr] gap-x-3 sm:block sm:columns-2 sm:gap-x-6 lg:columns-3">
             {kindGroups.map((g) => (
-              <div key={g.id} className="mb-3 grid break-inside-avoid grid-cols-1 sm:grid-cols-[auto_1fr] sm:gap-x-3">
-                <h4 className="px-1.5 pb-0.5 text-xs uppercase tracking-wider text-muted sm:col-span-2">{dict.kindGroups[g.id]}</h4>
+              <div key={g.id} className="contents sm:mb-3 sm:grid sm:break-inside-avoid sm:grid-cols-[auto_1fr] sm:gap-x-3">
+                <h4 className="hidden px-1.5 pb-0.5 text-xs uppercase tracking-wider text-muted sm:col-span-2 sm:block">{dict.kindGroups[g.id]}</h4>
                 {g.kinds.map((k) => (
                   <button
                     key={k}
@@ -45,9 +43,9 @@ export function KindMenu({ kind, onChange }: { kind: FittingKind; onChange: (kin
                       setOpen(false);
                       onChange(k);
                     }}
-                    className="flex w-full flex-col rounded-md px-1.5 py-1.5 text-left text-sm hover:bg-accent-soft disabled:opacity-50 disabled:hover:bg-transparent sm:col-span-2 sm:grid sm:grid-cols-subgrid"
+                    className="col-span-2 grid w-full grid-cols-subgrid rounded-md px-1.5 py-1.5 text-left text-sm hover:bg-accent-soft disabled:opacity-50 disabled:hover:bg-transparent"
                   >
-                    <span className="font-mono text-xs text-accent sm:text-sm">{dict.kinds[k].designation}</span>
+                    <span className="font-mono text-sm text-accent">{dict.kinds[k].designation}</span>
                     <span className="leading-tight">{dict.kinds[k].name}</span>
                   </button>
                 ))}
