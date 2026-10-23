@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import type { FittingKind } from "@/lib/form/fields";
-import { kindGroups, quickKinds, searchKinds, type KindGroupId } from "@/lib/form/kind-groups";
+import { kindGroups, searchKinds, type KindGroupId } from "@/lib/form/kind-groups";
 import { uk as dict } from "@/lib/i18n/uk";
 import { KindGlyph } from "./KindGlyph";
 import { scrollToTop } from "./scrollToTop";
@@ -124,34 +124,8 @@ export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardVi
   );
 }
 
-/** Phone: a sticky row of quick buttons and "all kinds", which opens a bottom sheet with search. */
-export function KindQuickBar({ count, onAdd }: Props) {
-  const [sheet, setSheet] = useState(false);
-  const [query, setQuery] = useState("");
-  const close = () => {
-    setSheet(false);
-    setQuery("");
-  };
-  const found = searchKinds(query);
-  return (
-    <div className="sticky top-0 z-20 -mx-4 border-b border-line bg-panel lg:hidden">
-      <div className="flex gap-1.5 overflow-x-auto px-4 py-2" role="toolbar" aria-label={dict.palette.title}>
-        {quickKinds.map((kind) => (
-          <button key={kind} type="button" onClick={() => onAdd(kind)} title={dict.kinds[kind].name} className="flex-none whitespace-nowrap rounded-full border border-line bg-background px-3 py-1 text-sm hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent">
-            <span className="mr-1 font-mono text-accent">+</span>
-            {dict.kinds[kind].designation}
-          </button>
-        ))}
-        <button type="button" onClick={() => setSheet(true)} aria-haspopup="dialog" className="flex-none whitespace-nowrap rounded-full border border-accent bg-accent-soft px-3 py-1 text-sm text-accent focus-visible:outline-2 focus-visible:outline-accent">
-          {dict.palette.allKinds}
-        </button>
-      </div>
-      {sheet && <Sheet found={found} query={query} setQuery={setQuery} count={count} onClose={close} onAdd={(k) => { onAdd(k); close(); }} />}
-    </div>
-  );
-}
-
-function Sheet({ found, query, setQuery, count, onClose, onAdd }: { found: ReturnType<typeof searchKinds>; query: string; setQuery: (q: string) => void; count: Props["count"]; onClose: () => void; onAdd: (k: FittingKind) => void }) {
+/** Phone: a bottom sheet with every kind and a search. */
+export function Sheet({ found, query, setQuery, count, onClose, onAdd }: { found: ReturnType<typeof searchKinds>; query: string; setQuery: (q: string) => void; count: Props["count"]; onClose: () => void; onAdd: (k: FittingKind) => void }) {
   const ref = useRef<HTMLDivElement>(null);
   useDismiss(ref, true, onClose);
   return (
