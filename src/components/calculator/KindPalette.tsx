@@ -136,12 +136,18 @@ export function Sheet({ found, query, setQuery, count, onClose, onAdd }: { found
       document.body.style.overflow = prev;
     };
   }, []);
-  // the on-screen keyboard shrinks the visual viewport, not the layout one: lift the sheet's bottom edge above it
-  const [lift, setLift] = useState(0);
+  // The on-screen keyboard shrinks the visual viewport, not the layout one, and iOS pans the visual viewport over the page:
+  // while the keyboard is up the sheet is fitted to exactly what is visible (top and bottom), so its list can always be scrolled.
+  const [fit, setFit] = useState<{ top: number; height: number } | null>(null);
   useEffect(() => {
     const vv = window.visualViewport;
     if (!vv) return;
-    const update = () => setLift(Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)));
+    const update = () => {
+      const keyboard = window.innerHeight - vv.height > 120;
+      if (!keyboard) return setFit(null);
+      const top = Math.round(vv.offsetTop) + 8;
+      setFit({ top, height: Math.max(160, Math.round(vv.offsetTop + vv.height) - top) });
+    };
     update();
     vv.addEventListener("resize", update);
     vv.addEventListener("scroll", update);
@@ -153,7 +159,7 @@ export function Sheet({ found, query, setQuery, count, onClose, onAdd }: { found
   return (
     <>
       <div className="fixed inset-0 z-40 bg-black/50" aria-hidden="true" />
-      <div ref={ref} role="dialog" aria-modal="true" aria-label={dict.palette.title} className="fixed inset-x-0 bottom-0 top-16 z-50 flex flex-col gap-2 overscroll-contain rounded-t-2xl border-t border-line bg-panel px-4 pb-4 pt-3 shadow-2xl" style={{ bottom: lift }}>
+      <div ref={ref} role="dialog" aria-modal="true" aria-label={dict.palette.title} className="fixed inset-x-0 bottom-0 top-16 z-50 flex flex-col gap-2 overscroll-contain rounded-t-2xl border-t border-line bg-panel px-4 pb-4 pt-3 shadow-2xl" style={fit ? { top: fit.top, height: fit.height, bottom: "auto" } : undefined}>
         <div className="flex items-center justify-between">
           <h3 className="font-medium">{dict.palette.title}</h3>
           <button type="button" className={buttonClass} onClick={onClose}>{dict.palette.close}</button>
