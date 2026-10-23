@@ -71,3 +71,15 @@ button:disabled,
 select:disabled {
   cursor: not-allowed;
 }
+
+/* A card that was just added from the side panel: a short accent ring so the eye finds it. */
+@keyframes flash-card {
+  from { box-shadow: 0 0 0 2px var(--accent); }
+  to { box-shadow: 0 0 0 2px transparent; }
+}
+.flash-card {
+  animation: flash-card 1.4s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .flash-card { animation: none; }
+}

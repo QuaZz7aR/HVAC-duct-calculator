@@ -5,40 +5,45 @@ import { FittingList } from "./calculator/FittingList";
 import { SettingsPanel } from "./calculator/SettingsPanel";
 import { ResultsTable } from "./calculator/ResultsTable";
 import { SheetList } from "./calculator/SheetList";
+import { KindQuickBar, KindRail } from "./calculator/KindPalette";
 import { mutedClass } from "./calculator/styles";
 import { Totals } from "./calculator/Totals";
 import { useCalculator } from "./calculator/useCalculator";
 
 export function Calculator() {
-  const { rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, cloneRow, removeRow } = useCalculator();
+  const { rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, removeRow } = useCalculator();
 
   return (
-    <main className="mx-auto w-full max-w-6xl flex-1 space-y-6 px-4 py-8">
-      <header>
-        <h1 className="text-2xl font-semibold">{dict.appTitle}</h1>
-        <p className={`mt-1 text-sm ${mutedClass}`}>{dict.appSubtitle}</p>
-      </header>
+    <div className="mx-auto w-full max-w-7xl flex-1 gap-6 px-4 py-8 lg:grid lg:grid-cols-[5rem_minmax(0,1fr)]">
+      <KindRail count={countOf} onAdd={addRow} />
+      <main className="min-w-0 space-y-6">
+        <header>
+          <h1 className="text-2xl font-semibold">{dict.appTitle}</h1>
+          <p className={`mt-1 text-sm ${mutedClass}`}>{dict.appSubtitle}</p>
+        </header>
 
-      <SettingsPanel settings={settings} onChange={setSettings} issues={settingsIssues} />
-      <FittingList
-        rows={rows}
-        outcome={outcome}
-        onKindChange={setKind}
-        onValueChange={setValue}
-        onReset={resetValue}
-        onPatch={update}
-        onClone={cloneRow}
-        onRemove={removeRow}
-        onAdd={addRow}
-      />
-      <ResultsTable rows={rows} outcome={outcome} calc={calc} />
+        <SettingsPanel settings={settings} onChange={setSettings} issues={settingsIssues} />
+        <KindQuickBar count={countOf} onAdd={addRow} />
+        <FittingList
+          rows={rows}
+          lastAddedId={lastAddedId}
+          outcome={outcome}
+          onKindChange={setKind}
+          onValueChange={setValue}
+          onReset={resetValue}
+          onPatch={update}
+          onClone={cloneRow}
+          onRemove={removeRow}
+        />
+        <ResultsTable rows={rows} outcome={outcome} calc={calc} />
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Totals calc={calc} />
-        <SheetList groups={calc.sheetList} />
-      </div>
+        <div className="grid gap-6 md:grid-cols-2">
+          <Totals calc={calc} />
+          <SheetList groups={calc.sheetList} />
+        </div>
 
-      <footer className="text-xs text-muted">{dict.footer}</footer>
-    </main>
+        <footer className="text-xs text-muted">{dict.footer}</footer>
+      </main>
+    </div>
   );
 }

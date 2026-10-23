@@ -1,14 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { RowOutcome } from "@/lib/form/calculate";
 import type { FieldKey, FittingKind, FormRow } from "@/lib/form/fields";
 import { sketchesOpenByDefault } from "@/lib/form/sample-rows";
 import { uk as dict } from "@/lib/i18n/uk";
 import { FittingCard } from "./FittingCard";
 import { kindTitle } from "./format";
-import { buttonClass, primaryButtonClass } from "./styles";
+import { buttonClass } from "./styles";
 
 interface Props {
   rows: FormRow[];
+  /** the row added last: the list scrolls to it and marks it */
+  lastAddedId: number | null;
   outcome: (id: number) => RowOutcome | undefined;
   onKindChange: (id: number, kind: FittingKind) => void;
   onValueChange: (id: number, key: FieldKey, value: string) => void;
@@ -16,7 +18,6 @@ interface Props {
   onPatch: (id: number, patch: Partial<FormRow>) => void;
   onClone: (id: number) => void;
   onRemove: (id: number) => void;
-  onAdd: () => void;
 }
 
 /** Rows of one kind next to each other, kinds in the order they first appear; each row keeps its list number. */
@@ -30,7 +31,7 @@ function groupByKind(rows: FormRow[]) {
   return [...groups.entries()];
 }
 
-export function FittingList({ rows, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove, onAdd }: Props) {
+export function FittingList({ rows, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove, lastAddedId }: Props) {
   // view state only: per card, whether its sketches are open and whether it is folded to a tile; new rows follow the defaults
   const [sketches, setSketches] = useState<Record<number, boolean>>({});
   const [folded, setFolded] = useState<Record<number, boolean>>({});
@@ -39,6 +40,12 @@ export function FittingList({ rows, outcome, onKindChange, onValueChange, onRese
   const isFolded = (id: number) => folded[id] ?? false;
   const allSketchesOpen = rows.every((r) => sketchOpen(r.id));
   const allFolded = rows.length > 0 && rows.every((r) => isFolded(r.id));
+
+  useEffect(() => {
+    if (lastAddedId === null) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.getElementById(`fitting-${lastAddedId}`)?.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
+  }, [lastAddedId]);
 
   const setAllSketches = (open: boolean) => {
     setSketchDefault(open);
@@ -51,6 +58,7 @@ export function FittingList({ rows, outcome, onKindChange, onValueChange, onRese
       key={row.id}
       row={row}
       index={index}
+      justAdded={row.id === lastAddedId}
       showSketch={sketchOpen(row.id)}
       collapsed={isFolded(row.id)}
       onToggleSketch={() => setSketches((s) => ({ ...s, [row.id]: !sketchOpen(row.id) }))}
@@ -104,9 +112,6 @@ export function FittingList({ rows, outcome, onKindChange, onValueChange, onRese
           );
         })}
       </div>
-      <button type="button" className={primaryButtonClass} onClick={onAdd}>
-        + {dict.addItem}
-      </button>
     </section>
   );
 }

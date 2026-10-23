@@ -1,9 +1,10 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { defaultConfig } from "@/lib/calc/config";
 import { calculate, type RowOutcome } from "@/lib/form/calculate";
 import { buildConfig, defaultSettings, type SettingsText } from "@/lib/form/settings";
-import { resetToAuto, setFieldValue, withKind } from "@/lib/form/auto-defaults";
+import { applyAutoDefaults, resetToAuto, setFieldValue, withKind } from "@/lib/form/auto-defaults";
 import { sampleRows } from "@/lib/form/sample-rows";
+import { insertIndex } from "@/lib/form/kind-groups";
 import { initialValues, newRow, type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
 
 /**
@@ -23,6 +24,13 @@ const hiddenLossInputs = {
 export function useCalculator() {
   // beta: the page opens with one example row of every fitting kind
   const [rows, setRows] = useState<FormRow[]>(() => sampleRows(defaultConfig));
+  const [lastAddedId, setLastAddedId] = useState<number | null>(null);
+  // the mark on a freshly added card fades after a moment, so a remount (card moved to a section) does not flash it again
+  useEffect(() => {
+    if (lastAddedId === null) return;
+    const t = setTimeout(() => setLastAddedId(null), 1500);
+    return () => clearTimeout(t);
+  }, [lastAddedId]);
   const nextId = useRef(Math.max(0, ...rows.map((r) => r.id)) + 1);
 
   const [settings, setSettings] = useState<SettingsText>(() => defaultSettings());
@@ -47,10 +55,16 @@ export function useCalculator() {
     setRows((rs) => rs.map((r) => (r.id === id ? setFieldValue(r, key, value, built.config) : r)));
   const resetValue = (id: number, key: FieldKey) =>
     setRows((rs) => rs.map((r) => (r.id === id ? resetToAuto(r, key, built.config) : r)));
-  const addRow = () => {
+  // a new row of `kind` goes after the last row of that kind, so it lands in its section; the list scrolls to it (`lastAddedId`)
+  const addRow = (kind: FittingKind) => {
     const id = nextId.current++; // outside the updater, which React may run twice
-    setRows((rs) => [...rs, newRow(id)]);
+    setRows((rs) => {
+      const at = insertIndex(rs, kind);
+      return [...rs.slice(0, at), applyAutoDefaults(newRow(id, kind), built.config), ...rs.slice(at)];
+    });
+    setLastAddedId(id);
   };
+  const countOf = (kind: FittingKind) => rows.filter((r) => r.kind === kind).length;
   // the copy goes right after the original, so it lands next to it (and in its kind section)
   const cloneRow = (id: number) => {
     const copyId = nextId.current++;
@@ -61,8 +75,9 @@ export function useCalculator() {
       const copy: FormRow = { ...src, id: copyId, values: { ...src.values }, manual: src.manual && [...src.manual] };
       return [...rs.slice(0, at + 1), copy, ...rs.slice(at + 1)];
     });
+    setLastAddedId(copyId);
   };
   const removeRow = (id: number) => setRows((rs) => rs.filter((r) => r.id !== id));
 
-  return { rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, cloneRow, removeRow };
+  return { rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, removeRow };
 }
