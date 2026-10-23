@@ -47,6 +47,10 @@ export function KindRail({ count, onAdd }: Props) {
       {/* the list opens inside the sticky box, so it stays beside the rail wherever the page is scrolled */}
       <div ref={box} className="sticky top-4">
       <div className="flex max-h-[calc(100vh-2rem)] flex-col gap-1 overflow-y-auto rounded-lg border border-line bg-panel p-1.5">
+        <p className="grid justify-items-center gap-0.5 border-b border-line px-0.5 pb-2 pt-1 text-center text-[11px] font-medium leading-tight">
+          <span aria-hidden="true" className="grid h-6 w-6 place-items-center rounded-full bg-accent text-base leading-none text-background">+</span>
+          {dict.palette.title}
+        </p>
         {kindGroups.map((g) => (
           <button
             key={g.id}

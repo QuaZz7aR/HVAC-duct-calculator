@@ -76,7 +76,13 @@ export function FittingList({ rows, outcome, onKindChange, onValueChange, onRese
   return (
     <section aria-labelledby="items-title" className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="items-title" className="font-medium">{dict.itemsTitle}</h2>
+        <div>
+          <h2 id="items-title" className="font-medium">{dict.itemsTitle}</h2>
+          <p className="text-sm text-muted">
+            <span className="hidden lg:inline">{dict.palette.hintRail}</span>
+            <span className="lg:hidden">{dict.palette.hintBar}</span>
+          </p>
+        </div>
         {rows.length > 0 && (
           <div className="flex flex-wrap gap-2">
             <button type="button" className={buttonClass} onClick={() => setAllSketches(!allSketchesOpen)}>

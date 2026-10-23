@@ -165,3 +165,4 @@ Owner idea: the central list shows a fitting as a title only, new fittings are a
 - A new row is inserted after the last row of its kind (`insertIndex`), so it lands in its kind section, gets the auto defaults, and the list scrolls to it and rings it briefly (`flash-card`, off under reduced motion).
 - The card header is the title `N. КВ — Назва`; the kind `<select>` is gone. Changing the kind is still possible: the «⋯» button of the card opens «Змінити тип на…» with all kinds (same `setKind`, sizes restart from the new kind's defaults). The bottom «Додати деталь» button is gone (it added a row of the default kind).
 - Fitting names and designations are unchanged. View state only, nothing persisted.
+- Discoverability (owner, 2026-10-23): the rail starts with a «+ Додати деталь» heading and the list heading has a hint line («оберіть її тип у панелі зліва»; on a phone it points at the buttons above the list).
