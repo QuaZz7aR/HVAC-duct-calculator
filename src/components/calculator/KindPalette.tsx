@@ -128,12 +128,21 @@ export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardVi
 export function Sheet({ found, query, setQuery, count, onClose, onAdd }: { found: ReturnType<typeof searchKinds>; query: string; setQuery: (q: string) => void; count: Props["count"]; onClose: () => void; onAdd: (k: FittingKind) => void }) {
   const ref = useRef<HTMLDivElement>(null);
   useDismiss(ref, true, onClose);
-  // the page behind must not scroll while the sheet is open
+  // The page behind must not scroll while the sheet is open. iOS ignores overflow:hidden on the body and chains touches from a
+  // list that does not scroll (few results), so the body is pinned in place and its scroll position restored on close.
   useEffect(() => {
-    const prev = document.body.style.overflow;
+    const y = window.scrollY;
+    const { position, top, width, overflow } = document.body.style;
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${y}px`;
+    document.body.style.width = "100%";
     document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = prev;
+      document.body.style.position = position;
+      document.body.style.top = top;
+      document.body.style.width = width;
+      document.body.style.overflow = overflow;
+      window.scrollTo(0, y);
     };
   }, []);
   // The on-screen keyboard shrinks the visual viewport, not the layout one, and iOS pans the visual viewport over the page:
@@ -159,12 +168,12 @@ export function Sheet({ found, query, setQuery, count, onClose, onAdd }: { found
   return (
     <>
       <div className="fixed inset-0 z-40 bg-black/50" aria-hidden="true" />
-      <div ref={ref} role="dialog" aria-modal="true" aria-label={dict.palette.title} className="fixed inset-x-0 bottom-0 top-16 z-50 flex flex-col gap-2 overscroll-contain rounded-t-2xl border-t border-line bg-panel px-4 pb-4 pt-3 shadow-2xl" style={fit ? { top: fit.top, height: fit.height, bottom: "auto" } : undefined}>
+      <div ref={ref} role="dialog" aria-modal="true" aria-label={dict.palette.title} className="fixed inset-x-0 bottom-0 top-16 z-50 flex flex-col gap-2 touch-none overscroll-contain rounded-t-2xl border-t border-line bg-panel px-4 pb-4 pt-3 shadow-2xl" style={fit ? { top: fit.top, height: fit.height, bottom: "auto" } : undefined}>
         <div className="flex items-center justify-between">
           <h3 className="font-medium">{dict.palette.title}</h3>
           <button type="button" className={buttonClass} onClick={onClose}>{dict.palette.close}</button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <div className="min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain">
           <div className="flex min-h-full flex-col">
             {/* a spacer, not justify-end: a short list sits low, a long one still scrolls up to its first item */}
             <div className="flex-1" aria-hidden="true" />
