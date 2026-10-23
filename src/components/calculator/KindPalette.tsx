@@ -36,20 +36,26 @@ function KindItem({ kind, count, onPick }: { kind: FittingKind; count: number; o
 /** Desktop: a narrow rail of the kind groups, always in view; a group opens a list of its kinds beside the rail. */
 export function KindRail({ count, onAdd }: Props) {
   const [open, setOpen] = useState<KindGroupId | null>(null);
+  // top of the open group's button inside the sticky box: the list opens level with it
+  const [top, setTop] = useState(0);
   const ref = useRef<HTMLElement>(null);
+  const box = useRef<HTMLDivElement>(null);
   useDismiss(ref, open !== null, () => setOpen(null));
   const group = kindGroups.find((g) => g.id === open);
   return (
     <nav ref={ref} aria-label={dict.palette.title} className="hidden lg:block">
       {/* the list opens inside the sticky box, so it stays beside the rail wherever the page is scrolled */}
-      <div className="sticky top-4">
+      <div ref={box} className="sticky top-4">
       <div className="flex max-h-[calc(100vh-2rem)] flex-col gap-1 overflow-y-auto rounded-lg border border-line bg-panel p-1.5">
         {kindGroups.map((g) => (
           <button
             key={g.id}
             type="button"
             aria-expanded={open === g.id}
-            onClick={() => setOpen(open === g.id ? null : g.id)}
+            onClick={(e) => {
+              setTop(box.current ? e.currentTarget.getBoundingClientRect().top - box.current.getBoundingClientRect().top : 0);
+              setOpen(open === g.id ? null : g.id);
+            }}
             className={`grid justify-items-center gap-0.5 rounded-md border px-0.5 py-1.5 text-[11px] leading-tight hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent ${open === g.id ? "border-line bg-accent-soft text-foreground" : "border-transparent text-muted"}`}
           >
             <KindGlyph kind={g.kinds[0]} className="h-[22px] w-[34px] text-accent" />
@@ -58,7 +64,7 @@ export function KindRail({ count, onAdd }: Props) {
         ))}
       </div>
       {group && (
-        <div className="absolute left-full top-0 z-30 ml-2 w-72 rounded-lg border border-line bg-panel p-2 shadow-xl shadow-black/30">
+        <div style={{ top }} className="absolute left-full z-30 ml-2 w-72 rounded-lg border border-line bg-panel p-2 shadow-xl shadow-black/30">
           <h3 className="mb-1 px-1.5 text-xs uppercase tracking-wider text-muted">{dict.kindGroups[group.id]}</h3>
           {group.kinds.map((kind) => (
             <KindItem
