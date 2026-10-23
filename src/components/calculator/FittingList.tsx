@@ -62,7 +62,7 @@ export function FittingList({ rows, view, outcome, onKindChange, onValueChange, 
   );
 
   return (
-    <section aria-labelledby="items-title" className="space-y-3">
+    <section id="items" aria-labelledby="items-title" className="scroll-mt-28 space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 id="items-title" className="font-medium">{dict.itemsTitle}</h2>
@@ -73,7 +73,7 @@ export function FittingList({ rows, view, outcome, onKindChange, onValueChange, 
         </div>
       </div>
       {/* one grid for the page: single cards and folded tiles share the 1-3 columns, a repeated kind is a full-width section with a grid of its own; open cards span the full width */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {groupByKind(rows).map(([kind, items]) => {
           if (items.length === 1) return card(items[0].row, items[0].index);
           const groupFolded = items.every((i) => isFolded(i.row.id));
@@ -91,7 +91,7 @@ export function FittingList({ rows, view, outcome, onKindChange, onValueChange, 
                   {groupFolded ? dict.expandGroup : dict.collapseGroup}
                 </button>
               </div>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{items.map(({ row, index }) => card(row, index))}</div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">{items.map(({ row, index }) => card(row, index))}</div>
             </div>
           );
         })}

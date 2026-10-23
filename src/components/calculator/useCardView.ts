@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { FormRow } from "@/lib/form/fields";
+import { scrollToList } from "./scrollToTop";
 import { sketchesOpenByDefault } from "@/lib/form/sample-rows";
 
 /** View state only: per card, whether its sketches are open and whether it is folded to a tile; new rows follow the defaults. */
@@ -22,7 +23,10 @@ export function useCardView(rows: FormRow[]) {
       setSketchDefault(open);
       setSketches(Object.fromEntries(rows.map((r) => [r.id, open])));
     },
-    setAllFolded: (value: boolean) => setFolded(Object.fromEntries(rows.map((r) => [r.id, value]))),
+    setAllFolded: (value: boolean) => {
+      setFolded(Object.fromEntries(rows.map((r) => [r.id, value])));
+      if (value) scrollToList();
+    },
   };
 }
 
