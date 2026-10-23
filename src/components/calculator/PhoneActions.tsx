@@ -11,11 +11,11 @@ import { FoldIcon, SketchesIcon, UpIcon } from "./ViewIcons";
 const round =
   "grid h-12 w-12 place-items-center rounded-full border border-line bg-panel text-accent shadow-lg shadow-black/30 hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
 
-/** Where the buttons of the "+" menu sit: three arcs around the "+" button, angle 0 = straight left, 90 = straight up. Items are 48 px round buttons, at least ~60 px apart centre to centre, so a thumb does not hit a neighbour. Items fill the inner arc first. */
+/** Where the buttons of the "+" menu sit: three arcs around the "+" button, angle 0 = straight left, 90 = straight up. Items are 48 px round buttons, at least ~68 px apart centre to centre, every arc symmetric about the 45 degree line, so a thumb does not hit a neighbour. Items fill the inner arc first. */
 const arcs = [
-  { radius: 72, angles: [20, 70] },
-  { radius: 135, angles: [0, 45, 90] },
-  { radius: 198, angles: [15, 40, 65, 90] },
+  { radius: 80, angles: [18, 72] },
+  { radius: 145, angles: [0, 45, 90] },
+  { radius: 210, angles: [7.5, 32.5, 57.5, 82.5] },
 ];
 const fanSlots = arcs.flatMap(({ radius, angles }) =>
   angles.map((deg) => ({ dx: -Math.round(radius * Math.cos((deg * Math.PI) / 180)), dy: -Math.round(radius * Math.sin((deg * Math.PI) / 180)) })),
