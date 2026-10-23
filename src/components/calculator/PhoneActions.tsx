@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { FittingKind } from "@/lib/form/fields";
 import { quickKinds, searchKinds } from "@/lib/form/kind-groups";
 import { uk as dict } from "@/lib/i18n/uk";
@@ -11,6 +11,15 @@ import { FoldIcon, SketchesIcon, UpIcon } from "./ViewIcons";
 const round =
   "grid h-11 w-11 place-items-center rounded-full border border-line bg-panel text-accent shadow-lg shadow-black/30 hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
 
+/** Where the buttons of the "+" menu sit: two arcs around the "+" button, angle 0 = straight left, 90 = straight up; the outer arc reaches the middle of a phone screen. Items fill the inner arc first. */
+const arcs = [
+  { radius: 88, angles: [15, 45, 75] },
+  { radius: 158, angles: [0, 18, 36, 54, 72, 90] },
+];
+const fanSlots = arcs.flatMap(({ radius, angles }) =>
+  angles.map((deg) => ({ dx: -Math.round(radius * Math.cos((deg * Math.PI) / 180)), dy: -Math.round(radius * Math.sin((deg * Math.PI) / 180)) })),
+);
+
 interface Props {
   view: CardView;
   hasRows: boolean;
@@ -19,7 +28,7 @@ interface Props {
   onAdd: (kind: FittingKind) => void;
 }
 
-/** Phone: a column of small round buttons at the right edge, within reach of a thumb. Closed: the two view toggles, "to top" after a short scroll down, and "+". Opened by "+": the quick kinds and "..." (the sheet with every kind and a search). */
+/** Phone: a column of small round buttons at the right edge, within reach of a thumb. Closed: the two view toggles, "to top" after a short scroll down, and "+". Opened by "+": the quick kinds and "..." (the sheet with every kind and a search) fan out along two arcs. The column sits a quarter of the screen above the bottom edge. */
 export function PhoneActions({ view, hasRows, count, onAdd }: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -38,6 +47,10 @@ export function PhoneActions({ view, hasRows, count, onAdd }: Props) {
     setQuery("");
     setOpen(false);
   };
+  const items: { kind?: FittingKind; text: string; label: string }[] = [
+    ...quickKinds.map((kind) => ({ kind, text: dict.kinds[kind].designation, label: dict.kinds[kind].name })),
+    { text: "⋯", label: dict.palette.allKinds },
+  ];
   const sketches = view.allSketchesOpen ? dict.hideAllSketches : dict.showAllSketches;
   const folding = view.allFolded ? dict.palette.expandCards : dict.palette.collapseCards;
   return (
@@ -46,48 +59,53 @@ export function PhoneActions({ view, hasRows, count, onAdd }: Props) {
       <div
         ref={ref}
         className="fixed z-30 flex flex-col gap-2 lg:hidden"
-        style={{ right: "max(1rem, env(safe-area-inset-right, 0px))", bottom: "max(1rem, env(safe-area-inset-bottom, 0px))" }}
+        style={{ right: "max(1rem, env(safe-area-inset-right, 0px))", bottom: "max(1rem, calc(env(safe-area-inset-bottom, 0px) + 25svh))" }}
       >
-        {open ? (
-          <div role="toolbar" aria-label={dict.palette.title} className="flex flex-col gap-2">
-            <button type="button" onClick={() => setSheet(true)} aria-haspopup="dialog" aria-label={dict.palette.allKinds} title={dict.palette.allKinds} className={`${round} text-lg font-bold leading-none`}>
-              ⋯
-            </button>
-            {[...quickKinds].reverse().map((kind) => (
-              <button key={kind} type="button" onClick={() => { onAdd(kind); setOpen(false); }} aria-label={dict.kinds[kind].name} title={dict.kinds[kind].name} className={`${round} font-mono text-[13px] font-semibold`}>
-                {dict.kinds[kind].designation}
-              </button>
-            ))}
-          </div>
-        ) : (
+        {!open && hasRows && (
           <>
-            {hasRows && (
-              <>
-                <button type="button" onClick={() => view.setAllSketches(!view.allSketchesOpen)} aria-label={sketches} title={sketches} className={round}>
-                  <SketchesIcon crossed={view.allSketchesOpen} className="h-5 w-7" />
-                </button>
-                <button type="button" onClick={() => view.setAllFolded(!view.allFolded)} aria-label={folding} title={folding} className={round}>
-                  <FoldIcon folded={view.allFolded} className="h-5 w-7" />
-                </button>
-              </>
-            )}
-            {scrolled && (
-              <button type="button" onClick={scrollToTop} aria-label={dict.palette.toTop} title={dict.palette.toTop} className={round}>
-                <UpIcon className="h-5 w-7" />
-              </button>
-            )}
+            <button type="button" onClick={() => view.setAllSketches(!view.allSketchesOpen)} aria-label={sketches} title={sketches} className={round}>
+              <SketchesIcon crossed={view.allSketchesOpen} className="h-5 w-7" />
+            </button>
+            <button type="button" onClick={() => view.setAllFolded(!view.allFolded)} aria-label={folding} title={folding} className={round}>
+              <FoldIcon folded={view.allFolded} className="h-5 w-7" />
+            </button>
           </>
         )}
-        <button
-          type="button"
-          onClick={() => setOpen(!open)}
-          aria-expanded={open}
-          aria-label={open ? dict.palette.closeMenu : dict.palette.addButton}
-          title={open ? dict.palette.closeMenu : dict.palette.addButton}
-          className="grid h-11 w-11 place-items-center self-end rounded-full bg-accent text-2xl font-light leading-none text-background shadow-lg shadow-black/30 focus-visible:outline-2 focus-visible:outline-accent"
-        >
-          {open ? "×" : "+"}
-        </button>
+        {!open && scrolled && (
+          <button type="button" onClick={scrollToTop} aria-label={dict.palette.toTop} title={dict.palette.toTop} className={round}>
+            <UpIcon className="h-5 w-7" />
+          </button>
+        )}
+        <div className="relative h-11 w-11 self-end">
+          {open && (
+            <div role="toolbar" aria-label={dict.palette.title}>
+              {items.map((item, i) => (
+                <button
+                  key={item.kind ?? "all"}
+                  type="button"
+                  onClick={() => (item.kind ? (onAdd(item.kind), setOpen(false)) : setSheet(true))}
+                  aria-label={item.label}
+                  title={item.label}
+                  aria-haspopup={item.kind ? undefined : "dialog"}
+                  className={`${round} fan-item absolute left-0 top-0 font-mono text-[13px] font-semibold`}
+                  style={{ "--dx": `${fanSlots[i].dx}px`, "--dy": `${fanSlots[i].dy}px` } as CSSProperties}
+                >
+                  {item.text}
+                </button>
+              ))}
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={() => setOpen(!open)}
+            aria-expanded={open}
+            aria-label={open ? dict.palette.closeMenu : dict.palette.addButton}
+            title={open ? dict.palette.closeMenu : dict.palette.addButton}
+            className="relative grid h-11 w-11 place-items-center rounded-full bg-accent text-2xl font-light leading-none text-background shadow-lg shadow-black/30 focus-visible:outline-2 focus-visible:outline-accent"
+          >
+            {open ? "×" : "+"}
+          </button>
+        </div>
       </div>
       {sheet && <Sheet found={searchKinds(query)} query={query} setQuery={setQuery} count={count} onClose={closeSheet} onAdd={(k) => { onAdd(k); closeSheet(); }} />}
     </>
