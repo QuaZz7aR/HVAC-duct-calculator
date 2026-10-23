@@ -42,6 +42,12 @@ const railBox = "flex flex-col gap-1 rounded-lg border border-line bg-panel p-1.
 const railAction =
   "grid grid-cols-[auto_1fr] items-center gap-2 rounded-md border border-line px-2.5 py-2 text-left text-sm leading-tight hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
 
+/** Back to the top of the page (the motion is dropped for people who asked for less of it). */
+function scrollToTop() {
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+}
+
 /** Desktop: a narrow rail of the kind groups, always in view; a group opens a list of its kinds beside the rail. */
 export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardView; hasRows: boolean }) {
   const [open, setOpen] = useState<KindGroupId | null>(null);
@@ -98,6 +104,14 @@ export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardVi
             </button>
           </div>
         )}
+        <div className={railBox}>
+          <button type="button" onClick={scrollToTop} className={railAction}>
+            <svg viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-5 w-8 text-accent">
+              <path d="M12 14V3M6 8l6-5 6 5" />
+            </svg>
+            {dict.palette.toTop}
+          </button>
+        </div>
       </div>
       {group && (
         <div style={{ top }} className="absolute left-full z-30 ml-2 w-max min-w-64 max-w-[28rem] rounded-lg border border-line bg-panel p-2 shadow-xl shadow-black/30">

@@ -22,6 +22,7 @@ describe("kind palette", () => {
     for (const name of Object.values(dict.kindGroups)) expect(rail).toContain(name);
     expect(rail).toContain(dict.hideAllSketches);
     expect(rail).toContain(dict.palette.collapseCards);
+    expect(rail).toContain(dict.palette.toTop);
     expect(renderToStaticMarkup(<KindRail count={() => 0} onAdd={() => {}} view={view} hasRows={false} />)).not.toContain(dict.hideAllSketches);
     const bar = renderToStaticMarkup(<KindQuickBar count={() => 0} onAdd={() => {}} />);
     expect(bar).toContain(dict.palette.allKinds);

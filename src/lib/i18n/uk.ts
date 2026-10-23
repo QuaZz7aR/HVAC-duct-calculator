@@ -26,6 +26,7 @@ export const uk = {
   palette: {
     title: 'Додати деталь',
     viewTitle: 'Вигляд',
+    toTop: 'Нагору',
     collapseCards: 'Згорнути всі деталі',
     expandCards: 'Розгорнути всі деталі',
     hintRail: 'Щоб додати деталь, оберіть її тип у панелі зліва.',
