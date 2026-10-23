@@ -27,24 +27,30 @@ export function KindMenu({ kind, onChange }: { kind: FittingKind; onChange: (kin
         ⋯
       </button>
       {open && (
-        <div ref={menuRef} style={{ transform: `translateX(${shift}px)` }} className="absolute right-0 top-full z-30 mt-1 max-h-80 w-80 max-w-[calc(100vw-1rem)] overflow-y-auto rounded-lg border border-line bg-panel p-1.5 shadow-xl shadow-black/30">
-          <p className="px-1.5 pb-1 text-xs uppercase tracking-wider text-muted">{dict.palette.changeKindTo}</p>
-          <div className="grid grid-cols-[auto_1fr] gap-x-3">
-          {kindGroups.flatMap((g) => g.kinds).map((k) => (
-            <button
-              key={k}
-              type="button"
-              disabled={k === kind}
-              onClick={() => {
-                setOpen(false);
-                onChange(k);
-              }}
-              className="col-span-2 grid w-full grid-cols-subgrid rounded-md px-1.5 py-1.5 text-left text-sm hover:bg-accent-soft disabled:opacity-50 disabled:hover:bg-transparent"
-            >
-              <span className="font-mono text-sm text-accent">{dict.kinds[k].designation}</span>
-              <span className="leading-tight">{dict.kinds[k].name}</span>
-            </button>
-          ))}
+        <div ref={menuRef} style={{ transform: `translateX(${shift}px)` }} className="absolute right-0 top-full z-30 mt-1 max-h-80 w-80 max-w-[calc(100vw-1rem)] overflow-y-auto rounded-lg border border-line bg-panel p-1.5 shadow-xl shadow-black/30 sm:max-h-none sm:w-[44rem] sm:overflow-visible sm:p-3 lg:w-[60rem]">
+          <p className="px-1.5 pb-1 text-xs uppercase tracking-wider text-muted sm:pb-2">{dict.palette.changeKindTo}</p>
+          {/* phone: one list, one designation column; desktop: the groups flow into columns, no scrolling */}
+          <div className="grid grid-cols-[auto_1fr] gap-x-3 sm:block sm:columns-2 sm:gap-x-6 lg:columns-3">
+            {kindGroups.map((g) => (
+              <div key={g.id} className="contents sm:mb-3 sm:grid sm:break-inside-avoid sm:grid-cols-[auto_1fr] sm:gap-x-3">
+                <h4 className="hidden px-1.5 pb-0.5 text-xs uppercase tracking-wider text-muted sm:col-span-2 sm:block">{dict.kindGroups[g.id]}</h4>
+                {g.kinds.map((k) => (
+                  <button
+                    key={k}
+                    type="button"
+                    disabled={k === kind}
+                    onClick={() => {
+                      setOpen(false);
+                      onChange(k);
+                    }}
+                    className="col-span-2 grid w-full grid-cols-subgrid rounded-md px-1.5 py-1.5 text-left text-sm hover:bg-accent-soft disabled:opacity-50 disabled:hover:bg-transparent"
+                  >
+                    <span className="font-mono text-sm text-accent">{dict.kinds[k].designation}</span>
+                    <span className="leading-tight">{dict.kinds[k].name}</span>
+                  </button>
+                ))}
+              </div>
+            ))}
           </div>
         </div>
       )}
