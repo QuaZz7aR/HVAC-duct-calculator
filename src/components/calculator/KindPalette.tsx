@@ -13,6 +13,9 @@ interface Props {
   onAdd: (kind: FittingKind) => void;
 }
 
+/** The list of kinds is one grid, so the designation column is as wide as the longest designation of that list. */
+export const kindListGrid = "grid grid-cols-[auto_1fr_auto] gap-x-3";
+
 /** One kind in a list: designation, name, "+" (or the count already in the list). */
 function KindItem({ kind, count, onPick }: { kind: FittingKind; count: number; onPick: () => void }) {
   const k = dict.kinds[kind];
@@ -20,9 +23,9 @@ function KindItem({ kind, count, onPick }: { kind: FittingKind; count: number; o
     <button
       type="button"
       onClick={onPick}
-      className="group grid w-full grid-cols-[4.5rem_1fr_auto] items-center gap-2 rounded-md border border-transparent px-1.5 py-1.5 text-left hover:border-line hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent"
+      className="group col-span-3 grid w-full grid-cols-subgrid items-center rounded-md border border-transparent px-1.5 py-1.5 text-left hover:border-line hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent"
     >
-      <span className="font-mono text-sm text-accent">{k.designation}</span>
+      <span className="px-1.5 font-mono text-sm text-accent">{k.designation}</span>
       <span className="text-base leading-tight">{k.name}</span>
       <span
         className="grid h-7 min-w-7 place-items-center rounded-md border border-line px-1 font-mono text-sm text-accent group-hover:border-accent group-hover:bg-accent group-hover:text-background"
@@ -97,19 +100,21 @@ export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardVi
         )}
       </div>
       {group && (
-        <div style={{ top }} className="absolute left-full z-30 ml-2 w-80 rounded-lg border border-line bg-panel p-2 shadow-xl shadow-black/30">
+        <div style={{ top }} className="absolute left-full z-30 ml-2 w-max min-w-64 max-w-[28rem] rounded-lg border border-line bg-panel p-2 shadow-xl shadow-black/30">
           <h3 className="mb-1 px-1.5 text-sm uppercase tracking-wider text-muted">{dict.kindGroups[group.id]}</h3>
-          {group.kinds.map((kind) => (
-            <KindItem
-              key={kind}
-              kind={kind}
-              count={count(kind)}
-              onPick={() => {
-                onAdd(kind);
-                setOpen(null);
-              }}
-            />
-          ))}
+          <div className={kindListGrid}>
+            {group.kinds.map((kind) => (
+              <KindItem
+                key={kind}
+                kind={kind}
+                count={count(kind)}
+                onPick={() => {
+                  onAdd(kind);
+                  setOpen(null);
+                }}
+              />
+            ))}
+          </div>
         </div>
       )}
       </div>
@@ -161,7 +166,7 @@ function Sheet({ found, query, setQuery, count, onClose, onAdd }: { found: Retur
           {found.map((g) => (
             <div key={g.id} className="mb-2">
               <h4 className="mb-1 mt-2 text-xs uppercase tracking-wider text-muted">{dict.kindGroups[g.id]}</h4>
-              {g.kinds.map((kind) => <KindItem key={kind} kind={kind} count={count(kind)} onPick={() => onAdd(kind)} />)}
+              <div className={kindListGrid}>{g.kinds.map((kind) => <KindItem key={kind} kind={kind} count={count(kind)} onPick={() => onAdd(kind)} />)}</div>
             </div>
           ))}
         </div>
