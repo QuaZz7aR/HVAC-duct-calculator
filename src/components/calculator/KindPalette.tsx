@@ -159,7 +159,9 @@ export function Sheet({ found, query, setQuery, count, onClose, onAdd }: { found
           <button type="button" className={buttonClass} onClick={onClose}>{dict.palette.close}</button>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-          <div className="flex min-h-full flex-col justify-end">
+          <div className="flex min-h-full flex-col">
+            {/* a spacer, not justify-end: a short list sits low, a long one still scrolls up to its first item */}
+            <div className="flex-1" aria-hidden="true" />
             {found.length === 0 && <p className="py-4 text-sm text-muted">{dict.palette.nothingFound}</p>}
             {found.map((g) => (
               <div key={g.id} className="mb-2">
