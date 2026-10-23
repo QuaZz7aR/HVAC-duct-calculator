@@ -38,7 +38,7 @@ export function applyAutoDefaults(row: FormRow, config: CalcConfig): FormRow {
  * Any other field is stored as typed and the auto value follows the new size.
  */
 export function setFieldValue(row: FormRow, key: FieldKey, value: string, config: CalcConfig): FormRow {
-  let next: FormRow = { ...row, values: { ...row.values, [key]: value } };
+  let next: FormRow = { ...row, values: { ...row.values, [key]: value }, preset: false };
   if (autoKey(row.kind) === key) {
     next = { ...next, manual: [...(row.manual ?? []).filter((k) => k !== key), key] };
   }

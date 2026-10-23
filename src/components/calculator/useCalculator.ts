@@ -2,10 +2,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { defaultConfig } from "@/lib/calc/config";
 import { calculate, type RowOutcome } from "@/lib/form/calculate";
 import { buildConfig, defaultSettings, type SettingsText } from "@/lib/form/settings";
-import { applyAutoDefaults, resetToAuto, setFieldValue, withKind } from "@/lib/form/auto-defaults";
+import { resetToAuto, setFieldValue, withKind } from "@/lib/form/auto-defaults";
 import { sampleRows } from "@/lib/form/sample-rows";
 import { insertIndex } from "@/lib/form/kind-groups";
-import { initialValues, newRow, type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
+import { defaultValues, presetRow } from "@/lib/form/defaults";
+import { type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
 
 /**
  * The page shows areas only; pressure losses are hidden for now (docs/decisions.md). The core still needs a flow and
@@ -47,9 +48,9 @@ export function useCalculator() {
   const outcome = (id: number) => outcomes.get(id);
 
   const update = (id: number, patch: Partial<FormRow>) =>
-    setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+    setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch, preset: false } : r)));
   const setKind = (id: number, kind: FittingKind) =>
-    setRows((rs) => rs.map((r) => (r.id === id ? withKind(r, kind, initialValues(kind), built.config) : r)));
+    setRows((rs) => rs.map((r) => (r.id === id ? { ...withKind(r, kind, defaultValues(kind), built.config), preset: true } : r)));
   // size-dependent fields (elbow radius) follow the size until the user types over them
   const setValue = (id: number, key: FieldKey, value: string) =>
     setRows((rs) => rs.map((r) => (r.id === id ? setFieldValue(r, key, value, built.config) : r)));
@@ -60,7 +61,7 @@ export function useCalculator() {
     const id = nextId.current++; // outside the updater, which React may run twice
     setRows((rs) => {
       const at = insertIndex(rs, kind);
-      return [...rs.slice(0, at), applyAutoDefaults(newRow(id, kind), built.config), ...rs.slice(at)];
+      return [...rs.slice(0, at), presetRow(id, kind, built.config), ...rs.slice(at)];
     });
     setLastAddedId(id);
   };

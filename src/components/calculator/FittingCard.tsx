@@ -72,6 +72,7 @@ export function FittingCard({ row, index, justAdded, showSketch, collapsed, onTo
           </button>
         </div>
       </div>
+      {row.preset && <p className="-mt-2 mb-3 text-xs text-muted">{dict.defaultsNote}</p>}
       <div
         className="grid grid-cols-2 gap-3 sm:[grid-template-columns:repeat(var(--cols),minmax(0,1fr))]"
         style={{ "--cols": fieldColumns(labels) } as React.CSSProperties}

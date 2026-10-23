@@ -64,6 +64,8 @@ export interface FormRow {
   zeta: string;
   /** Auto-filled fields (see auto-defaults.ts) that the user has typed over; they stop following the size. */
   manual?: FieldKey[];
+  /** The values are the untouched defaults of the kind (see defaults.ts); the card says so until the user edits something. */
+  preset?: boolean;
 }
 
 export function initialValues(kind: FittingKind): FormRow['values'] {

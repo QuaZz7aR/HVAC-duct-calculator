@@ -22,6 +22,7 @@ export const uk = {
   },
   itemsTitle: 'Деталі',
   addItem: 'Додати деталь',
+  defaultsNote: 'Типові значення за замовчуванням. Змініть їх під свій розмір.',
   palette: {
     title: 'Додати деталь',
     viewTitle: 'Вигляд',
