@@ -124,7 +124,7 @@ export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardVi
   );
 }
 
-/** Phone: a bottom sheet with every kind and a search. */
+/** Phone: a bottom sheet with every kind and, at the bottom within thumb reach, a search (not focused on open, so the keyboard stays down). */
 export function Sheet({ found, query, setQuery, count, onClose, onAdd }: { found: ReturnType<typeof searchKinds>; query: string; setQuery: (q: string) => void; count: Props["count"]; onClose: () => void; onAdd: (k: FittingKind) => void }) {
   const ref = useRef<HTMLDivElement>(null);
   useDismiss(ref, true, onClose);
@@ -136,7 +136,6 @@ export function Sheet({ found, query, setQuery, count, onClose, onAdd }: { found
           <h3 className="font-medium">{dict.palette.title}</h3>
           <button type="button" className={buttonClass} onClick={onClose}>{dict.palette.close}</button>
         </div>
-        <input type="search" autoFocus value={query} onChange={(e) => setQuery(e.target.value)} placeholder={dict.palette.search} aria-label={dict.palette.search} className={inputClass} />
         <div className="min-h-0 flex-1 overflow-y-auto">
           {found.length === 0 && <p className="py-4 text-sm text-muted">{dict.palette.nothingFound}</p>}
           {found.map((g) => (
@@ -146,6 +145,7 @@ export function Sheet({ found, query, setQuery, count, onClose, onAdd }: { found
             </div>
           ))}
         </div>
+        <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={dict.palette.search} aria-label={dict.palette.search} className={inputClass} />
       </div>
     </>
   );
