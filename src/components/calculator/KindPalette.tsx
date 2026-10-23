@@ -34,6 +34,8 @@ function KindItem({ kind, count, onPick }: { kind: FittingKind; count: number; o
   );
 }
 
+const railBox = "flex flex-col gap-1 rounded-lg border border-line bg-panel p-1.5";
+
 const railAction =
   "grid justify-items-center gap-0.5 rounded-md border border-line px-0.5 py-1.5 text-center text-[11px] leading-tight hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
 
@@ -50,7 +52,8 @@ export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardVi
     <nav ref={ref} aria-label={dict.palette.title} className="hidden lg:block">
       {/* the list opens inside the sticky box, so it stays beside the rail wherever the page is scrolled */}
       <div ref={box} className="sticky top-4">
-      <div className="flex max-h-[calc(100vh-2rem)] flex-col gap-1 overflow-y-auto rounded-lg border border-line bg-panel p-1.5">
+      <div className="flex max-h-[calc(100vh-2rem)] flex-col gap-2 overflow-y-auto">
+      <div className={railBox}>
         <p className="grid justify-items-center gap-0.5 border-b border-line px-0.5 pb-2 pt-1 text-center text-[11px] font-medium leading-tight">
           <span aria-hidden="true" className="grid h-6 w-6 place-items-center rounded-full bg-accent text-base leading-none text-background">+</span>
           {dict.palette.title}
@@ -70,20 +73,21 @@ export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardVi
             <span>{dict.kindGroups[g.id]}</span>
           </button>
         ))}
+      </div>
         {hasRows && (
-          <div className="mt-1 grid gap-1 border-t border-line pt-2">
-            <p className="text-center text-[11px] uppercase tracking-wider text-muted">{dict.palette.viewTitle}</p>
+          <div className={railBox}>
+            <p className="px-0.5 pt-0.5 text-center text-[11px] uppercase tracking-wider text-muted">{dict.palette.viewTitle}</p>
             <button type="button" onClick={() => view.setAllSketches(!view.allSketchesOpen)} className={railAction}>
               <svg viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-4 w-6 text-accent">
-                <rect x="2" y="3" width="14" height="8" rx="1" />
-                <path d="M2 14h14M2 12.5v3M16 12.5v3" />
-                {view.allSketchesOpen && <path d="M3 22L21 2" transform="translate(0 -3)" />}
+                <path d="M1.5 8S5 2 12 2s10.5 6 10.5 6S19 14 12 14 1.5 8 1.5 8z" />
+                <circle cx="12" cy="8" r="2.5" />
+                {view.allSketchesOpen && <path d="M3 15L21 1" />}
               </svg>
               {view.allSketchesOpen ? dict.palette.hideSketches : dict.palette.showSketches}
             </button>
             <button type="button" onClick={() => view.setAllFolded(!view.allFolded)} className={railAction}>
               <svg viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-4 w-6 text-accent">
-                {view.allFolded ? <path d="M6 2l6 5 6-5M6 9l6 5 6-5" /> : <path d="M6 6l6-5 6 5M6 14l6-5 6 5" />}
+                {view.allFolded ? <path d="M6 6l6-4 6 4M6 10l6 4 6-4" /> : <path d="M6 2l6 4 6-4M6 14l6-4 6 4" />}
               </svg>
               {view.allFolded ? dict.expandAll : dict.collapseAll}
             </button>
