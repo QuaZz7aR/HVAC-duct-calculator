@@ -5,6 +5,12 @@ import { uk as dict } from "@/lib/i18n/uk";
 import { KindGlyph } from "../KindGlyph";
 import { KindMenu } from "../KindMenu";
 import { KindQuickBar, KindRail } from "../KindPalette";
+import type { CardView } from "../useCardView";
+
+const view: CardView = {
+  sketchOpen: () => true, isFolded: () => false, allSketchesOpen: true, allFolded: false,
+  toggleSketch: () => {}, toggleFolded: () => {}, setFoldedMany: () => {}, setAllSketches: () => {}, setAllFolded: () => {},
+};
 
 describe("kind palette", () => {
   it("draws a glyph for every kind", () => {
@@ -12,8 +18,11 @@ describe("kind palette", () => {
   });
 
   it("shows a rail button per group and quick buttons with the all-kinds entry", () => {
-    const rail = renderToStaticMarkup(<KindRail count={() => 0} onAdd={() => {}} />);
+    const rail = renderToStaticMarkup(<KindRail count={() => 0} onAdd={() => {}} view={view} hasRows />);
     for (const name of Object.values(dict.kindGroups)) expect(rail).toContain(name);
+    expect(rail).toContain(dict.palette.sketches);
+    expect(rail).toContain(dict.palette.collapseShort);
+    expect(renderToStaticMarkup(<KindRail count={() => 0} onAdd={() => {}} view={view} hasRows={false} />)).not.toContain(dict.palette.sketches);
     const bar = renderToStaticMarkup(<KindQuickBar count={() => 0} onAdd={() => {}} />);
     expect(bar).toContain(dict.palette.allKinds);
     expect(bar).toContain(dict.kinds.roundStraight.designation);

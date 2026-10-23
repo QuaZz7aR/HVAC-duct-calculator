@@ -9,13 +9,16 @@ import { KindQuickBar, KindRail } from "./calculator/KindPalette";
 import { mutedClass } from "./calculator/styles";
 import { Totals } from "./calculator/Totals";
 import { useCalculator } from "./calculator/useCalculator";
+import { useCardView } from "./calculator/useCardView";
 
 export function Calculator() {
   const { rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, removeRow } = useCalculator();
 
+  const view = useCardView(rows);
+
   return (
     <div className="mx-auto w-full max-w-7xl flex-1 gap-6 px-4 py-8 lg:grid lg:grid-cols-[5rem_minmax(0,1fr)]">
-      <KindRail count={countOf} onAdd={addRow} />
+      <KindRail count={countOf} onAdd={addRow} view={view} hasRows={rows.length > 0} />
       <main className="min-w-0 space-y-6">
         <header>
           <h1 className="text-2xl font-semibold">{dict.appTitle}</h1>
@@ -26,6 +29,7 @@ export function Calculator() {
         <KindQuickBar count={countOf} onAdd={addRow} />
         <FittingList
           rows={rows}
+          view={view}
           lastAddedId={lastAddedId}
           outcome={outcome}
           onKindChange={setKind}

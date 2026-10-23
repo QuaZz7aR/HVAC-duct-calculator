@@ -4,6 +4,7 @@ import { kindGroups, quickKinds, searchKinds, type KindGroupId } from "@/lib/for
 import { uk as dict } from "@/lib/i18n/uk";
 import { KindGlyph } from "./KindGlyph";
 import { buttonClass, inputClass } from "./styles";
+import type { CardView } from "./useCardView";
 import { useDismiss } from "./useDismiss";
 
 interface Props {
@@ -33,8 +34,11 @@ function KindItem({ kind, count, onPick }: { kind: FittingKind; count: number; o
   );
 }
 
+const railToggle = (on: boolean) =>
+  `rounded-md border px-0.5 py-1.5 text-center text-[11px] leading-tight hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent ${on ? "border-accent bg-accent-soft text-foreground" : "border-line text-muted"}`;
+
 /** Desktop: a narrow rail of the kind groups, always in view; a group opens a list of its kinds beside the rail. */
-export function KindRail({ count, onAdd }: Props) {
+export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardView; hasRows: boolean }) {
   const [open, setOpen] = useState<KindGroupId | null>(null);
   // top of the open group's button inside the sticky box: the list opens level with it
   const [top, setTop] = useState(0);
@@ -66,6 +70,16 @@ export function KindRail({ count, onAdd }: Props) {
             <span>{dict.kindGroups[g.id]}</span>
           </button>
         ))}
+        {hasRows && (
+          <div className="mt-1 grid gap-1 border-t border-line pt-2">
+            <button type="button" aria-pressed={view.allSketchesOpen} title={view.allSketchesOpen ? dict.hideAllSketches : dict.showAllSketches} onClick={() => view.setAllSketches(!view.allSketchesOpen)} className={railToggle(view.allSketchesOpen)}>
+              {dict.palette.sketches}
+            </button>
+            <button type="button" aria-pressed={view.allFolded} title={view.allFolded ? dict.expandAll : dict.collapseAll} onClick={() => view.setAllFolded(!view.allFolded)} className={railToggle(view.allFolded)}>
+              {view.allFolded ? dict.palette.expandShort : dict.palette.collapseShort}
+            </button>
+          </div>
+        )}
       </div>
       {group && (
         <div style={{ top }} className="absolute left-full z-30 ml-2 w-72 rounded-lg border border-line bg-panel p-2 shadow-xl shadow-black/30">
