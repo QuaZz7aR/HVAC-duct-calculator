@@ -1,6 +1,6 @@
 import { defaultConfig } from "@/lib/calc/config";
 import { autoKey, isAuto } from "@/lib/form/auto-defaults";
-import { fieldColumns } from "@/lib/form/layout";
+import { fieldColumns, isLongLabel } from "@/lib/form/layout";
 import { kindFields, type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
 import type { RowOutcome } from "@/lib/form/calculate";
 import { uk as dict } from "@/lib/i18n/uk";
@@ -77,16 +77,21 @@ export function FittingCard({ row, index, justAdded, showSketch, collapsed, onTo
         className="grid grid-cols-2 gap-3 sm:[grid-template-columns:repeat(var(--cols),minmax(0,1fr))]"
         style={{ "--cols": fieldColumns(labels) } as React.CSSProperties}
       >
-        {kindFields[row.kind].map((f) => (
-          <TextField
-            key={f.key}
-            label={fieldLabel(f)}
-            value={row.values[f.key] ?? ""}
-            onChange={(v) => onValueChange(f.key, v)}
-            hint={autoKey(row.kind) === f.key ? (isAuto(row, f.key) && (row.values[f.key] ?? "") !== "" ? dict.autoValue : undefined) : undefined}
-            action={autoKey(row.kind) === f.key && !isAuto(row, f.key) ? { label: dict.resetAuto, onClick: () => onReset(f.key) } : undefined}
-          />
-        ))}
+        {kindFields[row.kind].map((f) => {
+          const hint = autoKey(row.kind) === f.key ? (isAuto(row, f.key) && (row.values[f.key] ?? "") !== "" ? dict.autoValue : undefined) : undefined;
+          const action = autoKey(row.kind) === f.key && !isAuto(row, f.key) ? { label: dict.resetAuto, onClick: () => onReset(f.key) } : undefined;
+          return (
+            <TextField
+              key={f.key}
+              label={fieldLabel(f)}
+              value={row.values[f.key] ?? ""}
+              onChange={(v) => onValueChange(f.key, v)}
+              hint={hint}
+              action={action}
+              wide={isLongLabel(`${fieldLabel(f)} ${hint ? `(${hint})` : ""} ${action?.label ?? ""}`.trim())}
+            />
+          );
+        })}
         <TextField label={dict.quantity} inputMode="numeric" value={row.quantity} onChange={(quantity) => onPatch({ quantity })} />
       </div>
       <button
