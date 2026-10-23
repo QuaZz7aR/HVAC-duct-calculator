@@ -33,7 +33,7 @@ function groupByKind(rows: FormRow[]) {
 }
 
 export function FittingList({ rows, view, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove, lastAddedId }: Props) {
-  const { sketchOpen, isFolded, allSketchesOpen, allFolded, setAllSketches, setAllFolded, setFoldedMany } = view;
+  const { sketchOpen, isFolded, setFoldedMany } = view;
 
   useEffect(() => {
     if (lastAddedId === null) return;
@@ -71,16 +71,6 @@ export function FittingList({ rows, view, outcome, onKindChange, onValueChange, 
             <span className="lg:hidden">{dict.palette.hintBar}</span>
           </p>
         </div>
-        {rows.length > 0 && (
-          <div className="flex flex-wrap gap-2 lg:hidden">
-            <button type="button" className={buttonClass} onClick={() => setAllSketches(!allSketchesOpen)}>
-              {allSketchesOpen ? dict.hideAllSketches : dict.showAllSketches}
-            </button>
-            <button type="button" className={buttonClass} onClick={() => setAllFolded(!allFolded)}>
-              {allFolded ? dict.expandAll : dict.collapseAll}
-            </button>
-          </div>
-        )}
       </div>
       {/* one grid for the page: single cards and folded tiles share the 1-3 columns, a repeated kind is a full-width section with a grid of its own; open cards span the full width */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

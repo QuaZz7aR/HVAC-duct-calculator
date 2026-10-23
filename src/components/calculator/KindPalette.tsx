@@ -3,6 +3,8 @@ import type { FittingKind } from "@/lib/form/fields";
 import { kindGroups, quickKinds, searchKinds, type KindGroupId } from "@/lib/form/kind-groups";
 import { uk as dict } from "@/lib/i18n/uk";
 import { KindGlyph } from "./KindGlyph";
+import { scrollToTop } from "./scrollToTop";
+import { FoldIcon, SketchesIcon, UpIcon } from "./ViewIcons";
 import { buttonClass, inputClass } from "./styles";
 import type { CardView } from "./useCardView";
 import { useDismiss } from "./useDismiss";
@@ -39,14 +41,11 @@ function KindItem({ kind, count, onPick }: { kind: FittingKind; count: number; o
 
 const railBox = "flex flex-col gap-1 rounded-lg border border-line bg-panel p-1.5";
 
+const barAction =
+  "flex items-center gap-1.5 rounded-md border border-line bg-background px-2 py-1.5 text-left text-[13px] leading-tight hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
+
 const railAction =
   "grid grid-cols-[auto_1fr] items-center gap-2 rounded-md border border-line px-2.5 py-2 text-left text-sm leading-tight hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
-
-/** Back to the top of the page (the motion is dropped for people who asked for less of it). */
-function scrollToTop() {
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
-}
 
 /** Desktop: a narrow rail of the kind groups, always in view; a group opens a list of its kinds beside the rail. */
 export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardView; hasRows: boolean }) {
@@ -89,26 +88,18 @@ export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardVi
           <div className={railBox}>
             <p className="px-0.5 pt-0.5 text-center text-xs uppercase tracking-wider text-muted">{dict.palette.viewTitle}</p>
             <button type="button" onClick={() => view.setAllSketches(!view.allSketchesOpen)} className={railAction}>
-              <svg viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-5 w-8 text-accent">
-                <path d="M1.5 8S5 2 12 2s10.5 6 10.5 6S19 14 12 14 1.5 8 1.5 8z" />
-                <circle cx="12" cy="8" r="2.5" />
-                {view.allSketchesOpen && <path d="M3 15L21 1" />}
-              </svg>
+              <SketchesIcon crossed={view.allSketchesOpen} className="h-5 w-8 text-accent" />
               {view.allSketchesOpen ? dict.hideAllSketches : dict.showAllSketches}
             </button>
             <button type="button" onClick={() => view.setAllFolded(!view.allFolded)} className={railAction}>
-              <svg viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-5 w-8 text-accent">
-                {view.allFolded ? <path d="M6 6l6-4 6 4M6 10l6 4 6-4" /> : <path d="M6 2l6 4 6-4M6 14l6-4 6 4" />}
-              </svg>
+              <FoldIcon folded={view.allFolded} className="h-5 w-8 text-accent" />
               {view.allFolded ? dict.palette.expandCards : dict.palette.collapseCards}
             </button>
           </div>
         )}
         <div className={railBox}>
           <button type="button" onClick={scrollToTop} className={railAction}>
-            <svg viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-5 w-8 text-accent">
-              <path d="M12 14V3M6 8l6-5 6 5" />
-            </svg>
+            <UpIcon className="h-5 w-8 text-accent" />
             {dict.palette.toTop}
           </button>
         </div>
@@ -137,7 +128,7 @@ export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardVi
 }
 
 /** Phone: a sticky row of quick buttons and "all kinds", which opens a bottom sheet with search. */
-export function KindQuickBar({ count, onAdd }: Props) {
+export function KindQuickBar({ count, onAdd, view, hasRows }: Props & { view: CardView; hasRows: boolean }) {
   const [sheet, setSheet] = useState(false);
   const [query, setQuery] = useState("");
   const close = () => {
@@ -158,6 +149,18 @@ export function KindQuickBar({ count, onAdd }: Props) {
           {dict.palette.allKinds}
         </button>
       </div>
+      {hasRows && (
+        <div className="grid grid-cols-2 gap-1.5 border-t border-line px-4 py-1.5">
+          <button type="button" onClick={() => view.setAllSketches(!view.allSketchesOpen)} className={barAction}>
+            <SketchesIcon crossed={view.allSketchesOpen} className="h-4 w-5 flex-none text-accent" />
+            {view.allSketchesOpen ? dict.hideAllSketches : dict.showAllSketches}
+          </button>
+          <button type="button" onClick={() => view.setAllFolded(!view.allFolded)} className={barAction}>
+            <FoldIcon folded={view.allFolded} className="h-4 w-5 flex-none text-accent" />
+            {view.allFolded ? dict.palette.expandCards : dict.palette.collapseCards}
+          </button>
+        </div>
+      )}
       {sheet && <Sheet found={found} query={query} setQuery={setQuery} count={count} onClose={close} onAdd={(k) => { onAdd(k); close(); }} />}
     </div>
   );
