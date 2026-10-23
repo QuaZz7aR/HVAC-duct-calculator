@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FittingKind } from "@/lib/form/fields";
 import { kindGroups, searchKinds, type KindGroupId } from "@/lib/form/kind-groups";
 import { uk as dict } from "@/lib/i18n/uk";
@@ -128,15 +128,23 @@ export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardVi
 export function Sheet({ found, query, setQuery, count, onClose, onAdd }: { found: ReturnType<typeof searchKinds>; query: string; setQuery: (q: string) => void; count: Props["count"]; onClose: () => void; onAdd: (k: FittingKind) => void }) {
   const ref = useRef<HTMLDivElement>(null);
   useDismiss(ref, true, onClose);
+  // the page behind must not scroll while the sheet is open
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
   return (
     <>
       <div className="fixed inset-0 z-40 bg-black/50" aria-hidden="true" />
-      <div ref={ref} role="dialog" aria-modal="true" aria-label={dict.palette.title} className="fixed inset-x-0 bottom-0 top-16 z-50 flex flex-col gap-2 rounded-t-2xl border-t border-line bg-panel px-4 pb-4 pt-3 shadow-2xl">
+      <div ref={ref} role="dialog" aria-modal="true" aria-label={dict.palette.title} className="fixed inset-x-0 bottom-0 top-16 z-50 flex flex-col gap-2 overscroll-contain rounded-t-2xl border-t border-line bg-panel px-4 pb-4 pt-3 shadow-2xl">
         <div className="flex items-center justify-between">
           <h3 className="font-medium">{dict.palette.title}</h3>
           <button type="button" className={buttonClass} onClick={onClose}>{dict.palette.close}</button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
           {found.length === 0 && <p className="py-4 text-sm text-muted">{dict.palette.nothingFound}</p>}
           {found.map((g) => (
             <div key={g.id} className="mb-2">
