@@ -1,6 +1,6 @@
 # 0029. Fitting sketches on each card
 
-- Status: Accepted
+- Status: Accepted; the layout of the two sketches is amended by [0032](0032-sketch-panels-and-field-alignment.md)
 - Date: 2026-10-22
 - Source: owner idea (2026-10-19), card design 3 chosen by the owner (2026-10-22); PR #25
 

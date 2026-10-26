@@ -43,9 +43,10 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0026](adr/0026-branch-in-taps.md) | Branch-in taps (Квр, Пвр) | 2026-10-19 | Accepted |
 | [0027](adr/0027-pressure-losses-hidden-in-the-ui.md) | Pressure losses hidden in the UI | 2026-10-19 | Accepted (temporary, until the aerodynamics mode) |
 | [0028](adr/0028-elbow-radius-suggested-from-the-size.md) | Elbow radius suggested from the size | 2026-10-22 | Accepted (values `TODO(confirm)`) |
-| [0029](adr/0029-fitting-sketches.md) | Fitting sketches on each card | 2026-10-22 | Accepted |
+| [0029](adr/0029-fitting-sketches.md) | Fitting sketches on each card | 2026-10-22 | Accepted; the sketch layout is amended by [0032](adr/0032-sketch-panels-and-field-alignment.md) |
 | [0030](adr/0030-beta-start-state-and-card-view.md) | Beta start state, card view state and card look | 2026-10-22 | Accepted (the beta start state is temporary) |
 | [0031](adr/0031-side-panel-for-adding-fittings.md) | Side panel for adding fittings | 2026-10-23 | Accepted |
+| [0032](adr/0032-sketch-panels-and-field-alignment.md) | Two sketch panels and inputs aligned under wrapped labels | 2026-10-26 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). Both are rect elbows.

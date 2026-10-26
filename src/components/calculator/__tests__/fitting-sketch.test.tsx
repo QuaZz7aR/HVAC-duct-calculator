@@ -48,4 +48,9 @@ describe("FittingSketch", () => {
     expect(profileLegend("roundStraight")).toEqual([dict.sketch.profileDiameter]);
     expect(sketchLegend("rectTee")).toEqual([dict.sketch.legend.rect, dict.sketch.legend.smallRect]);
   });
+
+  it("names the small end of a reducer without the branch wording", () => {
+    expect(sketchLegend("rectReducer")).toEqual([dict.sketch.legend.rect, dict.sketch.legend.smallEndRect, dict.sketch.legend.length]);
+    expect(profileLegend("roundReducer")).toEqual([dict.sketch.profileDiameter, dict.sketch.dashedSmall, dict.sketch.legend.smallEndDiameter]);
+  });
 });

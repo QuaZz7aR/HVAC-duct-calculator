@@ -83,6 +83,8 @@ export const uk = {
       rect: 'Ш × В — ширина × висота',
       smallDiameter: 'д — малий діаметр або діаметр врізки',
       smallRect: 'ш × в — мала ширина × висота або розміри врізки',
+      smallEndDiameter: 'д — малий діаметр',
+      smallEndRect: 'ш × в — мала ширина × висота',
       length: 'L — довжина',
       tapLength: 'l — довжина врізки',
       centerRadius: 'R — радіус по осі',
