@@ -103,17 +103,18 @@ export function FittingCard({ row, index, justAdded, showSketch, collapsed, onTo
         {showSketch ? dict.sketch.hide : dict.sketch.show}
       </button>
       {showSketch && (
-        <div className="mt-4 grid gap-4 rounded-md bg-background p-4 sm:grid-cols-2">
-          {([["side", dict.sketch.sideTitle, sketchLegend(row.kind)], ["profile", dict.sketch.profileTitle, profileLegend(row.kind)]] as const).map(([view, title, legend]) => (
-            <figure key={view} className="min-w-0">
-              <FittingSketch kind={row.kind} view={view} />
-              <figcaption className="mt-1 text-[15px] leading-snug">
-                <strong className="block text-[13px] font-semibold uppercase tracking-wide text-muted">{title}</strong>
-                <span className="text-sm text-muted">{legend.join("; ")}.</span>
-              </figcaption>
-            </figure>
-          ))}
-          <p className="text-sm text-muted sm:col-span-2">{dict.sketch.note}</p>
+        <div className="mt-4">
+          {/* two separate panels, side view and cross-section, each with its own title and legend */}
+          <div className="grid gap-3 sm:grid-cols-2">
+            {([["side", dict.sketch.sideTitle, sketchLegend(row.kind)], ["profile", dict.sketch.profileTitle, profileLegend(row.kind)]] as const).map(([view, title, legend]) => (
+              <figure key={view} className="flex min-w-0 flex-col rounded-md border border-line bg-background p-4">
+                <strong className="text-[13px] font-semibold uppercase tracking-wide text-muted">{title}</strong>
+                <FittingSketch kind={row.kind} view={view} />
+                <figcaption className="mt-auto pt-1 text-sm leading-snug text-muted">{legend.join("; ")}.</figcaption>
+              </figure>
+            ))}
+          </div>
+          <p className="mt-2 text-sm text-muted">{dict.sketch.note}</p>
         </div>
       )}
       {outcome && !outcome.ok && <ErrorList issues={outcome.issues} />}

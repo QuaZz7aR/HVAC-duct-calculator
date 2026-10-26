@@ -49,7 +49,7 @@ export function sketchLegend(kind: FittingKind): string[] {
     case "elbow":
       return [main, roundMain ? l.centerRadius : l.innerRadius, l.angle];
     case "reducer":
-      return [main, small, l.length];
+      return [main, roundSmall ? l.smallEndDiameter : l.smallEndRect, l.length];
     case "tee":
     case "cross":
       return [main, small];
@@ -61,7 +61,7 @@ export function profileLegend(kind: FittingKind): string[] {
   const { shape, roundMain, roundSmall } = sketchSpecs[kind];
   const l = dict.sketch;
   const out = [roundMain ? l.profileDiameter : l.profileRect];
-  if (shape === "reducer") out.push(l.dashedSmall, roundSmall ? l.legend.smallDiameter : l.legend.smallRect);
+  if (shape === "reducer") out.push(l.dashedSmall, roundSmall ? l.legend.smallEndDiameter : l.legend.smallEndRect);
   if (shape === "tee" || shape === "cross") out.push(l.dashedBranch, roundSmall ? l.legend.smallDiameter : l.legend.smallRect);
   return out;
 }

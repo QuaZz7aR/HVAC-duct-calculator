@@ -14,7 +14,8 @@ interface Props {
 
 export function TextField({ label, value, onChange, inputMode = "decimal", hint, action, wide }: Props) {
   return (
-    <label className={wide ? "col-span-2 sm:col-span-1" : undefined}>
+    // a column, with the input pushed to the bottom: a label that wraps to two lines does not lower its input below the neighbours
+    <label className={`flex flex-col ${wide ? "col-span-2 sm:col-span-1" : ""}`}>
       <span className={labelClass}>
         {label}
         {hint && <span className="ml-1 text-accent">({hint})</span>}
@@ -24,7 +25,7 @@ export function TextField({ label, value, onChange, inputMode = "decimal", hint,
           </button>
         )}
       </span>
-      <input className={inputClass} inputMode={inputMode} value={value} onChange={(e) => onChange(e.target.value)} />
+      <input className={`mt-auto ${inputClass}`} inputMode={inputMode} value={value} onChange={(e) => onChange(e.target.value)} />
     </label>
   );
 }

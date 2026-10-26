@@ -160,7 +160,7 @@ function Profile({ kind }: { kind: FittingKind }) {
 export function FittingSketch({ kind, view = "side" }: { kind: FittingKind; view?: SketchView }) {
   const label = `${kindTitle(kind)}: ${view === "side" ? dict.sketch.sideTitle : dict.sketch.profileTitle}`;
   return (
-    <svg viewBox="0 0 300 184" role="img" aria-label={label} className="h-auto w-full max-w-sm">
+    <svg viewBox="0 0 300 184" role="img" aria-label={label} className="mx-auto h-auto w-full max-w-sm">
       {view === "side" ? <Side kind={kind} /> : <Profile kind={kind} />}
     </svg>
   );
