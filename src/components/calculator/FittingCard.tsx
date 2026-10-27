@@ -6,7 +6,7 @@ import type { RowOutcome } from "@/lib/form/calculate";
 import { uk as dict } from "@/lib/i18n/uk";
 import { kindTitle } from "./format";
 import { FittingSketch } from "./FittingSketch";
-import { profileLegend, sketchLegend } from "./sketch-spec";
+import { isoLegend } from "./sketch-spec";
 import { ErrorList, WarningList } from "./ErrorList";
 import { KindMenu } from "./KindMenu";
 import { buttonClass, cardClass, dangerButtonClass } from "./styles";
@@ -103,19 +103,13 @@ export function FittingCard({ row, index, justAdded, showSketch, collapsed, onTo
         {showSketch ? dict.sketch.hide : dict.sketch.show}
       </button>
       {showSketch && (
-        <div className="mt-4">
-          {/* two separate panels, side view and cross-section, each with its own title and legend */}
-          <div className="grid gap-3 sm:grid-cols-2">
-            {([["side", dict.sketch.sideTitle, sketchLegend(row.kind)], ["profile", dict.sketch.profileTitle, profileLegend(row.kind)]] as const).map(([view, title, legend]) => (
-              <figure key={view} className="flex min-w-0 flex-col rounded-md border border-line bg-background p-4">
-                <strong className="text-[13px] font-semibold uppercase tracking-wide text-muted">{title}</strong>
-                <FittingSketch kind={row.kind} view={view} />
-                <figcaption className="mt-auto pt-1 text-sm leading-snug text-muted">{legend.join("; ")}.</figcaption>
-              </figure>
-            ))}
-          </div>
-          <p className="mt-2 text-sm text-muted">{dict.sketch.note}</p>
-        </div>
+        <figure className="mt-4 flex flex-col rounded-md border border-line bg-background p-4">
+          <strong className="text-[13px] font-semibold uppercase tracking-wide text-muted">{dict.sketch.isoTitle}</strong>
+          <FittingSketch kind={row.kind} view="iso" />
+          <figcaption className="pt-2 text-sm leading-snug text-muted">
+            {isoLegend(row.kind).join("; ")}. {dict.sketch.note}
+          </figcaption>
+        </figure>
       )}
       {outcome && !outcome.ok && <ErrorList issues={outcome.issues} />}
       {outcome?.ok && <WarningList warnings={outcome.result.warnings} />}

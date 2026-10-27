@@ -1,6 +1,6 @@
 # 0032. Two sketch panels and inputs aligned under wrapped labels
 
-- Status: Accepted
+- Status: Accepted; the two sketch panels are superseded by [0033](0033-isometric-sketch.md)
 - Date: 2026-10-26
 - Source: owner remarks with screenshots (2026-10-26)
 
