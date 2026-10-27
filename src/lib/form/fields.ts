@@ -18,7 +18,7 @@ export interface FieldDef {
 // TODO(confirm): allowance 50 mm and elbow angle 90 are form prefills only (the fixtures use 50), not core defaults.
 const allowance: FieldDef = { key: 'allowance', initial: '50' };
 const angle: FieldDef = { key: 'angle', initial: '90' };
-// TODO(confirm): the 100 mm tap length is a form prefill only (Excel Квр / Пвр column J), not a core default.
+// TODO(confirm): the 100 mm tap length is a form prefill only (Excel Квр / Пвр column J; ВСН 353-86 п. 1.5 / 2.5: h = 100 mm), not a core default.
 const tapLength: FieldDef = { key: 'length', initial: '100' };
 const reducerLength: FieldDef = { key: 'length', optional: true };
 

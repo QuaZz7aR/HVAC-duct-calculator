@@ -16,7 +16,7 @@ Two kinds, Excel codes Квр and Пвр: `roundTap` (`diameter`, `length`) and 
 
 ## Consequences
 - Comparison with the specification: Д150 0.047 (0.05), 300x100 0.080 (0.07), Д100 0.031 (0.02; the specification implies about 65 mm of length). The figures are his rounded ones, not fixtures.
-- The 100 mm prefill is a form default only, `TODO(confirm)`.
+- The 100 mm prefill is a form default only, `TODO(confirm)`. Source found later (2026-10-27): ВСН 353-86 п. 1.5 and 2.5 give a tap height of h = 100 mm "as a rule" for round and rect ducts (a USSR norm; no Ukrainian equivalent found).
 - The form still asks for a flow for every row, so a tap row needs one; with an empty zeta it adds no pressure drop. (Since 2026-10-19 the UI feeds a fixed hidden flow, [0027](0027-pressure-losses-hidden-in-the-ui.md).)
 - The seam allowance of [0022](0022-seam-allowance-for-other-kinds.md) applies to taps.
 - Deferred: subtracting the cut-out from the main duct (an option or a separate credit line) is not modelled; the main duct's thickness differs from the tap's, so it needs its own design.
