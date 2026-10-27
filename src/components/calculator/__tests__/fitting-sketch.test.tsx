@@ -75,11 +75,11 @@ describe("isometric sketch", () => {
 
   it("marks the small end, the branch, the radius and the length", () => {
     const labels = (kind: Parameters<typeof isoDrawing>[0]) => isoDrawing(kind).items.flatMap((i) => (i.type === "dim" || i.type === "radius" ? [i.label] : []));
-    expect(labels("rectReducer")).toEqual(expect.arrayContaining(["a", "b", "a₁", "b₁", "L"]));
-    expect(labels("rectToRoundReducer")).toEqual(expect.arrayContaining(["a", "b", "d₁", "L"]));
-    expect(labels("roundTeeRectBranch")).toEqual(expect.arrayContaining(["d", "a₁", "b₁"]));
-    expect(labels("roundElbow")).toEqual(expect.arrayContaining(["d", "R"]));
-    expect(labels("rectTap")).toEqual(expect.arrayContaining(["a", "b", "L"]));
+    expect(labels("rectReducer")).toEqual(expect.arrayContaining(["a₁", "b₁", "a₂", "b₂", "L"]));
+    expect(labels("rectToRoundReducer")).toEqual(expect.arrayContaining(["a₁", "b₁", "d₂", "L"]));
+    expect(labels("roundTeeRectBranch")).toEqual(expect.arrayContaining(["d₁", "a₂", "b₂"]));
+    expect(labels("roundElbow")).toEqual(expect.arrayContaining(["d₁", "R"]));
+    expect(labels("rectTap")).toEqual(expect.arrayContaining(["a₁", "b₁", "L"]));
   });
 
   it("explains the letters in the wording of the fields", () => {

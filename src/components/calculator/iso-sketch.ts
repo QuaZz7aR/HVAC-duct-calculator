@@ -331,7 +331,7 @@ function reducer(s: Sketch, roundMain: boolean, roundSmall: boolean) {
   if (roundMain) {
     s.cylinder([0, 0, 0], [len2, 0, 0], mainR + 0.06, "opening", "face", r1);
     const R = mainR + 0.06;
-    // the large end faces away: d is taken across its outline, the extension lines carry the outline back past the end
+    // the large end faces away: d₁ is taken across its outline, the extension lines carry the outline back past the end
     const d = R * Math.SQRT1_2;
     s.dim(...offset([[0, d, -d], [0, -d, d]], [-0.42, 0, 0]), sym.diameter, [-10, 5], "end");
     s.dim(...offset([[len2, 0, -r1], [len2, 0, r1]], [0, -r1 - 0.14, 0]), sym.smallDiameter, [10, 5], "start");
@@ -367,7 +367,7 @@ function reducer(s: Sketch, roundMain: boolean, roundSmall: boolean) {
   s.dim([[0, W / 2, -H / 2], [len2, w1 / 2, -h1 / 2]], [0, W / 2, -H / 2 - 0.16], [len2, w1 / 2, -H / 2 - 0.16], sym.length, [-8, 20]);
 }
 
-/** a and b of a reducer's large rect end at x = 0. */
+/** a₁ and b₁ of a reducer's large rect end at x = 0. */
 function rectEnd(s: Sketch, W: number, H: number) {
   s.dim(...offset([[0, -W / 2, H / 2], [0, W / 2, H / 2]], [-0.18, 0, 0]), sym.width, [-8, -8]);
   s.dim(...offset([[0, W / 2, -H / 2], [0, W / 2, H / 2]], [0, 0.14, 0]), sym.height, [-10, 5], "end");

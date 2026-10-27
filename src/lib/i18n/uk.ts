@@ -8,16 +8,16 @@ import type { FormIssueCode } from '../form/messages';
  */
 /**
  * Latin letters of the sizes, as on drawings and in EN 1505 / EN 1506 based catalogues: a × b of a rect duct, d of a round one,
- * index 1 for the small end or the branch. The fields and the isometric sketch use the same letters.
+ * index 1 for the main size, index 2 for the small end or the branch (owner, 2026-10-27). The fields and the isometric sketch use the same letters.
  * There is no common letter for the allowance; p (припуск) is the project's choice.
  */
 const sym = {
-  diameter: 'd',
-  smallDiameter: 'd₁',
-  width: 'a',
-  height: 'b',
-  smallWidth: 'a₁',
-  smallHeight: 'b₁',
+  diameter: 'd₁',
+  smallDiameter: 'd₂',
+  width: 'a₁',
+  height: 'b₁',
+  smallWidth: 'a₂',
+  smallHeight: 'b₂',
   length: 'L',
   radius: 'R',
   angle: 'α',
