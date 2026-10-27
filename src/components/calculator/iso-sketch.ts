@@ -1,5 +1,8 @@
 import type { FittingKind } from "@/lib/form/fields";
+import { uk as dict } from "@/lib/i18n/uk";
 import { sketchSpecs } from "./sketch-spec";
+
+const sym = dict.symbols;
 
 // Isometric sketch of a fitting as flat drawing items. Schematic proportions, never the user's sizes.
 // World axes: x along the main duct (screen right-down), y depth (screen left-down), z up.
@@ -257,14 +260,14 @@ function straight(s: Sketch, round: boolean, cap: boolean) {
     if (cap) s.cylinder([len, 0, 0], [len + 0.06, 0, 0], mainR * 1.1, "plate", "plate");
     // a cap's plate is the outermost end, so the extension lines start on it
     const [x, rx] = cap ? [len + 0.06, mainR * 1.1] : [len, mainR];
-    s.dim([[x, 0, -rx], [x, 0, rx]], [len, -mainR - 0.16, -mainR], [len, -mainR - 0.16, mainR], "Д", [10, 5], "start");
-    s.dim([lower(0, mainR, 0), lower(len, mainR, 0)], lower(0, mainR), lower(len, mainR), "L", [-8, 20]);
+    s.dim([[x, 0, -rx], [x, 0, rx]], [len, -mainR - 0.16, -mainR], [len, -mainR - 0.16, mainR], sym.diameter, [10, 5], "start");
+    s.dim([lower(0, mainR, 0), lower(len, mainR, 0)], lower(0, mainR), lower(len, mainR), sym.length, [-8, 20]);
   } else {
     s.prism("x", 0, len, rectW, rectH);
     if (cap) s.prism("x", len, len + 0.06, rectW + 0.08, rectH + 0.08, rectW + 0.08, rectH + 0.08, "plate", "plate");
-    s.dim(...offset([[0, -rectW / 2, rectH / 2], [0, rectW / 2, rectH / 2]], [-0.18, 0, 0]), "Ш", [-8, -8]);
-    s.dim(...offset([[0, rectW / 2, -rectH / 2], [0, rectW / 2, rectH / 2]], [0, 0.14, 0]), "В", [-10, 5], "end");
-    s.dim(...offset([[0, rectW / 2, -rectH / 2], [len, rectW / 2, -rectH / 2]], [0, 0, -0.16]), "L", [-8, 20]);
+    s.dim(...offset([[0, -rectW / 2, rectH / 2], [0, rectW / 2, rectH / 2]], [-0.18, 0, 0]), sym.width, [-8, -8]);
+    s.dim(...offset([[0, rectW / 2, -rectH / 2], [0, rectW / 2, rectH / 2]], [0, 0.14, 0]), sym.height, [-10, 5], "end");
+    s.dim(...offset([[0, rectW / 2, -rectH / 2], [len, rectW / 2, -rectH / 2]], [0, 0, -0.16]), sym.length, [-8, 20]);
   }
 }
 
@@ -281,15 +284,15 @@ function tap(s: Sketch, round: boolean) {
   );
   if (round) {
     s.roundBranch(0.22, l, () => 0);
-    s.dim(...offset(flatDiameter(0.22, l), [0, 0, 0.24]), "Д", [0, -8]);
+    s.dim(...offset(flatDiameter(0.22, l), [0, 0, 0.24]), sym.diameter, [0, -8]);
     // the branch's right outline on screen, measured beside it
     const side = 0.22 * Math.SQRT1_2;
-    s.dim([[side, -side, 0], [side, -side, l]], [0.22, -0.22 - 0.14, 0], [0.22, -0.22 - 0.14, l], "l", [10, 5], "start");
+    s.dim([[side, -side, 0], [side, -side, l]], [0.22, -0.22 - 0.14, 0], [0.22, -0.22 - 0.14, l], sym.length, [10, 5], "start");
   } else {
     s.prism("z", 0, l, 0.5, 0.36, 0.5, 0.36, "opening", "face", false);
-    s.dim(...offset([[-0.25, -0.18, l], [0.25, -0.18, l]], [0, -0.14, 0]), "Ш", [8, -8], "start");
-    s.dim(...offset([[-0.25, -0.18, l], [-0.25, 0.18, l]], [-0.14, 0, 0]), "В", [-10, -6], "end");
-    s.dim([[0.25, -0.18, 0], [0.25, -0.18, l]], [0.25, -0.18 - 0.14, 0], [0.25, -0.18 - 0.14, l - 0.02], "l", [10, 12], "start");
+    s.dim(...offset([[-0.25, -0.18, l], [0.25, -0.18, l]], [0, -0.14, 0]), sym.width, [8, -8], "start");
+    s.dim(...offset([[-0.25, -0.18, l], [-0.25, 0.18, l]], [-0.14, 0, 0]), sym.height, [-10, -6], "end");
+    s.dim([[0.25, -0.18, 0], [0.25, -0.18, l]], [0.25, -0.18 - 0.14, 0], [0.25, -0.18 - 0.14, l - 0.02], sym.length, [10, 12], "start");
   }
 }
 
@@ -302,9 +305,9 @@ function elbow(s: Sketch, round: boolean) {
     const centres = t.map((a): V3 => [rc * Math.cos(a), rc * Math.sin(a), 0]);
     s.tube(centres, t.map((a): [V3, V3] => [[Math.cos(a), Math.sin(a), 0], [0, 0, 1]]), centres.map(() => mainR));
     s.axis(centres);
-    s.radius([0, 0, 0], centres[n / 2], "R");
+    s.radius([0, 0, 0], centres[n / 2], sym.radius);
     // the end at x = 0 faces right on screen: its diameter is measured beside it
-    s.dim(...offset([[0, -rc, -mainR], [0, -rc, mainR]], [0, -mainR - 0.14, 0]), "Д", [10, 5], "start");
+    s.dim(...offset([[0, -rc, -mainR], [0, -rc, mainR]], [0, -mainR - 0.14, 0]), sym.diameter, [10, 5], "start");
   } else {
     const [ri, w, h] = [0.55, 0.55, 0.5];
     const ro = ri + w;
@@ -315,9 +318,9 @@ function elbow(s: Sketch, round: boolean) {
     s.face([...to, ...[...ti].reverse()]);
     for (const k of [0, n]) s.face([ti[k], to[k], bo[k], bi[k]], "opening");
     // R is drawn in the bottom plane, from the centre to the lower inner edge, so it stays off the walls
-    s.radius([0, 0, -h / 2], bi[n / 2], "R");
-    s.dim(...offset([[-ro, 0, -h / 2], [-ri, 0, -h / 2]], [0, 0, -0.16]), "Ш", [-8, 18]);
-    s.dim(...offset([[-ro, 0, -h / 2], [-ro, 0, h / 2]], [-0.14, 0, 0]), "В", [-10, 5], "end");
+    s.radius([0, 0, -h / 2], bi[n / 2], sym.radius);
+    s.dim(...offset([[-ro, 0, -h / 2], [-ri, 0, -h / 2]], [0, 0, -0.16]), sym.width, [-8, 18]);
+    s.dim(...offset([[-ro, 0, -h / 2], [-ro, 0, h / 2]], [-0.14, 0, 0]), sym.height, [-10, 5], "end");
   }
 }
 
@@ -328,11 +331,11 @@ function reducer(s: Sketch, roundMain: boolean, roundSmall: boolean) {
   if (roundMain) {
     s.cylinder([0, 0, 0], [len2, 0, 0], mainR + 0.06, "opening", "face", r1);
     const R = mainR + 0.06;
-    // the large end faces away: Д is taken across its outline, the extension lines carry the outline back past the end
+    // the large end faces away: d is taken across its outline, the extension lines carry the outline back past the end
     const d = R * Math.SQRT1_2;
-    s.dim(...offset([[0, d, -d], [0, -d, d]], [-0.42, 0, 0]), "Д", [-10, 5], "end");
-    s.dim(...offset([[len2, 0, -r1], [len2, 0, r1]], [0, -r1 - 0.14, 0]), "д", [10, 5], "start");
-    s.dim([lower(0, R, 0), lower(len2, r1, 0)], lower(0, R), lower(len2, r1), "L", [-8, 20]);
+    s.dim(...offset([[0, d, -d], [0, -d, d]], [-0.42, 0, 0]), sym.diameter, [-10, 5], "end");
+    s.dim(...offset([[len2, 0, -r1], [len2, 0, r1]], [0, -r1 - 0.14, 0]), sym.smallDiameter, [10, 5], "start");
+    s.dim([lower(0, R, 0), lower(len2, r1, 0)], lower(0, R), lower(len2, r1), sym.length, [-8, 20]);
     return;
   }
   const [W, H] = [0.9, 0.62];
@@ -350,24 +353,24 @@ function reducer(s: Sketch, roundMain: boolean, roundSmall: boolean) {
     s.edge(rect[2], rect[3]);
     s.face(circle, "opening");
     rectEnd(s, W, H);
-    s.dim(...offset([[len2, 0, -r1], [len2, 0, r1]], [0, -r1 - 0.14, 0]), "д", [10, 5], "start");
+    s.dim(...offset([[len2, 0, -r1], [len2, 0, r1]], [0, -r1 - 0.14, 0]), sym.smallDiameter, [10, 5], "start");
     // vertical extension lines down to one level: from the rect end's near corner and the round end's lowest point on screen
     const foot: V3 = [len2, r1 * 0.447, -r1 * 0.894];
-    s.dim([[0, W / 2, -H / 2], foot], [0, W / 2, -H / 2 - 0.16], [len2, foot[1], -H / 2 - 0.16], "L", [-8, 20]);
+    s.dim([[0, W / 2, -H / 2], foot], [0, W / 2, -H / 2 - 0.16], [len2, foot[1], -H / 2 - 0.16], sym.length, [-8, 20]);
     return;
   }
   s.prism("x", 0, len2, W, H, w1, h1);
   rectEnd(s, W, H);
-  s.dim(...offset([[len2, -w1 / 2, -h1 / 2], [len2, w1 / 2, -h1 / 2]], [0.18, 0, 0]), "ш", [10, 14], "start");
-  s.dim(...offset([[len2, -w1 / 2, -h1 / 2], [len2, -w1 / 2, h1 / 2]], [0, -0.14, 0]), "в", [10, 5], "start");
+  s.dim(...offset([[len2, -w1 / 2, -h1 / 2], [len2, w1 / 2, -h1 / 2]], [0.18, 0, 0]), sym.smallWidth, [10, 14], "start");
+  s.dim(...offset([[len2, -w1 / 2, -h1 / 2], [len2, -w1 / 2, h1 / 2]], [0, -0.14, 0]), sym.smallHeight, [10, 5], "start");
   // vertical extension lines from both near lower corners down to one level
-  s.dim([[0, W / 2, -H / 2], [len2, w1 / 2, -h1 / 2]], [0, W / 2, -H / 2 - 0.16], [len2, w1 / 2, -H / 2 - 0.16], "L", [-8, 20]);
+  s.dim([[0, W / 2, -H / 2], [len2, w1 / 2, -h1 / 2]], [0, W / 2, -H / 2 - 0.16], [len2, w1 / 2, -H / 2 - 0.16], sym.length, [-8, 20]);
 }
 
-/** Ш and В of a reducer's large rect end at x = 0. */
+/** a and b of a reducer's large rect end at x = 0. */
 function rectEnd(s: Sketch, W: number, H: number) {
-  s.dim(...offset([[0, -W / 2, H / 2], [0, W / 2, H / 2]], [-0.18, 0, 0]), "Ш", [-8, -8]);
-  s.dim(...offset([[0, W / 2, -H / 2], [0, W / 2, H / 2]], [0, 0.14, 0]), "В", [-10, 5], "end");
+  s.dim(...offset([[0, -W / 2, H / 2], [0, W / 2, H / 2]], [-0.18, 0, 0]), sym.width, [-8, -8]);
+  s.dim(...offset([[0, W / 2, -H / 2], [0, W / 2, H / 2]], [0, 0.14, 0]), sym.height, [-10, 5], "end");
 }
 
 function branchFitting(s: Sketch, roundMain: boolean, roundSmall: boolean, cross: boolean) {
@@ -394,16 +397,16 @@ function branchFitting(s: Sketch, roundMain: boolean, roundSmall: boolean, cross
     s.face([[-bw / 2, -bd / 2, top], [bw / 2, -bd / 2, top], [bw / 2, bd / 2, top], [-bw / 2, bd / 2, top]], "opening");
   }
   if (roundMain) {
-    s.dim(...offset([[half, 0, -mainR], [half, 0, mainR]], [0, -mainR - 0.14, 0]), "Д", [10, 5], "start");
+    s.dim(...offset([[half, 0, -mainR], [half, 0, mainR]], [0, -mainR - 0.14, 0]), sym.diameter, [10, 5], "start");
   } else {
-    s.dim(...offset([[half, -rectW / 2, -rectH / 2], [half, -rectW / 2, rectH / 2]], [0, -0.14, 0]), "В", [10, 5], "start");
-    s.dim(...offset([[-half, -rectW / 2, rectH / 2], [-half, rectW / 2, rectH / 2]], [-0.18, 0, 0]), "Ш", [-8, -8]);
+    s.dim(...offset([[half, -rectW / 2, -rectH / 2], [half, -rectW / 2, rectH / 2]], [0, -0.14, 0]), sym.height, [10, 5], "start");
+    s.dim(...offset([[-half, -rectW / 2, rectH / 2], [-half, rectW / 2, rectH / 2]], [-0.18, 0, 0]), sym.width, [-8, -8]);
   }
   if (roundSmall) {
-    s.dim(...offset(flatDiameter(rb, top), [0, 0, 0.24]), "д", [0, -8]);
+    s.dim(...offset(flatDiameter(rb, top), [0, 0, 0.24]), sym.smallDiameter, [0, -8]);
   } else {
-    s.dim(...offset([[-bw / 2, -bd / 2, top], [bw / 2, -bd / 2, top]], [0, -0.12, 0]), "ш", [8, -6], "start");
-    s.dim(...offset([[-bw / 2, -bd / 2, top], [-bw / 2, bd / 2, top]], [-0.12, 0, 0]), "в", [-10, -4], "end");
+    s.dim(...offset([[-bw / 2, -bd / 2, top], [bw / 2, -bd / 2, top]], [0, -0.12, 0]), sym.smallWidth, [8, -6], "start");
+    s.dim(...offset([[-bw / 2, -bd / 2, top], [-bw / 2, bd / 2, top]], [-0.12, 0, 0]), sym.smallHeight, [-8, -8], "end");
   }
 }
 

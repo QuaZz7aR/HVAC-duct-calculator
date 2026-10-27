@@ -66,7 +66,7 @@ export function profileLegend(kind: FittingKind): string[] {
   return out;
 }
 
-/** Legend of the isometric sketch: rect sizes are drawn on their own edges, so Ш and В (ш and в) are named separately. */
+/** Legend of the isometric sketch: rect sizes are drawn on their own edges, so a and b (a₁ and b₁) are named separately. */
 export function isoLegend(kind: FittingKind): string[] {
   const { shape, roundMain, roundSmall } = sketchSpecs[kind];
   const l = dict.sketch.legend;

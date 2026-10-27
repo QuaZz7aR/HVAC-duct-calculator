@@ -48,6 +48,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0031](adr/0031-side-panel-for-adding-fittings.md) | Side panel for adding fittings | 2026-10-23 | Accepted |
 | [0032](adr/0032-sketch-panels-and-field-alignment.md) | Two sketch panels and inputs aligned under wrapped labels | 2026-10-26 | Accepted; the two panels are superseded by [0033](adr/0033-isometric-sketch.md) |
 | [0033](adr/0033-isometric-sketch.md) | One isometric sketch instead of two views | 2026-10-27 | Accepted |
+| [0034](adr/0034-latin-size-letters.md) | Latin letters for sizes on the sketch and in the field labels | 2026-10-27 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). Both are rect elbows.

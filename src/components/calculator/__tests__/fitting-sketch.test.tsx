@@ -62,10 +62,10 @@ describe("isometric sketch", () => {
       const html = renderToStaticMarkup(<FittingSketch kind={kind} view="iso" />);
       expect(html).toContain(dict.sketch.isoTitle);
       const { roundMain } = sketchSpecs[kind];
-      if (roundMain) expect(html).toContain(">Д<");
+      if (roundMain) expect(html).toContain(`>${dict.symbols.diameter}<`);
       else {
-        expect(html).toContain(">Ш<");
-        expect(html).toContain(">В<");
+        expect(html).toContain(`>${dict.symbols.width}<`);
+        expect(html).toContain(`>${dict.symbols.height}<`);
       }
       const { items, box } = isoDrawing(kind);
       expect(items.some((i) => i.type === "face")).toBe(true);
@@ -75,11 +75,11 @@ describe("isometric sketch", () => {
 
   it("marks the small end, the branch, the radius and the length", () => {
     const labels = (kind: Parameters<typeof isoDrawing>[0]) => isoDrawing(kind).items.flatMap((i) => (i.type === "dim" || i.type === "radius" ? [i.label] : []));
-    expect(labels("rectReducer")).toEqual(expect.arrayContaining(["Ш", "В", "ш", "в", "L"]));
-    expect(labels("rectToRoundReducer")).toEqual(expect.arrayContaining(["Ш", "В", "д", "L"]));
-    expect(labels("roundTeeRectBranch")).toEqual(expect.arrayContaining(["Д", "ш", "в"]));
-    expect(labels("roundElbow")).toEqual(expect.arrayContaining(["Д", "R"]));
-    expect(labels("rectTap")).toEqual(expect.arrayContaining(["Ш", "В", "l"]));
+    expect(labels("rectReducer")).toEqual(expect.arrayContaining(["a", "b", "a₁", "b₁", "L"]));
+    expect(labels("rectToRoundReducer")).toEqual(expect.arrayContaining(["a", "b", "d₁", "L"]));
+    expect(labels("roundTeeRectBranch")).toEqual(expect.arrayContaining(["d", "a₁", "b₁"]));
+    expect(labels("roundElbow")).toEqual(expect.arrayContaining(["d", "R"]));
+    expect(labels("rectTap")).toEqual(expect.arrayContaining(["a", "b", "L"]));
   });
 
   it("explains the letters in the wording of the fields", () => {
