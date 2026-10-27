@@ -3,7 +3,8 @@ import { describe, expect, it } from "vitest";
 import { kindOrder } from "@/lib/form/fields";
 import { uk as dict } from "@/lib/i18n/uk";
 import { FittingSketch } from "../FittingSketch";
-import { profileLegend, sketchLegend, sketchSpecs } from "../sketch-spec";
+import { isoLegend, profileLegend, sketchLegend, sketchSpecs } from "../sketch-spec";
+import { isoDrawing } from "../iso-sketch";
 
 describe("FittingSketch", () => {
   it("has a drawing for every fitting kind", () => {
@@ -52,5 +53,40 @@ describe("FittingSketch", () => {
   it("names the small end of a reducer without the branch wording", () => {
     expect(sketchLegend("rectReducer")).toEqual([dict.sketch.legend.rect, dict.sketch.legend.smallEndRect, dict.sketch.legend.length]);
     expect(profileLegend("roundReducer")).toEqual([dict.sketch.profileDiameter, dict.sketch.dashedSmall, dict.sketch.legend.smallEndDiameter]);
+  });
+});
+
+describe("isometric sketch", () => {
+  it("draws every kind with its letters, rect sizes on separate edges", () => {
+    for (const kind of kindOrder) {
+      const html = renderToStaticMarkup(<FittingSketch kind={kind} view="iso" />);
+      expect(html).toContain(dict.sketch.isoTitle);
+      const { roundMain } = sketchSpecs[kind];
+      if (roundMain) expect(html).toContain(">Д<");
+      else {
+        expect(html).toContain(">Ш<");
+        expect(html).toContain(">В<");
+      }
+      const { items, box } = isoDrawing(kind);
+      expect(items.some((i) => i.type === "face")).toBe(true);
+      expect(box.every(Number.isFinite)).toBe(true);
+    }
+  });
+
+  it("marks the small end, the branch, the radius and the length", () => {
+    const labels = (kind: Parameters<typeof isoDrawing>[0]) => isoDrawing(kind).items.flatMap((i) => (i.type === "dim" || i.type === "radius" ? [i.label] : []));
+    expect(labels("rectReducer")).toEqual(expect.arrayContaining(["Ш", "В", "ш", "в", "L"]));
+    expect(labels("rectToRoundReducer")).toEqual(expect.arrayContaining(["Ш", "В", "д", "L"]));
+    expect(labels("roundTeeRectBranch")).toEqual(expect.arrayContaining(["Д", "ш", "в"]));
+    expect(labels("roundElbow")).toEqual(expect.arrayContaining(["Д", "R"]));
+    expect(labels("rectTap")).toEqual(expect.arrayContaining(["Ш", "В", "l"]));
+  });
+
+  it("explains the letters in the wording of the fields", () => {
+    expect(isoLegend("rectStraight")).toEqual([dict.sketch.legend.rectSides, dict.sketch.legend.length]);
+    expect(isoLegend("rectReducer")).toContain(dict.sketch.legend.smallEndSides);
+    expect(isoLegend("roundTee")).toContain(dict.sketch.legend.branchDiameter);
+    expect(isoLegend("rectElbow")).toContain(dict.sketch.legend.innerRadius);
+    expect(isoLegend("roundTap")).toContain(dict.sketch.legend.tapDuct);
   });
 });

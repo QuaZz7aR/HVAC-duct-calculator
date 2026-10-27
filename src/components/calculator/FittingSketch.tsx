@@ -1,9 +1,10 @@
 import type { FittingKind } from "@/lib/form/fields";
 import { uk as dict } from "@/lib/i18n/uk";
 import { kindTitle } from "./format";
+import { isoDrawing, type IsoTone } from "./iso-sketch";
 import { sketchSpecs } from "./sketch-spec";
 
-export type SketchView = "side" | "profile";
+export type SketchView = "side" | "profile" | "iso";
 
 const body = "fill-zinc-100 stroke-zinc-500 dark:fill-zinc-800 dark:stroke-zinc-400";
 const hidden = "fill-none stroke-zinc-400 dark:stroke-zinc-500";
@@ -156,9 +157,52 @@ function Profile({ kind }: { kind: FittingKind }) {
   );
 }
 
-/** Schematic of a fitting, side view or cross-section ("в профіль"). Not to scale; labels sit beside the drawing, never on it. */
+const tones: Record<IsoTone, string> = {
+  face: body,
+  opening: "fill-zinc-200 stroke-zinc-500 dark:fill-zinc-700 dark:stroke-zinc-400",
+  plate: "fill-zinc-400 stroke-zinc-600 dark:fill-zinc-500 dark:stroke-zinc-300",
+  ghost: hidden,
+};
+
+/** Screen px per drawing unit of the isometric view. */
+const isoScale = 1.5;
+
+/** Isometric view: faces turned to the viewer, hidden edges dashed, dimension lines with dots at the ends and the letter beside them. */
+function Iso({ kind, label }: { kind: FittingKind; label: string }) {
+  const { items, box } = isoDrawing(kind);
+  const pts = (q: [number, number][]) => q.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+  return (
+    // one scale for every kind: the width follows the drawing, so letters stay the same size
+    <svg viewBox={box.map((v) => v.toFixed(1)).join(" ")} role="img" aria-label={label} className="mx-auto h-auto max-w-full" style={{ width: `${(box[2] * isoScale).toFixed(0)}px` }}>
+      {items.map((i, k) => {
+        switch (i.type) {
+          case "face":
+            return <polygon key={k} points={pts(i.points)} className={tones[i.tone]} strokeWidth={1.6} strokeLinejoin="round" strokeDasharray={i.tone === "ghost" ? "5 4" : undefined} />;
+          case "edge":
+            return <line key={k} x1={i.a[0]} y1={i.a[1]} x2={i.b[0]} y2={i.b[1]} className={i.hidden ? hidden : "stroke-zinc-500 dark:stroke-zinc-400"} strokeWidth={i.hidden ? 1.1 : 1.6} strokeDasharray={i.hidden ? "4 3" : undefined} />;
+          case "dim":
+          case "radius": {
+            const [a, b] = i.type === "dim" ? [i.a, i.b] : [i.center, i.to];
+            return (
+              <g key={k}>
+                <line x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} className={dim} strokeWidth={1.2} strokeDasharray={i.type === "radius" ? "5 3" : undefined} />
+                {(i.type === "dim" ? [a, b] : [a]).map((q, j) => <circle key={j} cx={q[0]} cy={q[1]} r={i.type === "dim" ? 2 : 2.5} className="fill-blue-600 dark:fill-blue-400" />)}
+                <text x={i.at[0]} y={i.at[1]} textAnchor={i.type === "dim" ? i.anchor : "start"} fontSize={12} fontWeight={600} className={txt}>{i.label}</text>
+              </g>
+            );
+          }
+        }
+      })}
+    </svg>
+  );
+}
+
+const viewTitle = { side: dict.sketch.sideTitle, profile: dict.sketch.profileTitle, iso: dict.sketch.isoTitle };
+
+/** Schematic of a fitting: isometric, side view or cross-section ("в профіль"). Not to scale; labels sit beside the drawing, never on it. */
 export function FittingSketch({ kind, view = "side" }: { kind: FittingKind; view?: SketchView }) {
-  const label = `${kindTitle(kind)}: ${view === "side" ? dict.sketch.sideTitle : dict.sketch.profileTitle}`;
+  const label = `${kindTitle(kind)}: ${viewTitle[view]}`;
+  if (view === "iso") return <Iso kind={kind} label={label} />;
   return (
     <svg viewBox="0 0 300 184" role="img" aria-label={label} className="mx-auto h-auto w-full max-w-sm">
       {view === "side" ? <Side kind={kind} /> : <Profile kind={kind} />}

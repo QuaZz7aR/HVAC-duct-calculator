@@ -65,3 +65,24 @@ export function profileLegend(kind: FittingKind): string[] {
   if (shape === "tee" || shape === "cross") out.push(l.dashedBranch, roundSmall ? l.legend.smallDiameter : l.legend.smallRect);
   return out;
 }
+
+/** Legend of the isometric sketch: rect sizes are drawn on their own edges, so Ш and В (ш and в) are named separately. */
+export function isoLegend(kind: FittingKind): string[] {
+  const { shape, roundMain, roundSmall } = sketchSpecs[kind];
+  const l = dict.sketch.legend;
+  const main = roundMain ? l.diameter : l.rectSides;
+  switch (shape) {
+    case "straight":
+    case "cap":
+      return [main, l.length];
+    case "tap":
+      return [main, l.tapLength, l.tapDuct];
+    case "elbow":
+      return [main, roundMain ? l.centerRadius : l.innerRadius, l.angleNote];
+    case "reducer":
+      return [main, roundSmall ? l.smallEndDiameter : l.smallEndSides, l.length];
+    case "tee":
+    case "cross":
+      return [main, roundSmall ? l.branchDiameter : l.branchSides];
+  }
+}

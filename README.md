@@ -6,7 +6,7 @@ A web calculator for sheet-metal ductwork. You list the duct fittings of a venti
 
 The interface is in Ukrainian: the tool is built for duct designers and sheet-metal shops in Ukraine. Everything is calculated in the browser; there is no backend and nothing is stored.
 
-![Calculator on desktop: side panel for adding fittings, calculation settings and a fitting card with side and cross-section sketches](docs/images/desktop.png)
+![Calculator on desktop: side panel for adding fittings, calculation settings and a fitting card with its isometric sketch](docs/images/desktop.png)
 
 ## What it does
 
@@ -14,7 +14,7 @@ The interface is in Ukrainian: the tool is built for duct designers and sheet-me
 - **Metal thickness.** Looked up from the table of ДБН В.2.5-67:2013, annex Ц (round: by diameter, rectangular: by the larger side). The engineer's own table is available as an option.
 - **Metal list by thickness.** Area per thickness, area to order with a margin (20 % by default) and the number of sheets for the chosen sheet size (1000 × 2000, 1250 × 2500 or 1500 × 3000).
 - **Input warnings.** Unusual but valid input (aspect ratio of 3 and above, over 6.3, a side over 2000 mm, a large elbow radius) is flagged and never changed.
-- **Sketches.** Each fitting card shows a side view and a cross-section with the dimension letters used in the form.
+- **Sketches.** Each fitting card shows an isometric sketch with the dimension letters used in the form.
 
 | Fittings folded into tiles, with the results table | Totals and metal list by thickness |
 |---|---|
@@ -22,7 +22,7 @@ The interface is in Ukrainian: the tool is built for duct designers and sheet-me
 
 On a phone the side panel becomes a column of round buttons at the screen edge, with a quick menu of common kinds and a searchable list of all of them.
 
-<img src="docs/images/phone.png" alt="Calculator on a phone: fitting card with sketches and the round action buttons" width="320">
+<img src="docs/images/phone.png" alt="Calculator on a phone: fitting card with its sketch and the round action buttons" width="320">
 
 ## Supported fittings
 
