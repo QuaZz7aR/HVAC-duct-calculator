@@ -85,23 +85,23 @@ class Sketch {
     });
   }
 
-  radius(center: V3, to: V3, label: string, shift: V2 = [10, 5]) {
+  /** Radius leader from the centre; the label sits `shift` px from the point at `along` (0 = centre, 1 = end) of the leader. */
+  radius(center: V3, to: V3, label: string, shift: V2 = [10, 5], along = 0) {
     const [c, t] = [p(center), p(to)];
-    // the letter sits beside the centre, which is off the drawing
-    this.items.push({ type: "radius", center: c, to: t, label, at: [c[0] + shift[0], c[1] + shift[1]] });
+    this.items.push({ type: "radius", center: c, to: t, label, at: [c[0] + (t[0] - c[0]) * along + shift[0], c[1] + (t[1] - c[1]) * along + shift[1]] });
   }
 
   /**
    * Angle of a bend in the horizontal plane at height z: thin rays from the centre to `ends` (a leg the radius already marks needs none), an arc of radius r
-   * between their directions (from angle a0 to a1), the label shifted by `shift` px from the centre.
+   * between their directions (from angle a0 to a1), the label shifted by `shift` px from the arc's middle.
    */
   angle(center: V3, ends: V3[], r: number, a0: number, a1: number, label: string, shift: V2) {
     const arc = Array.from({ length: 25 }, (_, k) => {
       const a = a0 + ((a1 - a0) * k) / 24;
       return p([center[0] + r * Math.cos(a), center[1] + r * Math.sin(a), center[2]]);
     });
-    const c = p(center);
-    this.items.push({ type: "angle", arc, rays: ends.map((e): [V2, V2] => [c, p(e)]), label, at: [c[0] + shift[0], c[1] + shift[1]] });
+    const [c, mid] = [p(center), arc[12]];
+    this.items.push({ type: "angle", arc, rays: ends.map((e): [V2, V2] => [c, p(e)]), label, at: [mid[0] + shift[0], mid[1] + shift[1]] });
   }
 
   /** Centre line of a bent duct, dash-dot. */
@@ -315,13 +315,15 @@ function elbow(s: Sketch, round: boolean) {
   // a 90° bend in the horizontal plane around the z axis; both open ends face the viewer
   const t = Array.from({ length: n + 1 }, (_, k) => (-Math.PI / 2) - (Math.PI / 2) * (k / n));
   if (round) {
-    const rc = 0.85;
+    // the bend is wide enough to leave room for α between the centre and the duct
+    const rc = 1.05;
     const centres = t.map((a): V3 => [rc * Math.cos(a), rc * Math.sin(a), 0]);
     s.tube(centres, t.map((a): [V3, V3] => [[Math.cos(a), Math.sin(a), 0], [0, 0, 1]]), centres.map(() => mainR));
     s.axis(centres);
     // R runs along one leg to its axis, α spans both legs at the centre
-    s.radius([0, 0, 0], centres[0], sym.radius, [12, 18]);
-    s.angle([0, 0, 0], [centres[n]], 0.22, t[0], t[n], sym.angle, [-24, 16]);
+    // R beside its leader, α just above the middle of its arc
+    s.radius([0, 0, 0], centres[0], sym.radius, [6, 11], 0.3);
+    s.angle([0, 0, 0], [centres[n]], 0.18, t[0], t[n], sym.angle, [-4, -4]);
     // the end at x = 0 faces right on screen: its diameter is measured beside it
     s.dim(...offset([[0, -rc, -mainR], [0, -rc, mainR]], [0, -mainR - 0.14, 0]), sym.diameter, [10, 5], "start");
   } else {
@@ -334,8 +336,8 @@ function elbow(s: Sketch, round: boolean) {
     s.face([...to, ...[...ti].reverse()]);
     for (const k of [0, n]) s.face([ti[k], to[k], bo[k], bi[k]], "opening");
     // R and α are drawn in the bottom plane, from the centre to the lower inner edge, so they stay off the walls
-    s.radius([0, 0, -h / 2], bi[0], sym.radius, [12, 18]);
-    s.angle([0, 0, -h / 2], [bi[n]], 0.25, t[0], t[n], sym.angle, [-24, 16]);
+    s.radius([0, 0, -h / 2], bi[0], sym.radius, [6, 11], 0.3);
+    s.angle([0, 0, -h / 2], [bi[n]], 0.18, t[0], t[n], sym.angle, [-4, -5]);
     s.dim(...offset([[-ro, 0, -h / 2], [-ri, 0, -h / 2]], [0, 0, -0.16]), sym.width, [-8, 18]);
     s.dim(...offset([[-ro, 0, -h / 2], [-ro, 0, h / 2]], [-0.14, 0, 0]), sym.height, [-10, 5], "end");
   }
