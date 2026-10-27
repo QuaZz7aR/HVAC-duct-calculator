@@ -167,7 +167,15 @@ const tones: Record<IsoTone, string> = {
 /** Screen px per drawing unit of the isometric view. */
 const isoScale = 1.5;
 
-/** Isometric view: faces turned to the viewer, hidden edges dashed, dimension lines with dots at the ends and the letter beside them. */
+/** Arrowhead at `tip`, pointing away from `from`, as on a hand drawing. */
+function arrow(tip: [number, number], from: [number, number]) {
+  const d = Math.hypot(tip[0] - from[0], tip[1] - from[1]) || 1;
+  const [ux, uy] = [(tip[0] - from[0]) / d, (tip[1] - from[1]) / d];
+  const [bx, by] = [tip[0] - ux * 7, tip[1] - uy * 7];
+  return [tip, [bx - uy * 2.4, by + ux * 2.4], [bx + uy * 2.4, by - ux * 2.4]] as [number, number][];
+}
+
+/** Isometric view: faces turned to the viewer, hidden edges dashed, dimension lines with extension lines and arrows, the letter beside them. */
 function Iso({ kind, label }: { kind: FittingKind; label: string }) {
   const { items, box } = isoDrawing(kind);
   const pts = (q: [number, number][]) => q.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
@@ -189,8 +197,10 @@ function Iso({ kind, label }: { kind: FittingKind; label: string }) {
             const [a, b] = i.type === "dim" ? [i.a, i.b] : [i.center, i.to];
             return (
               <g key={k}>
+                {i.type === "dim" && i.ext.map(([q, r], j) => <line key={`e${j}`} x1={q[0]} y1={q[1]} x2={r[0]} y2={r[1]} className={dim} strokeWidth={0.8} />)}
                 <line x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} className={dim} strokeWidth={1.2} strokeDasharray={i.type === "radius" ? "5 3" : undefined} />
-                {(i.type === "dim" ? [a, b] : [a]).map((q, j) => <circle key={j} cx={q[0]} cy={q[1]} r={i.type === "dim" ? 2 : 2.5} className="fill-blue-600 dark:fill-blue-400" />)}
+                {i.type === "radius" && <circle cx={a[0]} cy={a[1]} r={2.5} className="fill-blue-600 dark:fill-blue-400" />}
+                {(i.type === "dim" ? [arrow(a, b), arrow(b, a)] : [arrow(b, a)]).map((q, j) => <polygon key={`a${j}`} points={pts(q)} className="fill-blue-600 dark:fill-blue-400" />)}
                 <text x={i.at[0]} y={i.at[1]} textAnchor={i.type === "dim" ? i.anchor : "start"} fontSize={12} fontWeight={600} className={txt}>{i.label}</text>
               </g>
             );
