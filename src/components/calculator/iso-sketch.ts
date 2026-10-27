@@ -328,7 +328,9 @@ function reducer(s: Sketch, roundMain: boolean, roundSmall: boolean) {
   if (roundMain) {
     s.cylinder([0, 0, 0], [len2, 0, 0], mainR + 0.06, "opening", "face", r1);
     const R = mainR + 0.06;
-    s.dim(...offset([[0, 0, -R], [0, 0, R]], [0, R + 0.14, 0]), "Д", [-10, 5], "end");
+    // the large end faces away: Д is taken across its outline, the extension lines carry the outline back past the end
+    const d = R * Math.SQRT1_2;
+    s.dim(...offset([[0, d, -d], [0, -d, d]], [-0.42, 0, 0]), "Д", [-10, 5], "end");
     s.dim(...offset([[len2, 0, -r1], [len2, 0, r1]], [0, -r1 - 0.14, 0]), "д", [10, 5], "start");
     s.dim([lower(0, R, 0), lower(len2, r1, 0)], lower(0, R), lower(len2, r1), "L", [-8, 20]);
     return;

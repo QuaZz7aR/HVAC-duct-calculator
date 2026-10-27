@@ -58,3 +58,41 @@ describe("isometric sketch layout", () => {
     });
   });
 });
+
+/** The segments a dimension draws: its line and its extension lines. */
+const segments = (m: Mark): [V2, V2][] => (m.type === "dim" ? [[m.a, m.b], ...m.ext] : [[m.center, m.to]]);
+
+/** True when two segments cross away from their ends (two lines leaving the same point on the part only touch). */
+function crosses([a, b]: [V2, V2], [c, d]: [V2, V2]) {
+  const cr = (o: V2, p: V2, q: V2) => (p[0] - o[0]) * (q[1] - o[1]) - (p[1] - o[1]) * (q[0] - o[0]);
+  const [d1, d2, d3, d4] = [cr(c, d, a), cr(c, d, b), cr(a, b, c), cr(a, b, d)];
+  if (!(d1 * d2 < 0 && d3 * d4 < 0)) return false;
+  const t = d1 / (d1 - d2);
+  const x: V2 = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+  const near = (q: V2) => Math.hypot(q[0] - x[0], q[1] - x[1]) < 2;
+  return !(near(a) || near(b) || near(c) || near(d));
+}
+
+describe("isometric sketch dimensions", () => {
+  it.each(kindOrder)("%s: no dimension or extension line crosses another dimension's lines", (kind) => {
+    const { marks } = parts(kind);
+    marks.forEach((m, i) =>
+      marks.forEach((o, j) => {
+        if (j <= i) return;
+        const hit = segments(m).some((s) => segments(o).some((t) => crosses(s, t)));
+        expect(hit, `${m.label} / ${o.label}`).toBe(false);
+      }),
+    );
+  });
+
+  it.each(kindOrder)("%s: no extension line runs through a letter", (kind) => {
+    const { marks } = parts(kind);
+    marks.forEach((m) => {
+      const box = labelBox(m);
+      marks.forEach((o) => {
+        if (o.type !== "dim") return;
+        expect(o.ext.some((e) => along(e).some((q) => inBox(q, box))), `${m.label} on extension of ${o.label}`).toBe(false);
+      });
+    });
+  });
+});
