@@ -177,9 +177,13 @@ function Iso({ kind, label }: { kind: FittingKind; label: string }) {
       {items.map((i, k) => {
         switch (i.type) {
           case "face":
-            return <polygon key={k} points={pts(i.points)} className={tones[i.tone]} strokeWidth={1.6} strokeLinejoin="round" strokeDasharray={i.tone === "ghost" ? "5 4" : undefined} />;
+            return <polygon key={k} points={pts(i.points)} className={tones[i.tone]} strokeWidth={i.stroke === false ? 0 : 1.6} strokeLinejoin="round" strokeDasharray={i.tone === "ghost" ? "5 4" : undefined} />;
+          case "outline":
+            return <polyline key={k} points={pts(i.points)} fill="none" className="stroke-zinc-500 dark:stroke-zinc-400" strokeWidth={1.6} strokeLinejoin="round" />;
           case "edge":
             return <line key={k} x1={i.a[0]} y1={i.a[1]} x2={i.b[0]} y2={i.b[1]} className={i.hidden ? hidden : "stroke-zinc-500 dark:stroke-zinc-400"} strokeWidth={i.hidden ? 1.1 : 1.6} strokeDasharray={i.hidden ? "4 3" : undefined} />;
+          case "axis":
+            return <polyline key={k} points={pts(i.points)} fill="none" className={dim} strokeWidth={1} strokeDasharray="10 3 2 3" />;
           case "dim":
           case "radius": {
             const [a, b] = i.type === "dim" ? [i.a, i.b] : [i.center, i.to];

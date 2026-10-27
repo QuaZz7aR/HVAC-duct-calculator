@@ -11,10 +11,12 @@ export type V2 = [number, number];
 export type IsoTone = "face" | "opening" | "plate" | "ghost";
 
 export type IsoItem =
-  | { type: "face"; points: V2[]; tone: IsoTone }
+  | { type: "face"; points: V2[]; tone: IsoTone; stroke?: false }
+  | { type: "outline"; points: V2[] }
   | { type: "edge"; a: V2; b: V2; hidden: boolean }
   | { type: "dim"; a: V2; b: V2; label: string; at: V2; anchor: "start" | "middle" | "end" }
-  | { type: "radius"; center: V2; to: V2; label: string; at: V2 };
+  | { type: "radius"; center: V2; to: V2; label: string; at: V2 }
+  | { type: "axis"; points: V2[] };
 
 export interface IsoDrawing {
   items: IsoItem[];
@@ -64,7 +66,13 @@ class Sketch {
 
   radius(center: V3, to: V3, label: string) {
     const [c, t] = [p(center), p(to)];
-    this.items.push({ type: "radius", center: c, to: t, label, at: [(c[0] + t[0]) / 2 + 10, (c[1] + t[1]) / 2 + 5] });
+    // the letter sits beside the centre, which is off the drawing
+    this.items.push({ type: "radius", center: c, to: t, label, at: [c[0] + 10, c[1] + 5] });
+  }
+
+  /** Centre line of a bent duct, dash-dot. */
+  axis(points: V3[]) {
+    this.items.push({ type: "axis", points: points.map(p) });
   }
 
   /**
@@ -72,23 +80,50 @@ class Sketch {
    * Outline = the extreme points of each section across the projected path; the ends are drawn as discs.
    */
   tube(centres: V3[], across: [V3, V3][], radii: number[], endTone: IsoTone = "opening", bodyTone: IsoTone = "face") {
-    const left: V2[] = [];
-    const right: V2[] = [];
-    centres.forEach((c, k) => {
-      const section = ring(c, across[k][0], across[k][1], radii[k], 72).map(p);
+    const sections = centres.map((c, k) => ring(c, across[k][0], across[k][1], radii[k], 72).map(p));
+    const sides = centres.map((_, k) => {
       const [a, b] = [p(centres[Math.max(k - 1, 0)]), p(centres[Math.min(k + 1, centres.length - 1)])];
-      const side = section.map((q) => (b[0] - a[0]) * q[1] - (b[1] - a[1]) * q[0]);
-      left.push(section[side.indexOf(Math.max(...side))]);
-      right.push(section[side.indexOf(Math.min(...side))]);
+      const side = sections[k].map((q) => (b[0] - a[0]) * q[1] - (b[1] - a[1]) * q[0]);
+      return [side.indexOf(Math.max(...side)), side.indexOf(Math.min(...side))];
     });
+    const left = sides.map(([l], k) => sections[k][l]);
+    const right = sides.map(([, r], k) => sections[k][r]);
     const last = centres.length - 1;
     const ends = [
-      { k: 0, out: sub(centres[0], centres[1]) },
-      { k: last, out: sub(centres[last], centres[last - 1]) },
+      { k: 0, next: 1, out: sub(centres[0], centres[1]) },
+      { k: last, next: last - 1, out: sub(centres[last], centres[last - 1]) },
     ];
+    // the two halves of an end section between its outline points: towards the rest of the tube first, then away from it
+    const halves = (k: number, next: number) => {
+      const ring2 = sections[k];
+      const n = ring2.length;
+      const [l, r] = sides[k];
+      const walk = (step: 1 | -1) => {
+        const out: V2[] = [];
+        for (let i = l; ; i = (i + step + n) % n) {
+          out.push(ring2[i]);
+          if (i === r) return out;
+        }
+      };
+      const [c, d] = [p(centres[k]), p(centres[next])];
+      const towards = (arc: V2[]) => {
+        const q = arc[Math.floor(arc.length / 2)];
+        return (q[0] - c[0]) * (d[0] - c[0]) + (q[1] - c[1]) * (d[1] - c[1]);
+      };
+      const [a, b] = [walk(1), walk(-1)];
+      return towards(a) >= towards(b) ? [a, b] : [b, a];
+    };
     const disc = (k: number, tone: IsoTone) => this.face(ring(centres[k], across[k][0], across[k][1], radii[k]), tone);
-    for (const e of ends) if (!faces(e.out)) disc(e.k, bodyTone === "ghost" ? "ghost" : "face");
-    this.items.push({ type: "face", points: [...left, ...right.reverse()], tone: bodyTone });
+    // an end turned away is seen only by its far half, which closes the outline
+    for (const e of ends) {
+      if (faces(e.out)) continue;
+      this.items.push({ type: "face", points: sections[e.k], tone: bodyTone, stroke: false }, { type: "outline", points: halves(e.k, e.next)[1] });
+    }
+    // the body: both outlines joined round the near half of each end, so no chord is drawn across an end
+    const startArc = halves(0, 1)[0].reverse();
+    const endArc = halves(last, last - 1)[0];
+    this.items.push({ type: "face", points: [...startArc, ...left, ...endArc, ...[...right].reverse()], tone: bodyTone, stroke: false });
+    this.items.push({ type: "outline", points: left }, { type: "outline", points: right });
     for (const e of ends) if (faces(e.out)) disc(e.k, endTone);
   }
 
@@ -118,6 +153,8 @@ class Sketch {
       if (dot(n, sub(c, mid)) < 0) n = scale(n, -1);
       return faces(n);
     });
+    faceList.forEach((f, i) => shown[i] && this.face(f, tones[i]));
+    // hidden edges go over the faces, as seen through the wall
     if (hiddenEdges) {
       const key = (q: V3) => q.map((x) => x.toFixed(4)).join(",");
       const edgeKey = (a: V3, b: V3) => [key(a), key(b)].sort().join("|");
@@ -133,7 +170,6 @@ class Sketch {
         });
       });
     }
-    faceList.forEach((f, i) => shown[i] && this.face(f, tones[i]));
   }
 
   /** Box or frustum between two rectangles across the axis `along` (x or z), from `from` to `to`. */
@@ -181,6 +217,12 @@ const rectW = 0.72;
 const rectH = 0.44;
 const len = 1.5;
 
+/** Ends of a horizontal circle's diameter that runs level on screen, raised to height z, for its dimension line. */
+function flatDiameter(r: number, z: number): [V3, V3] {
+  const d = r * Math.SQRT1_2;
+  return [[-d, d, z], [d, -d, z]];
+}
+
 /** A point just outside the lower near edge of a round duct along x: its outline there runs at 45° between y and -z. */
 function lower(x: number, r: number): V3 {
   const d = (r + 0.16) * Math.SQRT1_2;
@@ -215,7 +257,7 @@ function tap(s: Sketch, round: boolean) {
   );
   if (round) {
     s.roundBranch(0.22, l, () => 0);
-    s.dim([-0.22, 0, l + 0.2], [0.22, 0, l + 0.2], "Д", [-6, -10]);
+    s.dim(...flatDiameter(0.22, l + 0.24), "Д", [0, -8]);
     s.dim([0.22, -0.22 - 0.14, 0], [0.22, -0.22 - 0.14, l], "l", [10, 5], "start");
   } else {
     s.prism("z", 0, l, 0.5, 0.36, 0.5, 0.36, "opening", "face", false);
@@ -233,8 +275,10 @@ function elbow(s: Sketch, round: boolean) {
     const rc = 0.85;
     const centres = t.map((a): V3 => [rc * Math.cos(a), rc * Math.sin(a), 0]);
     s.tube(centres, t.map((a): [V3, V3] => [[Math.cos(a), Math.sin(a), 0], [0, 0, 1]]), centres.map(() => mainR));
+    s.axis(centres);
     s.radius([0, 0, 0], centres[n / 2], "R");
-    s.dim([-rc - mainR, 0, mainR + 0.22], [-rc + mainR, 0, mainR + 0.22], "Д", [-4, -10]);
+    // the end at x = 0 faces right on screen: its diameter is measured beside it
+    s.dim([0, -rc - mainR - 0.14, -mainR], [0, -rc - mainR - 0.14, mainR], "Д", [10, 5], "start");
   } else {
     const [ri, w, h] = [0.55, 0.55, 0.5];
     const ro = ri + w;
@@ -244,7 +288,8 @@ function elbow(s: Sketch, round: boolean) {
     s.face([...ti, ...[...bi].reverse()]);
     s.face([...to, ...[...ti].reverse()]);
     for (const k of [0, n]) s.face([ti[k], to[k], bo[k], bi[k]], "opening");
-    s.radius([0, 0, h / 2], ti[n / 2], "R");
+    // R is drawn in the bottom plane, from the centre to the lower inner edge, so it stays off the walls
+    s.radius([0, 0, -h / 2], bi[n / 2], "R");
     s.dim([-ro, 0, -h / 2 - 0.16], [-ri, 0, -h / 2 - 0.16], "Ш", [-8, 18]);
     s.dim([-ro - 0.14, 0, -h / 2], [-ro - 0.14, 0, h / 2], "В", [-10, 5], "end");
   }
@@ -284,7 +329,7 @@ function reducer(s: Sketch, roundMain: boolean, roundSmall: boolean) {
   s.prism("x", 0, len2, W, H, w1, h1);
   s.dim([-0.18, -W / 2, H / 2], [-0.18, W / 2, H / 2], "Ш", [-8, -8]);
   s.dim([0, W / 2 + 0.14, -H / 2], [0, W / 2 + 0.14, H / 2], "В", [-10, 5], "end");
-  s.dim([len2 + 0.16, -w1 / 2, h1 / 2], [len2 + 0.16, w1 / 2, h1 / 2], "ш", [12, -10]);
+  s.dim([len2 + 0.18, -w1 / 2, -h1 / 2], [len2 + 0.18, w1 / 2, -h1 / 2], "ш", [10, 14], "start");
   s.dim([len2, -w1 / 2 - 0.14, -h1 / 2], [len2, -w1 / 2 - 0.14, h1 / 2], "в", [10, 5], "start");
   s.dim([0, W / 2, -H / 2 - 0.16], [len2, w1 / 2, -h1 / 2 - 0.16], "L", [-8, 20]);
 }
@@ -304,7 +349,14 @@ function branchFitting(s: Sketch, roundMain: boolean, roundSmall: boolean, cross
   if (roundMain) s.cylinder([-half, 0, 0], [half, 0, 0], mainR);
   else s.prism("x", -half, half, rectW, rectH);
   if (roundSmall) s.roundBranch(rb, top, wall);
-  else s.prism("z", wall(bd / 2), top, bw, bd, bw, bd, "opening", "face", false);
+  else if (!roundMain) s.prism("z", wall(bd / 2), top, bw, bd, bw, bd, "opening", "face", false);
+  else {
+    // a rect branch on a round duct: its side across the duct follows the duct's curve, the side along it stands on a straight line
+    const ys = Array.from({ length: 13 }, (_, k) => bd / 2 - (bd * k) / 12);
+    s.face([[-bw / 2, bd / 2, top], [bw / 2, bd / 2, top], [bw / 2, bd / 2, wall(bd / 2)], [-bw / 2, bd / 2, wall(bd / 2)]]);
+    s.face([[bw / 2, -bd / 2, top], [bw / 2, bd / 2, top], ...ys.map((y): V3 => [bw / 2, y, wall(y)])]);
+    s.face([[-bw / 2, -bd / 2, top], [bw / 2, -bd / 2, top], [bw / 2, bd / 2, top], [-bw / 2, bd / 2, top]], "opening");
+  }
   if (roundMain) {
     s.dim([half, -mainR - 0.14, -mainR], [half, -mainR - 0.14, mainR], "Д", [10, 5], "start");
   } else {
@@ -312,7 +364,7 @@ function branchFitting(s: Sketch, roundMain: boolean, roundSmall: boolean, cross
     s.dim([-half - 0.18, -rectW / 2, rectH / 2], [-half - 0.18, rectW / 2, rectH / 2], "Ш", [-8, -8]);
   }
   if (roundSmall) {
-    s.dim([-rb, 0, top + 0.2], [rb, 0, top + 0.2], "д", [-6, -10]);
+    s.dim(...flatDiameter(rb, top + 0.24), "д", [0, -8]);
   } else {
     s.dim([-bw / 2, -bd / 2 - 0.12, top], [bw / 2, -bd / 2 - 0.12, top], "ш", [8, -6], "start");
     s.dim([-bw / 2 - 0.12, -bd / 2, top], [-bw / 2 - 0.12, bd / 2, top], "в", [-10, -4], "end");
@@ -358,7 +410,7 @@ export function isoDrawing(kind: FittingKind): IsoDrawing {
       break;
   }
   const pts: V2[] = s.items.flatMap((i) => {
-    if (i.type === "face") return i.points;
+    if (i.type === "face" || i.type === "axis" || i.type === "outline") return i.points;
     if (i.type === "edge") return [i.a, i.b];
     // a label is about 16 px tall and 12 px wide per letter, drawn from its baseline
     const w = i.label.length * 12;
