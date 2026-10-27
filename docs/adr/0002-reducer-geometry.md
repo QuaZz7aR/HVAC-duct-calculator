@@ -1,6 +1,6 @@
 # 0002. Reducer geometry: exact rect reducer, approximate rect-to-round
 
-- Status: Accepted
+- Status: Accepted; the rect-to-round part is superseded by [0035](0035-rect-to-round-exact-layout.md) (exact layout since 2026-10-27)
 - Date: 2026-10-07 (stage 0)
 - Source: project decision
 

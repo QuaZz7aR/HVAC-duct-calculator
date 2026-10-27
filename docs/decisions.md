@@ -16,7 +16,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | ADR | Decision | Date | Status |
 |---|---|---|---|
 | [0001](adr/0001-excel-is-a-reference-not-the-truth.md) | The Excel is a reference, not the truth | 2026-10-07 | Accepted |
-| [0002](adr/0002-reducer-geometry.md) | Reducer geometry: exact rect reducer, approximate rect-to-round | 2026-10-07 | Accepted |
+| [0002](adr/0002-reducer-geometry.md) | Reducer geometry: exact rect reducer, approximate rect-to-round | 2026-10-07 | Accepted; the rect-to-round part is superseded by [0035](adr/0035-rect-to-round-exact-layout.md) |
 | [0003](adr/0003-allowance-counted-twice-on-rect-elbows.md) | Allowance counted twice on rect elbows | 2026-10-07 | Accepted (deviation from the Excel, confirmed by the engineer) |
 | [0004](adr/0004-centerline-from-geometry-not-area.md) | Centerline length from geometry, not from area | 2026-10-07 | Accepted (deviation from the Excel, confirmed 2026-10-16) |
 | [0005](adr/0005-reducer-length-default-and-floor.md) | Reducer length: default 300 mm, floor 150 mm, no silent clamp | 2026-10-07 | Accepted |
@@ -49,11 +49,13 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0032](adr/0032-sketch-panels-and-field-alignment.md) | Two sketch panels and inputs aligned under wrapped labels | 2026-10-26 | Accepted; the two panels are superseded by [0033](adr/0033-isometric-sketch.md) |
 | [0033](adr/0033-isometric-sketch.md) | One isometric sketch instead of two views | 2026-10-27 | Accepted |
 | [0034](adr/0034-latin-size-letters.md) | Latin letters for sizes on the sketch and in the field labels | 2026-10-27 | Accepted |
+| [0035](adr/0035-rect-to-round-exact-layout.md) | Rect-to-round transition: exact sheet-metal layout | 2026-10-27 | Accepted |
 
 ## Known deviations from the Excel
-Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). Both are rect elbows.
+Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.
 - **Allowance counted twice**: +9.6 % / +13.7 % area against the Excel, confirmed by the engineer ([0003](adr/0003-allowance-counted-twice-on-rect-elbows.md)).
 - **Centerline from geometry, not area**: the Excel's friction length is about +33 % longer, confirmed Ш2 ([0004](adr/0004-centerline-from-geometry-not-area.md)).
+- **Rect-to-round transition as the exact layout**: the Excel (and ВСН 353-86) take the mean perimeter x axial length, 1-14 % less on elongated rect ends ([0035](adr/0035-rect-to-round-exact-layout.md)).
 
 ## `TODO(confirm)` register
 Find them all with `grep -rn "TODO(confirm)" src`.
@@ -62,10 +64,10 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `calc/config.ts` thickness | Default is the ДБН table (`dbnThickness`, engineer: "do it by ДБН", 2026-10-19). Open: sizes between the listed ones take the next larger listed size (our rule); fire-resistant ducts (>= 0.8 mm) are not modelled. `engineerThickness` (0.55 / 0.7 at 400 mm, confirmed 2026-10-16) is the selectable option; its rect key is the larger side, the Excel used the equivalent diameter (a simplification the engineer acknowledged). |
 | `calc/config.ts` order | Margin 20 % is "probably the margin for ordering metal" (engineer, unsure); the offered sheet sizes and the default 1250 x 2500 are not from a supplier. |
 | `calc/config.ts` wasteFactor | Factors 1.15 / 1.2 / 1.1 and their thresholds came from websites. Decided: elbows only, no normative source (Ш4); what they cover stays unconfirmed. Other kinds: `default` = the user's seam allowance (0 by default). Rect is keyed by equivalent diameter, thickness by larger side. |
-| `calc/sheet-area.ts` | Cap centerline is 0. Reducer centerline is the axial length (no fixture covers it). `rectToRoundReducer` slant ignores height. Rect elbow `innerRadius` is inner (confirmed 2026-10-16). |
+| `calc/sheet-area.ts` | Cap centerline is 0. Reducer centerline is the axial length (no fixture covers it). Rect elbow `innerRadius` is inner (confirmed 2026-10-16). |
 | `calc/thickness.ts` `thicknessSize` | Reducers are sized by the larger side over both ends, rect-to-round by its rect end (Excel convention); unconfirmed against handbooks. |
 | `form/fields.ts` | Prefilled allowance 50 mm and angle 90 in the form: UI convenience only, the core has no default for allowance. |
-| `calc/sheet-area.ts` taps (`roundTap`, `rectTap`) | Centerline 0 (a stub off the main flow); the 100 mm length is only a form prefill. |
+| `calc/sheet-area.ts` taps (`roundTap`, `rectTap`) | Centerline 0 (a stub off the main flow); the 100 mm length is only a form prefill. It matches ВСН 353-86 п. 1.5 / 2.5 ("врезку, как правило, следует выполнять высотой h = 100 мм"), a USSR norm; no Ukrainian norm with this figure was found (2026-10-27). |
 | `calc/sheet-area.ts` tees and crosses | Centerline of the main run is the branch size along the axis `E` (no allowance); the Excel has only the run length `E + 2 x allowance`. |
 | `calc/section.ts` | Reducer friction by the mean diameter and mean-velocity `Pd`: both from the engineer (2026-10-19, 2026-10-16). Caps have no friction because their centerline is 0. |
 | `calc/config.ts` elbowRadius | 1.0 D (round centre line) and 0.5 W (rect inner) are common practice, not a norm; form suggestion only. |
