@@ -19,6 +19,7 @@ export type IsoItem =
   | { type: "edge"; a: V2; b: V2; hidden: boolean }
   | { type: "dim"; a: V2; b: V2; label: string; at: V2; anchor: "start" | "middle" | "end"; ext: [V2, V2][] }
   | { type: "radius"; center: V2; to: V2; label: string; at: V2 }
+  | { type: "angle"; arc: V2[]; rays: [V2, V2][]; label: string; at: V2 }
   | { type: "axis"; points: V2[] };
 
 export interface IsoDrawing {
@@ -84,10 +85,23 @@ class Sketch {
     });
   }
 
-  radius(center: V3, to: V3, label: string) {
+  radius(center: V3, to: V3, label: string, shift: V2 = [10, 5]) {
     const [c, t] = [p(center), p(to)];
     // the letter sits beside the centre, which is off the drawing
-    this.items.push({ type: "radius", center: c, to: t, label, at: [c[0] + 10, c[1] + 5] });
+    this.items.push({ type: "radius", center: c, to: t, label, at: [c[0] + shift[0], c[1] + shift[1]] });
+  }
+
+  /**
+   * Angle of a bend in the horizontal plane at height z: thin rays from the centre to `ends` (a leg the radius already marks needs none), an arc of radius r
+   * between their directions (from angle a0 to a1), the label shifted by `shift` px from the centre.
+   */
+  angle(center: V3, ends: V3[], r: number, a0: number, a1: number, label: string, shift: V2) {
+    const arc = Array.from({ length: 25 }, (_, k) => {
+      const a = a0 + ((a1 - a0) * k) / 24;
+      return p([center[0] + r * Math.cos(a), center[1] + r * Math.sin(a), center[2]]);
+    });
+    const c = p(center);
+    this.items.push({ type: "angle", arc, rays: ends.map((e): [V2, V2] => [c, p(e)]), label, at: [c[0] + shift[0], c[1] + shift[1]] });
   }
 
   /** Centre line of a bent duct, dash-dot. */
@@ -305,7 +319,9 @@ function elbow(s: Sketch, round: boolean) {
     const centres = t.map((a): V3 => [rc * Math.cos(a), rc * Math.sin(a), 0]);
     s.tube(centres, t.map((a): [V3, V3] => [[Math.cos(a), Math.sin(a), 0], [0, 0, 1]]), centres.map(() => mainR));
     s.axis(centres);
-    s.radius([0, 0, 0], centres[n / 2], sym.radius);
+    // R runs along one leg to its axis, α spans both legs at the centre
+    s.radius([0, 0, 0], centres[0], sym.radius, [12, 18]);
+    s.angle([0, 0, 0], [centres[n]], 0.22, t[0], t[n], sym.angle, [-24, 16]);
     // the end at x = 0 faces right on screen: its diameter is measured beside it
     s.dim(...offset([[0, -rc, -mainR], [0, -rc, mainR]], [0, -mainR - 0.14, 0]), sym.diameter, [10, 5], "start");
   } else {
@@ -317,8 +333,9 @@ function elbow(s: Sketch, round: boolean) {
     s.face([...ti, ...[...bi].reverse()]);
     s.face([...to, ...[...ti].reverse()]);
     for (const k of [0, n]) s.face([ti[k], to[k], bo[k], bi[k]], "opening");
-    // R is drawn in the bottom plane, from the centre to the lower inner edge, so it stays off the walls
-    s.radius([0, 0, -h / 2], bi[n / 2], sym.radius);
+    // R and α are drawn in the bottom plane, from the centre to the lower inner edge, so they stay off the walls
+    s.radius([0, 0, -h / 2], bi[0], sym.radius, [12, 18]);
+    s.angle([0, 0, -h / 2], [bi[n]], 0.25, t[0], t[n], sym.angle, [-24, 16]);
     s.dim(...offset([[-ro, 0, -h / 2], [-ri, 0, -h / 2]], [0, 0, -0.16]), sym.width, [-8, 18]);
     s.dim(...offset([[-ro, 0, -h / 2], [-ro, 0, h / 2]], [-0.14, 0, 0]), sym.height, [-10, 5], "end");
   }
@@ -454,7 +471,7 @@ export function isoDrawing(kind: FittingKind): IsoDrawing {
     // a label is about 16 px tall and 12 px wide per letter, drawn from its baseline
     const w = i.label.length * 12;
     const x0 = i.type === "dim" && i.anchor === "end" ? i.at[0] - w : i.type === "dim" && i.anchor === "middle" ? i.at[0] - w / 2 : i.at[0];
-    const ends: V2[] = i.type === "dim" ? [i.a, i.b, ...i.ext.flat()] : [i.center, i.to];
+    const ends: V2[] = i.type === "dim" ? [i.a, i.b, ...i.ext.flat()] : i.type === "angle" ? [...i.arc, ...i.rays.flat()] : [i.center, i.to];
     return [...ends, [x0, i.at[1] - 14], [x0 + w, i.at[1] + 4]];
   });
   const pad = 8;

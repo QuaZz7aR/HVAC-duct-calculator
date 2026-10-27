@@ -192,6 +192,17 @@ function Iso({ kind, label }: { kind: FittingKind; label: string }) {
             return <line key={k} x1={i.a[0]} y1={i.a[1]} x2={i.b[0]} y2={i.b[1]} className={i.hidden ? hidden : "stroke-zinc-500 dark:stroke-zinc-400"} strokeWidth={i.hidden ? 1.1 : 1.6} strokeDasharray={i.hidden ? "4 3" : undefined} />;
           case "axis":
             return <polyline key={k} points={pts(i.points)} fill="none" className={dim} strokeWidth={1} strokeDasharray="10 3 2 3" />;
+          case "angle": {
+            const [n, m] = [i.arc.length - 1, i.arc.length - 2];
+            return (
+              <g key={k}>
+                {i.rays.map(([q, r], j) => <line key={`r${j}`} x1={q[0]} y1={q[1]} x2={r[0]} y2={r[1]} className={dim} strokeWidth={0.8} />)}
+                <polyline points={pts(i.arc)} fill="none" className={dim} strokeWidth={1.2} />
+                {[arrow(i.arc[0], i.arc[1]), arrow(i.arc[n], i.arc[m])].map((q, j) => <polygon key={`a${j}`} points={pts(q)} className="fill-blue-600 dark:fill-blue-400" />)}
+                <text x={i.at[0]} y={i.at[1]} fontSize={12} fontWeight={600} className={txt}>{i.label}</text>
+              </g>
+            );
+          }
           case "dim":
           case "radius": {
             const [a, b] = i.type === "dim" ? [i.a, i.b] : [i.center, i.to];

@@ -12,9 +12,13 @@ const inside = (q: V2, poly: V2[]) => {
   return c;
 };
 
-type Mark = Extract<IsoItem, { type: "dim" | "radius" }>;
-const ends = (m: Mark): [V2, V2] => (m.type === "dim" ? [m.a, m.b] : [m.center, m.to]);
-const along = ([a, b]: [V2, V2]) => Array.from({ length: 49 }, (_, k) => [a[0] + ((b[0] - a[0]) * (k + 1)) / 50, a[1] + ((b[1] - a[1]) * (k + 1)) / 50] as V2);
+type Mark = Extract<IsoItem, { type: "dim" | "radius" | "angle" }>;
+/** The main line of a mark: a dimension line, a radius leader, or the chord of an angle arc. */
+const ends = (m: Mark): [V2, V2] => (m.type === "dim" ? [m.a, m.b] : m.type === "angle" ? [m.arc[0], m.arc[m.arc.length - 1]] : [m.center, m.to]);
+const along = ([a, b]: [V2, V2]): V2[] => Array.from({ length: 49 }, (_, k) => [a[0] + ((b[0] - a[0]) * (k + 1)) / 50, a[1] + ((b[1] - a[1]) * (k + 1)) / 50] as V2);
+
+/** Points along the line a mark draws; for an angle, its arc (its rays run along the legs to the axis, like a radius). */
+const drawn = (m: Mark): V2[] => (m.type === "angle" ? m.arc.slice(1).flatMap((q, k) => along([m.arc[k], q])) : along(ends(m)));
 
 /** The label's box, as the viewBox estimate draws it: 12 px per letter, 14 px above the baseline, 4 below. */
 function labelBox(m: Mark): [number, number, number, number] {
@@ -27,7 +31,7 @@ const inBox = (q: V2, [x0, y0, x1, y1]: number[]) => q[0] > x0 && q[0] < x1 && q
 function parts(kind: FittingKind) {
   const { items } = isoDrawing(kind);
   const faces = items.flatMap((i) => (i.type === "face" && i.tone !== "ghost" ? [i.points] : []));
-  const marks = items.filter((i): i is Mark => i.type === "dim" || i.type === "radius");
+  const marks = items.filter((i): i is Mark => i.type === "dim" || i.type === "radius" || i.type === "angle");
   return { faces, marks };
 }
 
@@ -40,7 +44,7 @@ describe("isometric sketch layout", () => {
       expect(corners.some((q) => faces.some((f) => inside(q, f))), `letter ${m.label}`).toBe(false);
       // a round elbow's radius ends on the centre line inside the duct, by definition
       if (m.type === "radius" && kind === "roundElbow") continue;
-      expect(along(ends(m)).some((q) => faces.some((f) => inside(q, f))), `line ${m.label}`).toBe(false);
+      expect(drawn(m).some((q) => faces.some((f) => inside(q, f))), `line ${m.label}`).toBe(false);
     }
   });
 
@@ -53,14 +57,15 @@ describe("isometric sketch layout", () => {
         const ob = labelBox(o);
         const overlap = box[0] < ob[2] && ob[0] < box[2] && box[1] < ob[3] && ob[1] < box[3];
         expect(overlap, `${m.label} / ${o.label}`).toBe(false);
-        expect(along(ends(o)).some((q) => inBox(q, box)), `${m.label} on line ${o.label}`).toBe(false);
+        expect([...drawn(o), ...(o.type === "angle" ? o.rays.flatMap(along) : [])].some((q) => inBox(q, box)), `${m.label} on line ${o.label}`).toBe(false);
       });
     });
   });
 });
 
 /** The segments a dimension draws: its line and its extension lines. */
-const segments = (m: Mark): [V2, V2][] => (m.type === "dim" ? [[m.a, m.b], ...m.ext] : [[m.center, m.to]]);
+const segments = (m: Mark): [V2, V2][] =>
+  m.type === "dim" ? [[m.a, m.b], ...m.ext] : m.type === "angle" ? [...m.rays, ...m.arc.slice(1).map((q, k): [V2, V2] => [m.arc[k], q])] : [[m.center, m.to]];
 
 /** True when two segments cross away from their ends (two lines leaving the same point on the part only touch). */
 function crosses([a, b]: [V2, V2], [c, d]: [V2, V2]) {
