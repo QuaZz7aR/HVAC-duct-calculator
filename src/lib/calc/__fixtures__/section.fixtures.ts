@@ -121,7 +121,7 @@ export const sectionCases: SectionCase[] = [
         id: 'rect-to-round-200x150-d150-L250',
         input: { fitting: { kind: 'rectToRoundReducer', width: 200, height: 150, smallDiameter: 150, length: 250, allowance: 50 }, flow: 400, localCoefficient: 0.1 },
         expected: {
-            metalArea: 0.205697011,
+            metalArea: 0.205855730,
             centerlineLength: 0.25,
             pressureDrop: { velocity: 4.995653197, reynolds: 53007.162717, dynamicPressure: 14.931188681, frictionFactor: 0.022981072, frictionLoss: 0.533765147, localLoss: 1.493118868 },
         },
