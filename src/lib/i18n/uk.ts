@@ -4,7 +4,7 @@ import type { FormIssueCode } from '../form/messages';
 
 /**
  * Every user-visible string lives here. Another language is one more file with the same shape.
- * Fitting designations follow the engineer's Excel (КВ, ПВ, КО, ПО, КП, ПП, ППК, Заглушка).
+ * Fitting designations follow the engineer's Excel, with Ukrainian letters where his came from Russian words (ADR 0036).
  */
 /**
  * Latin letters of the sizes, as on drawings and in EN 1505 / EN 1506 based catalogues: a × b of a rect duct, d of a round one,
@@ -128,8 +128,8 @@ export const uk = {
     rectCap: { designation: 'Заглушка', name: 'Заглушка прямокутна' },
     roundTap: { designation: 'Квр', name: 'Врізка кругла' },
     rectTap: { designation: 'Пвр', name: 'Врізка прямокутна' },
-    roundElbow: { designation: 'КО', name: 'Круглий відвід' },
-    rectElbow: { designation: 'ПО', name: 'Прямокутний відвід' },
+    roundElbow: { designation: 'КВд', name: 'Круглий відвід' },
+    rectElbow: { designation: 'ПВд', name: 'Прямокутний відвід' },
     roundReducer: { designation: 'КП', name: 'Круглий перехід' },
     rectReducer: { designation: 'ПП', name: 'Прямокутний перехід' },
     rectToRoundReducer: { designation: 'ППК', name: 'Перехід прямокутник → круг' },
@@ -137,10 +137,10 @@ export const uk = {
     roundTeeRectBranch: { designation: 'КПТ', name: 'Круглий трійник із прямокутною врізкою' },
     rectTee: { designation: 'ПТ', name: 'Прямокутний трійник' },
     rectTeeRoundBranch: { designation: 'ПКТ', name: 'Прямокутний трійник із круглою врізкою' },
-    roundCross: { designation: 'КККр', name: 'Кругла хрестовина із круглими врізками' },
-    roundCrossRectBranches: { designation: 'КПКр', name: 'Кругла хрестовина із прямокутними врізками' },
-    rectCross: { designation: 'ППКр', name: 'Прямокутна хрестовина із прямокутними врізками' },
-    rectCrossRoundBranches: { designation: 'ПККр', name: 'Прямокутна хрестовина із круглими врізками' },
+    roundCross: { designation: 'ККХ', name: 'Кругла хрестовина із круглими врізками' },
+    roundCrossRectBranches: { designation: 'КПХ', name: 'Кругла хрестовина із прямокутними врізками' },
+    rectCross: { designation: 'ППХ', name: 'Прямокутна хрестовина із прямокутними врізками' },
+    rectCrossRoundBranches: { designation: 'ПКХ', name: 'Прямокутна хрестовина із круглими врізками' },
   } satisfies Record<FittingKind, { designation: string; name: string }>,
   fields: {
     diameter: `Діаметр ${sym.diameter}, мм`,

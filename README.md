@@ -33,12 +33,12 @@ On a phone the side panel becomes a column of round buttons at the screen edge, 
 | Group | Kinds |
 |---|---|
 | Straight ducts | round (КВ), rectangular (ПВ) |
-| Elbows | round (КО), rectangular (ПО), any angle |
+| Elbows | round (КВд), rectangular (ПВд), any angle |
 | Reducers | round (КП), rectangular (ПП), rectangular to round (ППК) |
 | Caps | round, rectangular |
 | Branch-in collars | round (Квр), rectangular (Пвр) |
 | Tees | round (КТ), round with a rectangular branch (КПТ), rectangular (ПТ), rectangular with a round branch (ПКТ) |
-| Crosses | round with round branches (КККр), round with rectangular branches (КПКр), rectangular with rectangular branches (ППКр), rectangular with round branches (ПККр) |
+| Crosses | round with round branches (ККХ), round with rectangular branches (КПХ), rectangular with rectangular branches (ППХ), rectangular with round branches (ПКХ) |
 
 Tees and crosses subtract the branch openings from the main duct; thickness follows the main duct.
 
