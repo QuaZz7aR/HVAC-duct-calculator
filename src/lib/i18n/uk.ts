@@ -4,7 +4,7 @@ import type { FormIssueCode } from '../form/messages';
 
 /**
  * Every user-visible string lives here. Another language is one more file with the same shape.
- * Fitting designations follow the engineer's Excel (КВ, ПВ, КО, ПО, КП, ПП, ППК, Заглушка).
+ * Fitting designations follow the engineer's Excel, with Ukrainian letters where his came from Russian words (ADR 0036).
  */
 /**
  * Latin letters of the sizes, as on drawings and in EN 1505 / EN 1506 based catalogues: a × b of a rect duct, d of a round one,
@@ -27,7 +27,7 @@ const sym = {
 
 export const uk = {
   symbols: sym,
-  appTitle: 'Калькулятор повітроводів',
+  appTitle: 'Калькулятор повітропроводів',
   appSubtitle:
     'Список фасонних частин → площа металу та товщина. Усе рахується в браузері.',
   settings: {
@@ -62,7 +62,7 @@ export const uk = {
     countOnPage: 'у списку',
   },
   kindGroups: {
-    straight: 'Повітроводи',
+    straight: 'Повітропроводи',
     elbow: 'Відводи',
     reducer: 'Переходи',
     cap: 'Заглушки',
@@ -110,7 +110,7 @@ export const uk = {
       smallEndSides: `${sym.smallWidth} — мала ширина, ${sym.smallHeight} — мала висота`,
       branchDiameter: `${sym.smallDiameter} — діаметр врізки`,
       branchSides: `${sym.smallWidth}, ${sym.smallHeight} — розміри врізки`,
-      tapDuct: 'пунктир — повітровод, у який врізаються',
+      tapDuct: 'пунктир — повітропровід, у який врізаються',
       angleNote: `кут ${sym.angle} — з поля «Кут», на схемі 90°`,
       length: `${sym.length} — довжина`,
       tapLength: `${sym.length} — довжина врізки`,
@@ -122,14 +122,14 @@ export const uk = {
   autoValue: 'авто',
   resetAuto: 'скинути до авто',
   kinds: {
-    roundStraight: { designation: 'КВ', name: 'Круглий повітровод' },
-    rectStraight: { designation: 'ПВ', name: 'Прямокутний повітровод' },
+    roundStraight: { designation: 'КПв', name: 'Круглий повітропровід' },
+    rectStraight: { designation: 'ППв', name: 'Прямокутний повітропровід' },
     roundCap: { designation: 'Заглушка', name: 'Заглушка кругла' },
     rectCap: { designation: 'Заглушка', name: 'Заглушка прямокутна' },
     roundTap: { designation: 'Квр', name: 'Врізка кругла' },
     rectTap: { designation: 'Пвр', name: 'Врізка прямокутна' },
-    roundElbow: { designation: 'КО', name: 'Круглий відвід' },
-    rectElbow: { designation: 'ПО', name: 'Прямокутний відвід' },
+    roundElbow: { designation: 'КВд', name: 'Круглий відвід' },
+    rectElbow: { designation: 'ПВд', name: 'Прямокутний відвід' },
     roundReducer: { designation: 'КП', name: 'Круглий перехід' },
     rectReducer: { designation: 'ПП', name: 'Прямокутний перехід' },
     rectToRoundReducer: { designation: 'ППК', name: 'Перехід прямокутник → круг' },
@@ -137,10 +137,10 @@ export const uk = {
     roundTeeRectBranch: { designation: 'КПТ', name: 'Круглий трійник із прямокутною врізкою' },
     rectTee: { designation: 'ПТ', name: 'Прямокутний трійник' },
     rectTeeRoundBranch: { designation: 'ПКТ', name: 'Прямокутний трійник із круглою врізкою' },
-    roundCross: { designation: 'КККр', name: 'Кругла хрестовина із круглими врізками' },
-    roundCrossRectBranches: { designation: 'КПКр', name: 'Кругла хрестовина із прямокутними врізками' },
-    rectCross: { designation: 'ППКр', name: 'Прямокутна хрестовина із прямокутними врізками' },
-    rectCrossRoundBranches: { designation: 'ПККр', name: 'Прямокутна хрестовина із круглими врізками' },
+    roundCross: { designation: 'ККХ', name: 'Кругла хрестовина із круглими врізками' },
+    roundCrossRectBranches: { designation: 'КПХ', name: 'Кругла хрестовина із прямокутними врізками' },
+    rectCross: { designation: 'ППХ', name: 'Прямокутна хрестовина із прямокутними врізками' },
+    rectCrossRoundBranches: { designation: 'ПКХ', name: 'Прямокутна хрестовина із круглими врізками' },
   } satisfies Record<FittingKind, { designation: string; name: string }>,
   fields: {
     diameter: `Діаметр ${sym.diameter}, мм`,

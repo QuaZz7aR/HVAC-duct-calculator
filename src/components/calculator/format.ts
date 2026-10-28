@@ -5,7 +5,7 @@ import type { FittingKind, FormRow } from "@/lib/form/fields";
 export const fmt = (n: number, digits = 3) =>
   n.toLocaleString("uk-UA", { minimumFractionDigits: digits, maximumFractionDigits: digits });
 
-/** "КВ — Круглий повітровод" */
+/** "КПв — Круглий повітропровід" */
 export function kindTitle(kind: FittingKind) {
   const k = dict.kinds[kind];
   return `${k.designation} — ${k.name}`;

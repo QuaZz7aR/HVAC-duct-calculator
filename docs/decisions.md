@@ -50,12 +50,14 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0033](adr/0033-isometric-sketch.md) | One isometric sketch instead of two views | 2026-10-27 | Accepted |
 | [0034](adr/0034-latin-size-letters.md) | Latin letters for sizes on the sketch and in the field labels | 2026-10-27 | Accepted |
 | [0035](adr/0035-rect-to-round-exact-layout.md) | Rect-to-round transition: exact sheet-metal layout | 2026-10-27 | Accepted |
+| [0036](adr/0036-ukrainian-fitting-codes.md) | Ukrainian fitting codes: КПв, ППв, КВд, ПВд, ККХ, КПХ, ППХ, ПКХ instead of the Excel КВ, ПВ, КО, ПО, ...Кр | 2026-10-28 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.
 - **Allowance counted twice**: +9.6 % / +13.7 % area against the Excel, confirmed by the engineer ([0003](adr/0003-allowance-counted-twice-on-rect-elbows.md)).
 - **Centerline from geometry, not area**: the Excel's friction length is about +33 % longer, confirmed Ш2 ([0004](adr/0004-centerline-from-geometry-not-area.md)).
 - **Rect-to-round transition as the exact layout**: the Excel (and ВСН 353-86) take the mean perimeter x axial length, 1-14 % less on elongated rect ends ([0035](adr/0035-rect-to-round-exact-layout.md)).
+- **Fitting codes**: straight ducts, elbows and crosses use Ukrainian letters (КПв, ППв, КВд, ПВд, ...Х) instead of the Excel КВ, ПВ, КО, ПО, ...Кр ([0036](adr/0036-ukrainian-fitting-codes.md)).
 
 ## `TODO(confirm)` register
 Find them all with `grep -rn "TODO(confirm)" src`.
