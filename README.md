@@ -1,5 +1,7 @@
 # HVAC duct calculator
 
+**English** · [Українська](README.uk.md)
+
 A web calculator for sheet-metal ductwork. You list the duct fittings of a ventilation system (straight ducts, elbows, reducers, tees, crosses, caps, branch-in collars) with their sizes, and it returns the sheet-metal area of every item, the metal thickness by the Ukrainian norm, and a metal list grouped by thickness with the number of sheets to order.
 
 **Live:** https://hvac-duct-calculator-rho.vercel.app
