@@ -27,7 +27,7 @@ const sym = {
 
 export const uk = {
   symbols: sym,
-  appTitle: 'Калькулятор повітроводів',
+  appTitle: 'Калькулятор повітропроводів',
   appSubtitle:
     'Список фасонних частин → площа металу та товщина. Усе рахується в браузері.',
   settings: {
@@ -62,7 +62,7 @@ export const uk = {
     countOnPage: 'у списку',
   },
   kindGroups: {
-    straight: 'Повітроводи',
+    straight: 'Повітропроводи',
     elbow: 'Відводи',
     reducer: 'Переходи',
     cap: 'Заглушки',
@@ -110,7 +110,7 @@ export const uk = {
       smallEndSides: `${sym.smallWidth} — мала ширина, ${sym.smallHeight} — мала висота`,
       branchDiameter: `${sym.smallDiameter} — діаметр врізки`,
       branchSides: `${sym.smallWidth}, ${sym.smallHeight} — розміри врізки`,
-      tapDuct: 'пунктир — повітровод, у який врізаються',
+      tapDuct: 'пунктир — повітропровід, у який врізаються',
       angleNote: `кут ${sym.angle} — з поля «Кут», на схемі 90°`,
       length: `${sym.length} — довжина`,
       tapLength: `${sym.length} — довжина врізки`,
@@ -122,8 +122,8 @@ export const uk = {
   autoValue: 'авто',
   resetAuto: 'скинути до авто',
   kinds: {
-    roundStraight: { designation: 'КВ', name: 'Круглий повітровод' },
-    rectStraight: { designation: 'ПВ', name: 'Прямокутний повітровод' },
+    roundStraight: { designation: 'КПв', name: 'Круглий повітропровід' },
+    rectStraight: { designation: 'ППв', name: 'Прямокутний повітропровід' },
     roundCap: { designation: 'Заглушка', name: 'Заглушка кругла' },
     rectCap: { designation: 'Заглушка', name: 'Заглушка прямокутна' },
     roundTap: { designation: 'Квр', name: 'Врізка кругла' },

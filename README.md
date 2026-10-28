@@ -32,7 +32,7 @@ On a phone the side panel becomes a column of round buttons at the screen edge, 
 
 | Group | Kinds |
 |---|---|
-| Straight ducts | round (КВ), rectangular (ПВ) |
+| Straight ducts | round (КПв), rectangular (ППв) |
 | Elbows | round (КВд), rectangular (ПВд), any angle |
 | Reducers | round (КП), rectangular (ПП), rectangular to round (ППК) |
 | Caps | round, rectangular |
