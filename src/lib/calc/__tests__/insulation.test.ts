@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { isTeeCross } from '../branch';
 import { defaultConfig } from '../config';
 import { insulated, insulationArea, insulationList } from '../insulation';
 import { centerlineLength, developedLength, sheetArea } from '../sheet-area';
@@ -12,7 +13,8 @@ describe('insulation area', () => {
     expect(insulationArea(input, thicknessMm, defaultConfig)).toBeCloseTo(area, 6);
   });
 
-  it.each(insulationCases)('$id: keeps the centre line, and the developed length except for reducers', ({ input, thicknessMm }) => {
+  // tees and crosses are left out: their run is the branch size + 2 x allowance, and the outer branch is 2t wider
+  it.each(insulationCases.filter((c) => !isTeeCross(c.input)))('$id: keeps the centre line, and the developed length except for reducers', ({ input, thicknessMm }) => {
     const outer = insulated(input, thicknessMm);
     expect(centerlineLength(outer)).toBeCloseTo(centerlineLength(input), 9);
     if (!input.kind.includes('Reducer')) expect(developedLength(outer)).toBeCloseTo(developedLength(input), 9);
