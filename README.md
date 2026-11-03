@@ -2,7 +2,7 @@
 
 **English** · [Українська](README.uk.md)
 
-A web calculator for sheet-metal ductwork. You list the duct fittings of a ventilation system (straight ducts, elbows, reducers, tees, crosses, caps, branch-in collars) with their sizes, and it returns the sheet-metal area of every item, the metal thickness by the Ukrainian norm, and a metal list grouped by thickness with the number of sheets to order.
+A web calculator for sheet-metal ductwork. You list the duct fittings of a ventilation system (straight ducts, elbows, reducers, tees, crosses, caps, branch-in collars) with their sizes, and it returns the sheet-metal area of every item, the metal thickness by the Ukrainian norm, a metal list grouped by thickness with the number of sheets to order, the insulation area and a cost estimate from your own prices.
 
 **Live:** https://hvac-duct-calculator-rho.vercel.app
 
@@ -15,13 +15,14 @@ The interface is in Ukrainian: the tool is built for duct designers and sheet-me
 - **Metal area per item.** Developed surface of each fitting from its geometry, with the connection allowance for flanges and the cutting coefficient for elbows.
 - **Metal thickness.** Looked up from the table of ДБН В.2.5-67:2013, annex Ц (round: by diameter, rectangular: by the larger side). The engineer's own table is available as an option.
 - **Metal list by thickness.** Area per thickness, area to order with a margin (20 % by default) and the number of sheets for the chosen sheet size (1000 × 2000, 1250 × 2500 or 1500 × 3000).
+- **Insulation area (beta).** Pick an insulation material per item (six from the engineer's spreadsheet); the outer surface of the layer is the metal geometry with each size increased by twice the layer thickness. Area per item, a list per material and a total. The model will be refined with the engineer.
 - **Cost estimate.** Enter your own price per m² (UAH) for each sheet thickness and insulation material: cost per line and in total. Metal is priced on the area to order. No prices are preset.
 - **Input warnings.** Unusual but valid input (aspect ratio of 3 and above, over 6.3, a side over 2000 mm, a large elbow radius) is flagged and never changed.
 - **Sketches.** Each fitting card shows an isometric sketch with the dimension letters used in the form.
 
-| Fittings folded into tiles, with the results table | Totals and metal list by thickness |
+| Fittings folded into tiles, with the results table | Totals, metal and insulation lists with prices |
 |---|---|
-| ![All 19 fitting kinds folded into compact tiles](docs/images/desktop-folded.png) | ![Results per item, totals and the metal list with sheet counts](docs/images/totals.png) |
+| ![All 19 fitting kinds folded into compact tiles](docs/images/desktop-folded.png) | ![Results per item, totals, the metal list with sheet counts and the insulation list with costs](docs/images/totals.png) |
 
 On a phone the side panel becomes a column of round buttons at the screen edge, with a quick menu of common kinds and a searchable list of all of them.
 
@@ -87,7 +88,6 @@ npm run lint
 
 ## Roadmap
 
-- Insulation area
 - Adapters and plenum boxes
 - Aerodynamics as a separate mode
 - XLSX export of the specification
