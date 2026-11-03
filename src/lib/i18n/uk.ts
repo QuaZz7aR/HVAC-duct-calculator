@@ -164,6 +164,7 @@ export const uk = {
     thickness: 'Товщина металу, мм',
     metalArea: 'Площа, м² (шт.)',
     metalAreaTotal: 'Сума площі, м²',
+    insulationTotal: 'Утеплення, м²',
     empty: 'Додайте деталь, щоб побачити розрахунок.',
     skipped: (n: number) => `Не враховано позицій з помилками: ${n}.`,
   },
@@ -171,6 +172,25 @@ export const uk = {
     title: 'Разом',
     metalArea: 'Площа металу, м²',
     metalAreaToOrder: 'Площа до замовлення (із запасом), м²',
+    insulationArea: 'Площа утеплювача, м²',
+  },
+  insulation: {
+    field: 'Утеплення',
+    none: 'Без утеплення',
+    // the engineer's Excel names («Шаблон», columns P-U)
+    materials: {
+      iz8: 'Ізолон 8 мм',
+      kf10: 'Каучук фольгований 10 мм',
+      kf13: 'Каучук фольгований 13 мм',
+      kf30: 'Каучук фольгований 30 мм',
+      mf30: 'Мін. вата фольгована 30 мм',
+      mf50: 'Мін. вата фольгована 50 мм',
+    } as Record<string, string>,
+    title: 'Відомість утеплювача (бета)',
+    material: 'Матеріал',
+    area: 'Площа, м²',
+    empty: 'Оберіть утеплення в картці деталі, щоб побачити площу.',
+    note: 'Бета: площа зовнішньої поверхні утеплювача (кожен розмір перерізу + 2 товщини шару), для відводів із коефіцієнтом розкрою, для заглушок лише торець. Без запасу на замовлення.',
   },
   sheetList: {
     title: 'Відомість металу за товщиною',
@@ -197,6 +217,7 @@ export const uk = {
     'kind.unknown': 'Невідомий тип деталі',
     'input.unknownKey': 'Зайве поле',
     'input.invalid': 'Некоректні дані',
+    'insulation.unknown': 'Невідомий матеріал утеплення',
     'quantity.invalid': 'Ціле число, не менше 1',
   } satisfies Record<FormIssueCode, string>,
   // non-blocking advice next to a row; numbers come from the warning, thresholds from config

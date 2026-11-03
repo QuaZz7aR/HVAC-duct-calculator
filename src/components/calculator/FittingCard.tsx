@@ -9,7 +9,7 @@ import { FittingSketch } from "./FittingSketch";
 import { isoLegend } from "./sketch-spec";
 import { ErrorList, WarningList } from "./ErrorList";
 import { KindMenu } from "./KindMenu";
-import { buttonClass, cardClass, dangerButtonClass } from "./styles";
+import { buttonClass, cardClass, dangerButtonClass, labelClass, selectClass } from "./styles";
 import { TextField } from "./TextField";
 
 interface Props {
@@ -34,7 +34,7 @@ export function FittingCard({ row, index, justAdded, showSketch, collapsed, onTo
   const fieldLabel = (f: (typeof kindFields)[FittingKind][number]) =>
     `${dict.fields[f.key]}${f.optional ? ` (${dict.optional}: ${defaultConfig.reducerLengthMm})` : ""}`;
   // the (авто) hint or the reset link sits after the label, so reserve room for the longer one on the suggested field
-  const labels = [...kindFields[row.kind].map((f) => fieldLabel(f) + (autoKey(row.kind) === f.key ? ` ${dict.autoValue.length > dict.resetAuto.length ? `(${dict.autoValue})` : dict.resetAuto}` : "")), dict.quantity];
+  const labels = [...kindFields[row.kind].map((f) => fieldLabel(f) + (autoKey(row.kind) === f.key ? ` ${dict.autoValue.length > dict.resetAuto.length ? `(${dict.autoValue})` : dict.resetAuto}` : "")), dict.quantity, dict.insulation.field];
   if (collapsed) {
     // one compact tile: number, kind and the typed values; the whole tile expands the card
     const summary = [...kindFields[row.kind].map((f) => row.values[f.key] ?? ""), row.quantity].map((v) => v || "–").join(" · ");
@@ -93,6 +93,15 @@ export function FittingCard({ row, index, justAdded, showSketch, collapsed, onTo
           );
         })}
         <TextField label={dict.quantity} inputMode="numeric" value={row.quantity} onChange={(quantity) => onPatch({ quantity })} />
+        <label className="col-span-2 flex flex-col sm:col-span-1">
+          <span className={labelClass}>{dict.insulation.field}</span>
+          <select className={`mt-auto ${selectClass}`} value={row.insulation ?? ""} onChange={(e) => onPatch({ insulation: e.target.value })}>
+            <option value="" className="bg-panel text-foreground">{dict.insulation.none}</option>
+            {defaultConfig.insulation.materials.map((m) => (
+              <option key={m.code} value={m.code} className="bg-panel text-foreground">{dict.insulation.materials[m.code] ?? m.code}</option>
+            ))}
+          </select>
+        </label>
       </div>
       <button
         type="button"

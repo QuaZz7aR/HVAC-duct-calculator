@@ -17,7 +17,7 @@ function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outco
     return (
       <tr className="border-t border-line text-muted hover:bg-accent-soft">
         <td className="py-1 pr-3">{index + 1}. {rowTitle(row)}</td>
-        <td colSpan={4} className="px-2 text-right">—</td>
+        <td colSpan={5} className="px-2 text-right">—</td>
       </tr>
     );
   }
@@ -28,7 +28,8 @@ function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outco
       <td className={numCell}>{r.quantity}</td>
       <td className={numCell}>{fmt(r.thicknessMm, 2)}</td>
       <td className={numCell}>{fmt(r.metalArea)}</td>
-      <td className="pl-2 text-right tabular-nums">{fmt(r.metalAreaTotal)}</td>
+      <td className={numCell}>{fmt(r.metalAreaTotal)}</td>
+      <td className="pl-2 text-right tabular-nums">{r.insulation ? fmt(r.insulation.areaTotal) : "—"}</td>
     </tr>
   );
 }
@@ -48,7 +49,8 @@ export function ResultsTable({ rows, outcome, calc }: Props) {
                 <th className="px-2 text-right">{dict.quantity}</th>
                 <th className="px-2 text-right">{dict.results.thickness}</th>
                 <th className="px-2 text-right">{dict.results.metalArea}</th>
-                <th className="pl-2 text-right">{dict.results.metalAreaTotal}</th>
+                <th className="px-2 text-right">{dict.results.metalAreaTotal}</th>
+                <th className="pl-2 text-right">{dict.results.insulationTotal}</th>
               </tr>
             </thead>
             <tbody>

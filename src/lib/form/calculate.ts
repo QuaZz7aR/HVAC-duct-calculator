@@ -3,6 +3,7 @@ import { defaultConfig, type CalcConfig } from '../calc/config';
 import { assembleSection } from '../calc/section';
 import { centerlineLength } from '../calc/sheet-area';
 import { metalArea } from '../calc/waste-factor';
+import { insulationArea, insulationList, type InsulationGroup, type InsulationItem } from '../calc/insulation';
 import { orderArea, orderList, type OrderLine } from '../calc/sheet-count';
 import { sheetList } from '../calc/sheet-list';
 import { thickness, thicknessSize } from '../calc/thickness';
@@ -28,6 +29,7 @@ export interface RowResult {
   thicknessMm: number;
   metalArea: number; // m2, one piece, waste factor included
   metalAreaTotal: number; // m2, times quantity
+  insulation: { code: string; area: number; areaTotal: number } | null; // m2 one piece and times quantity; null = not insulated
   centerlineLength: number; // m
   pressureDrop: PressureDrop; // all NaN when `lossesAvailable` is false
   totalLoss: number; // Pa, friction + local, one piece; NaN when `lossesAvailable` is false
@@ -43,12 +45,14 @@ export interface Calculation {
   sheetList: OrderLine[]; // per thickness: computed area, area with the order margin, whole sheets
   totalMetalArea: number; // m2, times quantity, the computed area
   totalMetalAreaToOrder: number; // m2, the computed area plus the order margin (config.order.marginPercent)
+  insulationList: InsulationGroup[]; // m2 per material, times quantity
+  totalInsulationArea: number; // m2, all materials
   totalPressureDrop: number; // Pa, times quantity; rows with unavailable losses are left out
   skipped: number; // rows left out because of errors
 }
 
 /** Form text -> validated core fitting plus the section inputs. */
-function parseRow(row: FormRow, schemas: ReturnType<typeof createSchemas>) {
+function parseRow(row: FormRow, schemas: ReturnType<typeof createSchemas>, config: CalcConfig) {
   const issues: FormIssue[] = [];
 
   const raw: Record<string, unknown> = { kind: row.kind };
@@ -72,8 +76,12 @@ function parseRow(row: FormRow, schemas: ReturnType<typeof createSchemas>) {
   if (Number.isNaN(zeta)) issues.push({ code: 'size.notFinite', path: ['zeta'] });
   else if (zeta < 0) issues.push({ code: 'coefficient.negative', path: ['zeta'] });
 
+  const code = row.insulation ?? '';
+  const material = code === '' ? null : (config.insulation.materials.find((m) => m.code === code) ?? null);
+  if (code !== '' && !material) issues.push({ code: 'insulation.unknown', path: ['insulation'] });
+
   if (issues.length > 0 || !item.ok) return { ok: false as const, issues };
-  return { ok: true as const, fitting: item.value.fitting, quantity: item.value.quantity, flow: flow!, zeta };
+  return { ok: true as const, fitting: item.value.fitting, quantity: item.value.quantity, flow: flow!, zeta, material };
 }
 
 export function calculate(
@@ -90,9 +98,10 @@ export function calculate(
   const schemas = createSchemas(config);
   const outcomes: RowOutcome[] = [];
   const valid: { fitting: Fitting; quantity: number }[] = [];
+  const insulatedItems: InsulationItem[] = [];
   let totalPressureDrop = 0;
   for (const row of rows) {
-    const p = parseRow(row, schemas);
+    const p = parseRow(row, schemas, config);
     if (!p.ok) {
       outcomes.push({ ok: false, id: row.id, issues: p.issues });
     } else if (!airResult) {
@@ -111,6 +120,7 @@ export function calculate(
           pressureDrop = s.pressureDrop;
           totalLoss = sum;
         }
+        const ins = p.material ? insulationArea(p.fitting, p.material.thicknessMm, config) : NaN;
         result = {
           id: row.id,
           fitting: p.fitting,
@@ -118,6 +128,7 @@ export function calculate(
           thicknessMm: thickness(thicknessSize(p.fitting), config),
           metalArea: area,
           metalAreaTotal: area * p.quantity,
+          insulation: p.material ? { code: p.material.code, area: ins, areaTotal: ins * p.quantity } : null,
           centerlineLength: centerlineLength(p.fitting),
           pressureDrop,
           totalLoss,
@@ -129,24 +140,31 @@ export function calculate(
         if (![result.metalArea, result.metalAreaTotal, result.centerlineLength].every(Number.isFinite) || result.metalArea <= 0) {
           throw new Error('not a valid section');
         }
+        if (result.insulation && !(Number.isFinite(result.insulation.areaTotal) && result.insulation.area > 0)) {
+          throw new Error('not a valid insulation area');
+        }
       } catch {
         outcomes.push({ ok: false, id: row.id, issues: [{ code: 'input.invalid', path: [] }] });
         continue;
       }
       outcomes.push({ ok: true, result });
       valid.push({ fitting: p.fitting, quantity: p.quantity });
+      if (p.material) insulatedItems.push({ fitting: p.fitting, quantity: p.quantity, material: p.material });
       if (result.lossesAvailable) totalPressureDrop += p.quantity * result.totalLoss;
     }
   }
 
   const groups = sheetList(valid, config);
   const totalMetalArea = groups.reduce((sum, g) => sum + g.area, 0);
+  const insulation = insulationList(insulatedItems, config);
   return {
     air: air.ok ? { ok: true } : { ok: false, issues: air.issues },
     rows: outcomes,
     sheetList: orderList(groups, config.order),
     totalMetalArea,
     totalMetalAreaToOrder: orderArea(totalMetalArea, config.order.marginPercent),
+    insulationList: insulation,
+    totalInsulationArea: insulation.reduce((sum, g) => sum + g.area, 0),
     totalPressureDrop,
     // rows blocked only by invalid air carry no issues of their own and are not counted
     skipped: outcomes.filter((o) => !o.ok && o.issues.length > 0).length,
