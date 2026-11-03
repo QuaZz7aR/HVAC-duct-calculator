@@ -2,12 +2,18 @@ import type { FieldKey } from "@/lib/form/fields";
 import type { FittingWarning } from "@/lib/calc/warnings";
 import { issueMessage, warningMessage, type FormIssue } from "@/lib/form/messages";
 import { uk as dict } from "@/lib/i18n/uk";
+import { fmt } from "./format";
 
 function fieldLabel(issue: FormIssue) {
   const key = String(issue.path[0]);
   if (key === "quantity") return dict.quantity;
   if (key === "seamPercent") return dict.settings.seamPercent;
   if (key === "marginPercent") return dict.settings.marginPercent;
+  if (key === "metalPrice") return dict.price.metalLabel(fmt(Number(issue.path[1]), 2));
+  if (key === "insulationPrice") {
+    const code = String(issue.path[1]);
+    return dict.price.insulationLabel(dict.insulation.materials[code] ?? code);
+  }
   return dict.fields[key as FieldKey] ?? key;
 }
 
