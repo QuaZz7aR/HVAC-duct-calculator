@@ -5,6 +5,7 @@ import { FittingList } from "./calculator/FittingList";
 import { SettingsPanel } from "./calculator/SettingsPanel";
 import { ResultsTable } from "./calculator/ResultsTable";
 import { SheetList } from "./calculator/SheetList";
+import { InsulationList } from "./calculator/InsulationList";
 import { KindRail } from "./calculator/KindPalette";
 import { mutedClass } from "./calculator/styles";
 import { Totals } from "./calculator/Totals";
@@ -44,6 +45,7 @@ export function Calculator() {
         <div className="grid gap-6 md:grid-cols-2">
           <Totals calc={calc} />
           <SheetList groups={calc.sheetList} />
+          <InsulationList groups={calc.insulationList} />
         </div>
 
         <footer className="text-xs text-muted">{dict.footer}</footer>

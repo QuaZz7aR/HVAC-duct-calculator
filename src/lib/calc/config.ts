@@ -63,6 +63,18 @@ export interface OrderConfig {
   sheetSizes: SheetSize[]; // the sizes the UI offers
 }
 
+/** An insulation material: stable code (the UI names it) and its layer thickness. */
+export interface InsulationMaterial {
+  code: string;
+  thicknessMm: number;
+}
+
+/** Insulation materials the user picks from, per row. */
+export interface InsulationConfig {
+  version: string; // bumped on ANY change of the list
+  materials: InsulationMaterial[];
+}
+
 /** Boundary-unit defaults (mm). Convert with units.ts before use in the core. */
 export interface CalcConfig {
   air: AirConfig;
@@ -74,6 +86,7 @@ export interface CalcConfig {
   warnings: WarningConfig;
   order: OrderConfig;
   elbowRadius: ElbowRadiusConfig;
+  insulation: InsulationConfig;
 }
 
 /**
@@ -165,6 +178,18 @@ export const defaultConfig: CalcConfig = {
     // centre line (manufacturer catalogues, the fixtures use it); rect inner radius 0.5 W, i.e. centre-line R = 1.0 W (SMACNA-style minimum without vanes)
     roundCenterFactor: 1,
     rectInnerFactor: 0.5,
+  },
+  insulation: {
+    version: 'excel-1',
+    // TODO(confirm): the six materials of the engineer's Excel («Шаблон», columns P-U), his practice, not a norm; whether the list is complete is open
+    materials: [
+      { code: 'iz8', thicknessMm: 8 }, // Ізолон 8 мм
+      { code: 'kf10', thicknessMm: 10 }, // каучук фольгований 10 мм
+      { code: 'kf13', thicknessMm: 13 },
+      { code: 'kf30', thicknessMm: 30 },
+      { code: 'mf30', thicknessMm: 30 }, // мінеральна вата фольгована 30 мм
+      { code: 'mf50', thicknessMm: 50 },
+    ],
   },
   order: {
     // engineer (2026-10-19): the 20 % is "probably the margin for ordering metal"
