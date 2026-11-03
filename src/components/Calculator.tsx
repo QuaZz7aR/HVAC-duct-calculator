@@ -14,7 +14,7 @@ import { useCalculator } from "./calculator/useCalculator";
 import { useCardView } from "./calculator/useCardView";
 
 export function Calculator() {
-  const { rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, removeRow } = useCalculator();
+  const { rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, removeRow, prices, costs, setMetalPrice, setInsulationPrice } = useCalculator();
 
   const view = useCardView(rows);
 
@@ -42,10 +42,10 @@ export function Calculator() {
         />
         <ResultsTable rows={rows} outcome={outcome} calc={calc} />
 
-        <div className="grid gap-6 md:grid-cols-2">
-          <Totals calc={calc} />
-          <SheetList groups={calc.sheetList} />
-          <InsulationList groups={calc.insulationList} />
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <Totals calc={calc} pricing={costs} priceIssues={costs.issues} />
+          <SheetList groups={calc.sheetList} prices={prices.metal} costs={costs.metal} onPrice={setMetalPrice} />
+          <InsulationList groups={calc.insulationList} prices={prices.insulation} costs={costs.insulation} onPrice={setInsulationPrice} />
         </div>
 
         <footer className="text-xs text-muted">{dict.footer}</footer>

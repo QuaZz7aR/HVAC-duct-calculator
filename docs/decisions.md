@@ -52,6 +52,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0035](adr/0035-rect-to-round-exact-layout.md) | Rect-to-round transition: exact sheet-metal layout | 2026-10-27 | Accepted |
 | [0036](adr/0036-ukrainian-fitting-codes.md) | Ukrainian fitting codes: КПв, ППв, КВд, ПВд, ККХ, КПХ, ППХ, ПКХ instead of the Excel КВ, ПВ, КО, ПО, ...Кр | 2026-10-28 | Accepted |
 | [0037](adr/0037-insulation-area-beta.md) | Insulation area (beta): outer surface, sizes + 2t | 2026-11-03 | Accepted (beta) |
+| [0038](adr/0038-price-per-square-metre.md) | Price: user-entered UAH per m² per thickness and material | 2026-11-03 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.
@@ -82,7 +83,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 - eslint 9 -> 10: blocked upstream. `eslint-config-next` 16.3.8 itself allows `eslint >=9`, but the plugins it bundles (`eslint-plugin-react` 7.37.5, `eslint-plugin-import` 2.32.0, `eslint-plugin-jsx-a11y` 6.10.2, all at their latest releases) declare peers only up to `^9`. Retry when those publish eslint 10 support; do not force it with overrides.
 - Share the equivalent-diameter helper between `aero.ts` (m) and `waste-factor.ts` (mm).
 - Sheet count has no nesting or offcut model (a plain ceil of area over sheet area); a cutting plan would need part shapes.
-- Next features (engineer's order, 2026-10-16): insulation (beta done, [0037](adr/0037-insulation-area-beta.md)), price per fitting (user-entered), then aerodynamics as a separate mode. XLSX export waits for the engineer's reference files.
+- Next features (engineer's order, 2026-10-16): insulation (beta done, [0037](adr/0037-insulation-area-beta.md)), price (done as UAH per m² per thickness and material, [0038](adr/0038-price-per-square-metre.md); a price per fitting or per sheet, labour and a price list are deferred), then aerodynamics as a separate mode. XLSX export waits for the engineer's reference files.
 - A user-defined (custom) thickness table, which the engineer mentioned as a possible later step.
 - Fire-resistant ducts (thickness at least 0.8 mm, ДБН п. 7.11.5) are not a mode.
 - Fix the Excel template (M9/M10/M12/M27-M30 on both sheets) and tell the engineer; a copy is ready.

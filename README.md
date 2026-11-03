@@ -15,6 +15,7 @@ The interface is in Ukrainian: the tool is built for duct designers and sheet-me
 - **Metal area per item.** Developed surface of each fitting from its geometry, with the connection allowance for flanges and the cutting coefficient for elbows.
 - **Metal thickness.** Looked up from the table of ДБН В.2.5-67:2013, annex Ц (round: by diameter, rectangular: by the larger side). The engineer's own table is available as an option.
 - **Metal list by thickness.** Area per thickness, area to order with a margin (20 % by default) and the number of sheets for the chosen sheet size (1000 × 2000, 1250 × 2500 or 1500 × 3000).
+- **Cost estimate.** Enter your own price per m² (UAH) for each sheet thickness and insulation material: cost per line and in total. Metal is priced on the area to order. No prices are preset.
 - **Input warnings.** Unusual but valid input (aspect ratio of 3 and above, over 6.3, a side over 2000 mm, a large elbow radius) is flagged and never changed.
 - **Sketches.** Each fitting card shows an isometric sketch with the dimension letters used in the form.
 
@@ -88,6 +89,5 @@ npm run lint
 
 - Insulation area
 - Adapters and plenum boxes
-- Price estimate
 - Aerodynamics as a separate mode
 - XLSX export of the specification

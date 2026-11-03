@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { defaultConfig } from "@/lib/calc/config";
 import { calculate, type RowOutcome } from "@/lib/form/calculate";
+import { emptyPrices, pricing, type PriceText } from "@/lib/form/price";
 import { buildConfig, defaultSettings, type SettingsText } from "@/lib/form/settings";
 import { resetToAuto, setFieldValue, withKind } from "@/lib/form/auto-defaults";
 import { sampleRows } from "@/lib/form/sample-rows";
@@ -41,6 +42,13 @@ export function useCalculator() {
     () => calculate(rows.map((r) => ({ ...r, flow: hiddenLossInputs.flow, zeta: hiddenLossInputs.zeta })), hiddenLossInputs.air, built.config),
     [rows, built.config],
   );
+  // prices stay keyed by thickness / material, so a line that leaves the list and comes back keeps its price
+  const [prices, setPrices] = useState<PriceText>(emptyPrices);
+  const costs = useMemo(() => pricing(calc, prices), [calc, prices]);
+  const setMetalPrice = (key: string, value: string) => setPrices((p) => ({ ...p, metal: { ...p.metal, [key]: value } }));
+  const setInsulationPrice = (code: string, value: string) =>
+    setPrices((p) => ({ ...p, insulation: { ...p.insulation, [code]: value } }));
+
   const outcomes = useMemo(
     () => new Map<number, RowOutcome>(calc.rows.map((r) => [r.ok ? r.result.id : r.id, r])),
     [calc],
@@ -80,5 +88,5 @@ export function useCalculator() {
   };
   const removeRow = (id: number) => setRows((rs) => rs.filter((r) => r.id !== id));
 
-  return { rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, removeRow };
+  return { rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, removeRow, prices, costs, setMetalPrice, setInsulationPrice };
 }
