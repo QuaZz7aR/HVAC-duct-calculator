@@ -15,9 +15,9 @@ export function issueMessage(issue: { code: FormIssueCode }, dict: Dictionary): 
   return dict.errors[issue.code];
 }
 
-/** Warning text with the numbers filled in (decimal comma, as the UI shows them). */
+/** Warning text with the numbers filled in (decimal mark of the dictionary's language, as the UI shows them). */
 export function warningMessage(w: FittingWarning, dict: Dictionary): string {
   // the value is rounded up so the text never says a number exceeds an identical one
-  const n = (x: number, up = false) => String((up ? Math.ceil(x * 100 - 1e-9) : Math.round(x * 100)) / 100).replace('.', ',');
+  const n = (x: number, up = false) => String((up ? Math.ceil(x * 100 - 1e-9) : Math.round(x * 100)) / 100).replace('.', dict.decimal);
   return dict.warnings[w.code](n(w.value, true), n(w.limit));
 }

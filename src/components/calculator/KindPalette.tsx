@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { FittingKind } from "@/lib/form/fields";
 import { kindGroups, searchKinds, type KindGroupId } from "@/lib/form/kind-groups";
-import { uk as dict } from "@/lib/i18n/uk";
+import { useI18n } from "@/components/i18n";
 import { KindGlyph } from "./KindGlyph";
 import { scrollToTop } from "./scrollToTop";
 import { FoldIcon, SketchesIcon, UpIcon } from "./ViewIcons";
@@ -20,6 +20,7 @@ export const kindListGrid = "grid grid-cols-[auto_1fr_auto] gap-x-3";
 
 /** One kind in a list: designation, name, "+" (or the count already in the list). */
 function KindItem({ kind, count, onPick }: { kind: FittingKind; count: number; onPick: () => void }) {
+  const { dict } = useI18n();
   const k = dict.kinds[kind];
   return (
     <button
@@ -46,6 +47,7 @@ const railAction =
 
 /** Desktop: a narrow rail of the kind groups, always in view; a group opens a list of its kinds beside the rail. */
 export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardView; hasRows: boolean }) {
+  const { dict } = useI18n();
   const [open, setOpen] = useState<KindGroupId | null>(null);
   // top of the open group's button inside the sticky box: the list opens level with it
   const [top, setTop] = useState(0);
@@ -126,6 +128,7 @@ export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardVi
 
 /** Phone: a bottom sheet with every kind and, at the bottom within thumb reach, a search (not focused on open, so the keyboard stays down). */
 export function Sheet({ found, query, setQuery, count, onClose, onAdd }: { found: ReturnType<typeof searchKinds>; query: string; setQuery: (q: string) => void; count: Props["count"]; onClose: () => void; onAdd: (k: FittingKind) => void }) {
+  const { dict } = useI18n();
   const ref = useRef<HTMLDivElement>(null);
   useDismiss(ref, true, onClose);
   // The page behind must not scroll while the sheet is open. iOS ignores overflow:hidden on the body and chains touches from a

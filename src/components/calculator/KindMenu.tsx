@@ -1,12 +1,13 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import type { FittingKind } from "@/lib/form/fields";
 import { kindGroups } from "@/lib/form/kind-groups";
-import { uk as dict } from "@/lib/i18n/uk";
+import { useI18n } from "@/components/i18n";
 import { buttonClass } from "./styles";
 import { useDismiss } from "./useDismiss";
 
 /** "⋯" button of a card: opens the list of kinds to switch this row to (sizes then restart from the new kind's defaults). */
 export function KindMenu({ kind, onChange }: { kind: FittingKind; onChange: (kind: FittingKind) => void }) {
+  const { dict } = useI18n();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useDismiss(ref, open, () => setOpen(false));

@@ -1,7 +1,6 @@
 import type { Calculation } from "@/lib/form/calculate";
 import type { Pricing } from "@/lib/form/price";
-import { uk as dict } from "@/lib/i18n/uk";
-import { fmt } from "./format";
+import { useI18n } from "@/components/i18n";
 import { PriceInput } from "./PriceInput";
 import { cardClass, mutedClass } from "./styles";
 
@@ -13,6 +12,7 @@ interface Props {
 }
 
 export function InsulationList({ groups, prices, costs, onPrice }: Props) {
+  const { dict, fmt } = useI18n();
   return (
     <section className={`min-w-0 ${cardClass}`} aria-labelledby="insulation-title">
       <h2 id="insulation-title" className="mb-3 font-medium">{dict.insulation.title}</h2>

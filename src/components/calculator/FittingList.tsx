@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import type { RowOutcome } from "@/lib/form/calculate";
 import type { FieldKey, FittingKind, FormRow } from "@/lib/form/fields";
-import { uk as dict } from "@/lib/i18n/uk";
+import { useI18n } from "@/components/i18n";
 import { FittingCard } from "./FittingCard";
 import { kindTitle } from "./format";
 import { buttonClass } from "./styles";
@@ -33,6 +33,7 @@ function groupByKind(rows: FormRow[]) {
 }
 
 export function FittingList({ rows, view, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove, lastAddedId }: Props) {
+  const { dict } = useI18n();
   const { sketchOpen, isFolded, setFoldedMany } = view;
 
   useEffect(() => {
@@ -81,7 +82,7 @@ export function FittingList({ rows, view, outcome, onKindChange, onValueChange, 
             <div key={kind} className="col-span-full space-y-3 rounded-lg border border-line p-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h3 className="text-sm font-medium">
-                  {kindTitle(kind)} <span className="text-muted">× {items.length}</span>
+                  {kindTitle(kind, dict)} <span className="text-muted">× {items.length}</span>
                 </h3>
                 <button
                   type="button"
