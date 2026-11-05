@@ -1,4 +1,4 @@
-import { uk as dict } from '../i18n/uk';
+import { uk, type Dictionary } from '../i18n/uk';
 import type { FittingKind, FormRow } from './fields';
 
 export type KindGroupId = 'straight' | 'elbow' | 'reducer' | 'cap' | 'tap' | 'tee' | 'cross';
@@ -24,7 +24,7 @@ export function insertIndex(rows: readonly Pick<FormRow, 'kind'>[], kind: Fittin
 }
 
 /** Groups with the kinds that match the query in the designation or the name (case-insensitive); empty groups are dropped. */
-export function searchKinds(query: string): { id: KindGroupId; kinds: FittingKind[] }[] {
+export function searchKinds(query: string, dict: Dictionary = uk): { id: KindGroupId; kinds: FittingKind[] }[] {
   const q = query.trim().toLowerCase();
   if (!q) return kindGroups;
   const hit = (k: FittingKind) => `${dict.kinds[k].designation} ${dict.kinds[k].name}`.toLowerCase().includes(q);

@@ -27,6 +27,10 @@ const sym = {
 
 export const uk = {
   symbols: sym,
+  // number format of the page: locale for toLocaleString and the decimal mark in warning texts
+  locale: 'uk-UA',
+  decimal: ',',
+  language: { label: 'Мова інтерфейсу', uk: 'УКР', en: 'EN' },
   appTitle: 'Калькулятор повітропроводів',
   appSubtitle:
     'Список фасонних частин → площа металу та товщина. Усе рахується в браузері.',

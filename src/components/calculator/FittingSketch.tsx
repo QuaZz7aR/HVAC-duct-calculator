@@ -1,5 +1,5 @@
 import type { FittingKind } from "@/lib/form/fields";
-import { uk as dict } from "@/lib/i18n/uk";
+import { useI18n } from "@/components/i18n";
 import { kindTitle } from "./format";
 import { isoDrawing, type IsoTone } from "./iso-sketch";
 import { sketchSpecs } from "./sketch-spec";
@@ -66,6 +66,7 @@ function Elbow({ round, main }: { round: boolean; main: string }) {
 }
 
 function Side({ kind }: { kind: FittingKind }) {
+  const { dict } = useI18n();
   const { shape, roundMain, roundSmall } = sketchSpecs[kind];
   const main = roundMain ? dict.sketch.diameter : dict.sketch.rect;
   const small = roundSmall ? dict.sketch.smallDiameter : dict.sketch.smallRect;
@@ -121,6 +122,7 @@ function Side({ kind }: { kind: FittingKind }) {
 
 /** Cross-section of the main duct; tees, crosses and reducers add the branch or small end as a dashed outline with its own dimensions. */
 function Profile({ kind }: { kind: FittingKind }) {
+  const { dict } = useI18n();
   const { shape, roundMain, roundSmall } = sketchSpecs[kind];
   const main = roundMain ? dict.sketch.diameter : dict.sketch.rect;
   const hasSmall = shape === "reducer" || shape === "tee" || shape === "cross";
@@ -222,11 +224,11 @@ function Iso({ kind, label }: { kind: FittingKind; label: string }) {
   );
 }
 
-const viewTitle = { side: dict.sketch.sideTitle, profile: dict.sketch.profileTitle, iso: dict.sketch.isoTitle };
-
 /** Schematic of a fitting: isometric, side view or cross-section ("в профіль"). Not to scale; labels sit beside the drawing, never on it. */
 export function FittingSketch({ kind, view = "side" }: { kind: FittingKind; view?: SketchView }) {
-  const label = `${kindTitle(kind)}: ${viewTitle[view]}`;
+  const { dict } = useI18n();
+  const viewTitle = { side: dict.sketch.sideTitle, profile: dict.sketch.profileTitle, iso: dict.sketch.isoTitle };
+  const label = `${kindTitle(kind, dict)}: ${viewTitle[view]}`;
   if (view === "iso") return <Iso kind={kind} label={label} />;
   return (
     <svg viewBox="0 0 300 184" role="img" aria-label={label} className="mx-auto h-auto w-full max-w-sm">

@@ -6,7 +6,7 @@ A web calculator for sheet-metal ductwork. You list the duct fittings of a venti
 
 **Live:** https://hvac-duct-calculator-rho.vercel.app
 
-The interface is in Ukrainian: the tool is built for duct designers and sheet-metal shops in Ukraine. Everything is calculated in the browser; there is no backend and nothing is stored.
+The interface is in Ukrainian by default, with an English version: the УКР / EN switch at the top right changes the language, and the browser remembers the choice. The tool is built for duct designers and sheet-metal shops in Ukraine. Everything is calculated in the browser; there is no backend and nothing is stored apart from the language choice.
 
 ![Calculator on desktop: side panel for adding fittings, calculation settings and a fitting card with its isometric sketch](docs/images/desktop.png)
 
@@ -31,6 +31,8 @@ On a phone the side panel becomes a column of round buttons at the screen edge, 
 ## Supported fittings
 
 19 kinds, named by the designations a Ukrainian spec uses.
+
+In the English interface the same kinds have short English codes (C = circular, R = rectangular): CD, RD ducts; CE, RE elbows; CR, RR, RC reducers; CTap, RTap collars; CT, CRT, RT, RCT tees; CX, CRX, RX, RCX crosses.
 
 | Group | Kinds |
 |---|---|
@@ -62,7 +64,7 @@ src/lib/calc/        pure TypeScript core: geometry, thickness, waste factor, sh
                      air properties and pressure drop. No framework, no validation library.
 src/lib/validation/  Zod schemas around the core; errors are stable codes, not text
 src/lib/form/        form layer: raw text -> validated input -> results; defaults and warnings
-src/lib/i18n/        every user-visible string (Ukrainian dictionary)
+src/lib/i18n/        every user-visible string (Ukrainian and English dictionaries)
 src/components/      React components; props only, no calculation
 ```
 

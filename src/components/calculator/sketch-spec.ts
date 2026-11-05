@@ -1,5 +1,5 @@
 import type { FittingKind } from "@/lib/form/fields";
-import { uk as dict } from "@/lib/i18n/uk";
+import { uk, type Dictionary } from "@/lib/i18n/uk";
 
 export type SketchShape = "straight" | "cap" | "tap" | "elbow" | "reducer" | "tee" | "cross";
 
@@ -35,7 +35,7 @@ export const sketchSpecs: Record<FittingKind, SketchSpec> = {
 };
 
 /** The letters a sketch uses, each with what it stands for, in the wording of the input fields. */
-export function sketchLegend(kind: FittingKind): string[] {
+export function sketchLegend(kind: FittingKind, dict: Dictionary = uk): string[] {
   const { shape, roundMain, roundSmall } = sketchSpecs[kind];
   const l = dict.sketch.legend;
   const main = roundMain ? l.diameter : l.rect;
@@ -57,7 +57,7 @@ export function sketchLegend(kind: FittingKind): string[] {
 }
 
 /** Legend of the cross-section: the main size, and the dashed outline of the small end or the branch. */
-export function profileLegend(kind: FittingKind): string[] {
+export function profileLegend(kind: FittingKind, dict: Dictionary = uk): string[] {
   const { shape, roundMain, roundSmall } = sketchSpecs[kind];
   const l = dict.sketch;
   const out = [roundMain ? l.profileDiameter : l.profileRect];
@@ -67,7 +67,7 @@ export function profileLegend(kind: FittingKind): string[] {
 }
 
 /** Legend of the isometric sketch: rect sizes are drawn on their own edges, so a₁ and b₁ (a₂ and b₂) are named separately. */
-export function isoLegend(kind: FittingKind): string[] {
+export function isoLegend(kind: FittingKind, dict: Dictionary = uk): string[] {
   const { shape, roundMain, roundSmall } = sketchSpecs[kind];
   const l = dict.sketch.legend;
   const main = roundMain ? l.diameter : l.rectSides;

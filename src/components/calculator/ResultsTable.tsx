@@ -1,7 +1,7 @@
 import type { Calculation, RowOutcome } from "@/lib/form/calculate";
 import type { FormRow } from "@/lib/form/fields";
-import { uk as dict } from "@/lib/i18n/uk";
-import { fmt, rowTitle } from "./format";
+import { useI18n } from "@/components/i18n";
+import { rowTitle } from "./format";
 import { cardClass, mutedClass } from "./styles";
 
 interface Props {
@@ -13,10 +13,11 @@ interface Props {
 const numCell = "px-2 text-right tabular-nums";
 
 function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outcome: RowOutcome | undefined }) {
+  const { dict, fmt } = useI18n();
   if (!outcome?.ok) {
     return (
       <tr className="border-t border-line text-muted hover:bg-accent-soft">
-        <td className="py-1 pr-3">{index + 1}. {rowTitle(row)}</td>
+        <td className="py-1 pr-3">{index + 1}. {rowTitle(row, dict)}</td>
         <td colSpan={5} className="px-2 text-right">—</td>
       </tr>
     );
@@ -24,7 +25,7 @@ function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outco
   const r = outcome.result;
   return (
     <tr className="border-t border-line hover:bg-accent-soft">
-      <td className="py-1 pr-3">{index + 1}. {rowTitle(row)}</td>
+      <td className="py-1 pr-3">{index + 1}. {rowTitle(row, dict)}</td>
       <td className={numCell}>{r.quantity}</td>
       <td className={numCell}>{fmt(r.thicknessMm, 2)}</td>
       <td className={numCell}>{fmt(r.metalArea)}</td>
@@ -35,6 +36,7 @@ function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outco
 }
 
 export function ResultsTable({ rows, outcome, calc }: Props) {
+  const { dict } = useI18n();
   return (
     <section aria-labelledby="results-title" className={cardClass}>
       <h2 id="results-title" className="mb-3 font-medium">{dict.results.title}</h2>

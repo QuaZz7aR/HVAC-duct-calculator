@@ -1,7 +1,7 @@
 import { defaultConfig } from "@/lib/calc/config";
 import type { FormIssue } from "@/lib/form/messages";
 import { sheetKey, type SettingsText, type ThicknessTableKey } from "@/lib/form/settings";
-import { uk as dict } from "@/lib/i18n/uk";
+import { useI18n } from "@/components/i18n";
 import { ErrorList } from "./ErrorList";
 import { cardClass, selectClass, labelClass, mutedClass } from "./styles";
 import { TextField } from "./TextField";
@@ -14,6 +14,7 @@ interface Props {
 
 /** Calculation settings: thickness table, seam allowance, order margin and sheet size. */
 export function SettingsPanel({ settings, onChange, issues }: Props) {
+  const { dict } = useI18n();
   return (
     <section className={cardClass} aria-labelledby="settings-title">
       <h2 id="settings-title" className="mb-3 font-medium">{dict.settings.title}</h2>

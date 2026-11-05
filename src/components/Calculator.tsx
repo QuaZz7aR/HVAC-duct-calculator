@@ -1,6 +1,7 @@
 "use client";
 
-import { uk as dict } from "@/lib/i18n/uk";
+import { I18nProvider, useI18n } from "@/components/i18n";
+import { LangSwitch } from "./calculator/LangSwitch";
 import { FittingList } from "./calculator/FittingList";
 import { SettingsPanel } from "./calculator/SettingsPanel";
 import { ResultsTable } from "./calculator/ResultsTable";
@@ -14,6 +15,15 @@ import { useCalculator } from "./calculator/useCalculator";
 import { useCardView } from "./calculator/useCardView";
 
 export function Calculator() {
+  return (
+    <I18nProvider>
+      <CalculatorPage />
+    </I18nProvider>
+  );
+}
+
+function CalculatorPage() {
+  const { dict } = useI18n();
   const { rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, removeRow, prices, costs, setMetalPrice, setInsulationPrice } = useCalculator();
 
   const view = useCardView(rows);
@@ -22,9 +32,12 @@ export function Calculator() {
     <div className="mx-auto w-full max-w-7xl flex-1 gap-6 px-4 py-8 lg:grid lg:grid-cols-[15rem_minmax(0,1fr)]">
       <KindRail count={countOf} onAdd={addRow} view={view} hasRows={rows.length > 0} />
       <main className="min-w-0 space-y-6">
-        <header>
-          <h1 className="text-2xl font-semibold">{dict.appTitle}</h1>
-          <p className={`mt-1 text-sm ${mutedClass}`}>{dict.appSubtitle}</p>
+        <header className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold">{dict.appTitle}</h1>
+            <p className={`mt-1 text-sm ${mutedClass}`}>{dict.appSubtitle}</p>
+          </div>
+          <LangSwitch />
         </header>
 
         <SettingsPanel settings={settings} onChange={setSettings} issues={settingsIssues} />

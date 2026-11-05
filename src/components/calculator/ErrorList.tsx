@@ -1,10 +1,10 @@
 import type { FieldKey } from "@/lib/form/fields";
 import type { FittingWarning } from "@/lib/calc/warnings";
 import { issueMessage, warningMessage, type FormIssue } from "@/lib/form/messages";
-import { uk as dict } from "@/lib/i18n/uk";
-import { fmt } from "./format";
+import { useI18n } from "@/components/i18n";
+import type { Dictionary } from "@/lib/i18n";
 
-function fieldLabel(issue: FormIssue) {
+function fieldLabel(issue: FormIssue, dict: Dictionary, fmt: (n: number, digits?: number) => string) {
   const key = String(issue.path[0]);
   if (key === "quantity") return dict.quantity;
   if (key === "seamPercent") return dict.settings.seamPercent;
@@ -18,12 +18,13 @@ function fieldLabel(issue: FormIssue) {
 }
 
 export function ErrorList({ issues }: { issues: FormIssue[] }) {
+  const { dict, fmt } = useI18n();
   if (issues.length === 0) return null;
   return (
     <ul role="alert" className="mt-2 space-y-0.5 text-sm text-red-600 dark:text-red-400">
       {issues.map((i, n) => (
         <li key={n}>
-          {fieldLabel(i)}: {issueMessage(i, dict)}
+          {fieldLabel(i, dict, fmt)}: {issueMessage(i, dict)}
         </li>
       ))}
     </ul>
@@ -32,6 +33,7 @@ export function ErrorList({ issues }: { issues: FormIssue[] }) {
 
 /** Non-blocking advice for a row that calculated fine; strong ones are marked in red. */
 export function WarningList({ warnings }: { warnings: FittingWarning[] }) {
+  const { dict } = useI18n();
   if (warnings.length === 0) return null;
   return (
     <ul aria-label={dict.warnings.title} className="mt-2 space-y-0.5 text-sm">

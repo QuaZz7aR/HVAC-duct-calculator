@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { FittingKind } from "@/lib/form/fields";
 import { quickKinds, searchKinds } from "@/lib/form/kind-groups";
-import { uk as dict } from "@/lib/i18n/uk";
+import { useI18n } from "@/components/i18n";
 import { Sheet } from "./KindPalette";
 import type { CardView } from "./useCardView";
 import { scrollToTop } from "./scrollToTop";
@@ -30,6 +30,7 @@ interface Props {
 
 /** Phone: a column of small round buttons at the right edge, within reach of a thumb. Closed: the two view toggles, "to top" after a short scroll down, and "+". Opened by "+": the quick kinds and "..." (the sheet with every kind and a search) fan out along two arcs. The column sits 15 % of the screen height above the bottom edge. */
 export function PhoneActions({ view, hasRows, count, onAdd }: Props) {
+  const { dict } = useI18n();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [sheet, setSheet] = useState(false);
@@ -107,7 +108,7 @@ export function PhoneActions({ view, hasRows, count, onAdd }: Props) {
           </button>
         </div>
       </div>
-      {sheet && <Sheet found={searchKinds(query)} query={query} setQuery={setQuery} count={count} onClose={closeSheet} onAdd={(k) => { onAdd(k); closeSheet(); }} />}
+      {sheet && <Sheet found={searchKinds(query, dict)} query={query} setQuery={setQuery} count={count} onClose={closeSheet} onAdd={(k) => { onAdd(k); closeSheet(); }} />}
     </>
   );
 }
