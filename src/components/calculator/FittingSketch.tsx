@@ -177,9 +177,26 @@ function arrow(tip: [number, number], from: [number, number]) {
   return [tip, [bx - uy * 2.4, by + ux * 2.4], [bx + uy * 2.4, by - ux * 2.4]] as [number, number][];
 }
 
+/** Bounding box of the lines without the letters, padded a little: the thumbnail hides the letters, so it centres the lines alone. */
+function lineBox(items: ReturnType<typeof isoDrawing>["items"]): [number, number, number, number] {
+  const pts: [number, number][] = [];
+  const add = (v: unknown): void => {
+    if (!Array.isArray(v)) return;
+    if (v.length === 2 && typeof v[0] === "number" && typeof v[1] === "number") pts.push([v[0], v[1]]);
+    else v.forEach(add);
+  };
+  for (const i of items) for (const [k, v] of Object.entries(i)) if (k !== "at") add(v);
+  const xs = pts.map((q) => q[0]);
+  const ys = pts.map((q) => q[1]);
+  const [x0, y0, x1, y1] = [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+  const pad = 0.04 * Math.max(x1 - x0, y1 - y0);
+  return [x0 - pad, y0 - pad, x1 - x0 + 2 * pad, y1 - y0 + 2 * pad];
+}
+
 /** Isometric view: faces turned to the viewer, hidden edges dashed, dimension lines with extension lines and arrows, the letter beside them. */
 function Iso({ kind, label, thumb = false }: { kind: FittingKind; label: string; thumb?: boolean }) {
-  const { items, box } = isoDrawing(kind);
+  const { items, box: full } = isoDrawing(kind);
+  const box = thumb ? lineBox(items) : full;
   const pts = (q: [number, number][]) => q.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
   return (
     // one scale for every kind: the width follows the drawing, so letters stay the same size
