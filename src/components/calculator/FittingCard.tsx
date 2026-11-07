@@ -57,7 +57,17 @@ export function FittingCard({ row, index, justAdded, showSketch, collapsed, onTo
   return (
     <div id={`fitting-${row.id}`} className={`${cardClass} col-span-full scroll-mt-16 ${justAdded ? "flash-card" : ""}`}>
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-        <h3 className="min-w-0 flex-1 text-base font-medium leading-snug">
+        <button
+          type="button"
+          className={`h-14 w-20 shrink-0 sm:h-16 sm:w-24 rounded-md border bg-background p-1 hover:border-accent ${showSketch ? "border-accent" : "border-line"}`}
+          onClick={onToggleSketch}
+          aria-expanded={showSketch}
+          aria-label={showSketch ? dict.sketch.hide : dict.sketch.show}
+          title={showSketch ? dict.sketch.hide : dict.sketch.show}
+        >
+          <FittingSketch kind={row.kind} view="iso" thumb />
+        </button>
+        <h3 className="min-w-0 flex-1 self-center text-base font-medium leading-snug">
           <span className="text-muted">{index + 1}.</span> {kindTitle(row.kind, dict)}
         </h3>
         <div className="flex max-w-full flex-wrap gap-2">
@@ -104,18 +114,12 @@ export function FittingCard({ row, index, justAdded, showSketch, collapsed, onTo
           </select>
         </label>
       </div>
-      <button
-        type="button"
-        className={`mt-4 ${buttonClass}`}
-        aria-expanded={showSketch}
-        onClick={onToggleSketch}
-      >
-        {showSketch ? dict.sketch.hide : dict.sketch.show}
-      </button>
       {showSketch && (
         <figure className="mt-4 flex flex-col rounded-md border border-line bg-background p-4">
-          <strong className="text-[13px] font-semibold uppercase tracking-wide text-muted">{dict.sketch.isoTitle}</strong>
-          <FittingSketch kind={row.kind} view="iso" />
+          <button type="button" className="flex flex-col text-left" onClick={onToggleSketch} aria-expanded={true} title={dict.sketch.hide}>
+            <strong className="text-[13px] font-semibold uppercase tracking-wide text-muted">{dict.sketch.isoTitle}</strong>
+            <FittingSketch kind={row.kind} view="iso" />
+          </button>
           <figcaption className="pt-2 text-sm leading-snug text-muted">
             {isoLegend(row.kind, dict).join("; ")}. {dict.sketch.note}
           </figcaption>

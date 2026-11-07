@@ -54,6 +54,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0037](adr/0037-insulation-area-beta.md) | Insulation area (beta): outer surface, sizes + 2t | 2026-11-03 | Accepted (beta) |
 | [0038](adr/0038-price-per-square-metre.md) | Price: user-entered UAH per m² per thickness and material | 2026-11-03 | Accepted |
 | [0039](adr/0039-english-interface.md) | English interface with a УКР / EN switch | 2026-11-05 | Accepted |
+| [0040](adr/0040-sketch-thumbnail-in-the-card.md) | Sketch thumbnail in the card opens the full sketch | 2026-11-07 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.

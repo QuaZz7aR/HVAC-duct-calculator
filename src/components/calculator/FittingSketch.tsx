@@ -178,12 +178,12 @@ function arrow(tip: [number, number], from: [number, number]) {
 }
 
 /** Isometric view: faces turned to the viewer, hidden edges dashed, dimension lines with extension lines and arrows, the letter beside them. */
-function Iso({ kind, label }: { kind: FittingKind; label: string }) {
+function Iso({ kind, label, thumb = false }: { kind: FittingKind; label: string; thumb?: boolean }) {
   const { items, box } = isoDrawing(kind);
   const pts = (q: [number, number][]) => q.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
   return (
     // one scale for every kind: the width follows the drawing, so letters stay the same size
-    <svg viewBox={box.map((v) => v.toFixed(1)).join(" ")} role="img" aria-label={label} className="mx-auto h-auto max-w-full" style={{ width: `${(box[2] * isoScale).toFixed(0)}px` }}>
+    <svg viewBox={box.map((v) => v.toFixed(1)).join(" ")} role="img" aria-label={label} className={thumb ? "h-full w-full [&_text]:hidden" : "mx-auto h-auto max-w-full"} style={thumb ? undefined : { width: `${(box[2] * isoScale).toFixed(0)}px` }}>
       {items.map((i, k) => {
         switch (i.type) {
           case "face":
@@ -224,12 +224,12 @@ function Iso({ kind, label }: { kind: FittingKind; label: string }) {
   );
 }
 
-/** Schematic of a fitting: isometric, side view or cross-section ("в профіль"). Not to scale; labels sit beside the drawing, never on it. */
-export function FittingSketch({ kind, view = "side" }: { kind: FittingKind; view?: SketchView }) {
+/** Schematic of a fitting (`thumb`: the isometric view as a small preview without letters, fills its box): isometric, side view or cross-section ("в профіль"). Not to scale; labels sit beside the drawing, never on it. */
+export function FittingSketch({ kind, view = "side", thumb = false }: { kind: FittingKind; view?: SketchView; thumb?: boolean }) {
   const { dict } = useI18n();
   const viewTitle = { side: dict.sketch.sideTitle, profile: dict.sketch.profileTitle, iso: dict.sketch.isoTitle };
   const label = `${kindTitle(kind, dict)}: ${viewTitle[view]}`;
-  if (view === "iso") return <Iso kind={kind} label={label} />;
+  if (view === "iso") return <Iso kind={kind} label={label} thumb={thumb} />;
   return (
     <svg viewBox="0 0 300 184" role="img" aria-label={label} className="mx-auto h-auto w-full max-w-sm">
       {view === "side" ? <Side kind={kind} /> : <Profile kind={kind} />}
