@@ -18,7 +18,7 @@ The interface is in Ukrainian by default, with an English version: the УКР / 
 - **Insulation area (beta).** Pick an insulation material per item (six from the engineer's spreadsheet); the outer surface of the layer is the metal geometry with each size increased by twice the layer thickness. Area per item, a list per material and a total. The model will be refined with the engineer.
 - **Cost estimate.** Enter your own price per m² (UAH) for each sheet thickness and insulation material: cost per line and in total. Metal is priced on the area to order. No prices are preset.
 - **Input warnings.** Unusual but valid input (aspect ratio of 3 and above, over 6.3, a side over 2000 mm, a large elbow radius) is flagged and never changed.
-- **Sketches.** Each fitting card shows an isometric sketch with the dimension letters used in the form.
+- **Sketches.** Each fitting card shows a thumbnail of its isometric sketch; a click opens the full sketch with the dimension letters used in the form.
 
 | Fittings folded into tiles, with the results table | Totals, metal and insulation lists with prices |
 |---|---|
