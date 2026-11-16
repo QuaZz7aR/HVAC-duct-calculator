@@ -13,6 +13,7 @@ import type { Fitting, PressureDrop } from '../calc/types';
 import { airInputSchema, createSchemas, validate } from '../validation';
 import { hasAllowance, kindFields, type FormRow } from './fields';
 import type { FormIssue } from './messages';
+import { splitLength, type Pieces } from './pieces';
 
 /** Raw text -> number. Accepts a decimal comma; empty -> undefined; anything else non-numeric -> NaN. */
 export function parseNumber(text: string | undefined): number | undefined {
@@ -39,6 +40,7 @@ export interface RowResult {
   totalLoss: number; // Pa, friction + local, one piece; NaN when `lossesAvailable` is false
   lossesAvailable: boolean; // false when the loss calculation overflowed or failed; the area above is still valid
   warnings: FittingWarning[]; // advice only, the numbers above are unchanged
+  pieces: Pieces | null; // straights longer than the max piece length, one row item; the area is unchanged (ADR 0045)
 }
 
 export type RowOutcome = { ok: true; result: RowResult } | { ok: false; id: number; issues: FormIssue[] };
@@ -61,8 +63,16 @@ function parseRow(row: FormRow, schemas: ReturnType<typeof createSchemas>, confi
   const issues: FormIssue[] = [];
 
   const raw: Record<string, unknown> = { kind: row.kind };
+  let maxPiece: number | undefined;
   for (const f of kindFields[row.kind]) {
     const v = parseNumber(row.values[f.key]);
+    if (f.formOnly) {
+      // the max piece length: empty or 0 = no split
+      if (v !== undefined && Number.isNaN(v)) issues.push({ code: 'size.notFinite', path: [f.key] });
+      else if (v !== undefined && v < 0) issues.push({ code: 'size.nonPositive', path: [f.key] });
+      else maxPiece = v;
+      continue;
+    }
     if (v !== undefined) raw[f.key] = v;
   }
   // the number of allowances is a choice, not typed text; an empty choice leaves the core default (2)
@@ -89,7 +99,7 @@ function parseRow(row: FormRow, schemas: ReturnType<typeof createSchemas>, confi
   if (code !== '' && !material) issues.push({ code: 'insulation.unknown', path: ['insulation'] });
 
   if (issues.length > 0 || !item.ok) return { ok: false as const, issues };
-  return { ok: true as const, fitting: item.value.fitting, quantity: item.value.quantity, flow: flow!, zeta, material };
+  return { ok: true as const, fitting: item.value.fitting, quantity: item.value.quantity, flow: flow!, zeta, material, maxPiece };
 }
 
 export function calculate(
@@ -146,6 +156,7 @@ export function calculate(
           totalLoss,
           lossesAvailable: Number.isFinite(totalLoss),
           warnings: fittingWarnings(p.fitting, config),
+          pieces: 'length' in p.fitting && (p.fitting.kind === 'roundStraight' || p.fitting.kind === 'rectStraight') ? splitLength(p.fitting.length, p.maxPiece) : null,
         };
         // sizes near the float limit pass validation but overflow; a size below the first table row has no thickness;
         // a branch cut-out larger than the wall (tees, crosses) gives a non-positive area, which is not a duct

@@ -10,6 +10,9 @@ interface Props {
   calc: Calculation;
 }
 
+/** mm -> metres without trailing zeros: 3000 -> "3", 1500 -> "1,5". */
+const metres = (mm: number, locale: string) => (mm / 1000).toLocaleString(locale, { maximumFractionDigits: 3 });
+
 const numCell = "px-2 text-right tabular-nums";
 
 function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outcome: RowOutcome | undefined }) {
@@ -23,9 +26,13 @@ function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outco
     );
   }
   const r = outcome.result;
+  const p = r.pieces;
   return (
     <tr className="border-t border-line hover:bg-accent-soft">
-      <td className="py-1 pr-3">{index + 1}. {rowTitle(row, dict)}</td>
+      <td className="py-1 pr-3">
+        {index + 1}. {rowTitle(row, dict)}
+        {p && <span className={`block text-xs ${mutedClass}`}>{dict.results.pieces(String(p.full), metres(p.pieceMm, dict.locale), p.restMm > 0 ? metres(p.restMm, dict.locale) : null)}</span>}
+      </td>
       <td className={numCell}>{r.quantity}</td>
       <td className={numCell}>{fmt(r.thicknessMm, 2)}</td>
       <td className={numCell}>{fmt(r.metalArea)}</td>

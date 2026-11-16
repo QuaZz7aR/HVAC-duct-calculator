@@ -1,3 +1,4 @@
+import { defaultConfig } from '../calc/config';
 import type { Fitting } from '../calc/types';
 
 export type FittingKind = Fitting['kind'];
@@ -5,7 +6,7 @@ export type FittingKind = Fitting['kind'];
 export type FieldKey =
   | 'diameter' | 'smallDiameter' | 'width' | 'height' | 'smallWidth' | 'smallHeight'
   | 'length' | 'centerRadius' | 'innerRadius' | 'angle' | 'allowance'
-  | 'branchDiameter' | 'branchWidth' | 'branchHeight';
+  | 'branchDiameter' | 'branchWidth' | 'branchHeight' | 'maxPiece';
 
 export interface FieldDef {
   key: FieldKey;
@@ -13,6 +14,8 @@ export interface FieldDef {
   optional?: boolean;
   /** Prefilled when a row is created or its kind changes. */
   initial?: string;
+  /** Form only: not part of the core fitting (the straight piece length, ADR 0045). */
+  formOnly?: boolean;
 }
 
 // TODO(confirm): allowance 50 mm and elbow angle 90 are form prefills only (the fixtures use 50), not core defaults.
@@ -20,6 +23,7 @@ const allowance: FieldDef = { key: 'allowance', initial: '50' };
 const angle: FieldDef = { key: 'angle', initial: '90' };
 // TODO(confirm): the 100 mm tap length is a form prefill only (Excel Квр / Пвр column J; ВСН 353-86 п. 1.5 / 2.5: h = 100 mm), not a core default.
 const tapLength: FieldDef = { key: 'length', initial: '100' };
+const maxPiece = (mm: number): FieldDef => ({ key: 'maxPiece', formOnly: true, initial: String(mm) });
 const reducerLength: FieldDef = { key: 'length', optional: true };
 
 export const kindOrder: FittingKind[] = [
@@ -39,8 +43,8 @@ export const kindFields: Record<FittingKind, FieldDef[]> = {
   roundCrossRectBranches: [{ key: 'diameter' }, { key: 'branchWidth' }, { key: 'branchHeight' }, allowance],
   rectCross: [{ key: 'width' }, { key: 'height' }, { key: 'branchWidth' }, { key: 'branchHeight' }, allowance],
   rectCrossRoundBranches: [{ key: 'width' }, { key: 'height' }, { key: 'branchDiameter' }, allowance],
-  roundStraight: [{ key: 'diameter' }, { key: 'length' }],
-  rectStraight: [{ key: 'width' }, { key: 'height' }, { key: 'length' }],
+  roundStraight: [{ key: 'diameter' }, { key: 'length' }, maxPiece(defaultConfig.straightPiece.roundMm)],
+  rectStraight: [{ key: 'width' }, { key: 'height' }, { key: 'length' }, maxPiece(defaultConfig.straightPiece.rectMm)],
   roundCap: [{ key: 'diameter' }, { key: 'length' }],
   rectCap: [{ key: 'width' }, { key: 'height' }, { key: 'length' }],
   roundTap: [{ key: 'diameter' }, tapLength],
