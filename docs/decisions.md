@@ -59,6 +59,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0042](adr/0042-metal-consumption-and-actual-area.md) | Two areas: metal consumption and actual area | 2026-11-16 | Accepted; the order no longer subtracts the tee cut-out (0021), short reducers are ordered as 300 mm (0005) |
 | [0043](adr/0043-tap-ring-in-the-metal-consumption.md) | Tap ring in the metal consumption | 2026-11-16 | Accepted (actual-area part superseded by [0044](adr/0044-tap-ring-in-the-actual-area.md)) |
 | [0044](adr/0044-tap-ring-in-the-actual-area.md) | Tap ring in the actual area | 2026-11-16 | Accepted |
+| [0045](adr/0045-straight-piece-length.md) | Straight ducts split into shop pieces | 2026-11-16 | Accepted (defaults `TODO(confirm)`) |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.
@@ -80,6 +81,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `form/fields.ts` | Prefilled allowance 50 mm and angle 90 in the form: UI convenience only, the core has no default for allowance. |
 | `calc/sheet-area.ts` taps (`roundTap`, `rectTap`) | Centerline 0 (a stub off the main flow); the 100 mm length is only a form prefill. It matches ВСН 353-86 п. 1.5 / 2.5 ("врезку, как правило, следует выполнять высотой h = 100 мм"), a USSR norm; no Ukrainian norm with this figure was found (2026-10-27). |
 | `calc/config.ts` tap | Ring width 50 mm around a tap stub (Excel Квр value). Resolved 2026-11-16: the ring is part of the actual area and rect taps have it too ([0044](adr/0044-tap-ring-in-the-actual-area.md)); only the width stays unconfirmed. |
+| `calc/config.ts` straightPiece | Max straight piece length prefill: round 3000 mm, rect 1250 mm, from the engineer's orders; no norm ([0045](adr/0045-straight-piece-length.md)). |
 | `calc/sheet-area.ts` tees and crosses | Centerline of the main run is the branch size along the axis `E` (no allowance); the Excel has only the run length `E + 2 x allowance`. |
 | `calc/section.ts` | Reducer friction by the mean diameter and mean-velocity `Pd`: both from the engineer (2026-10-19, 2026-10-16). Caps have no friction because their centerline is 0. |
 | `calc/config.ts` elbowRadius | 1.0 D (round centre line) and 0.5 W (rect inner) are common practice, not a norm; form suggestion only. |

@@ -142,6 +142,7 @@ export const en: Dictionary = {
     branchDiameter: `Branch diameter ${sym.smallDiameter}, mm`,
     branchWidth: `Branch width ${sym.smallWidth} (along the axis), mm`,
     branchHeight: `Branch height ${sym.smallHeight}, mm`,
+    maxPiece: 'Max piece length, mm (0 = no split)',
   },
   results: {
     title: 'Results by item',
@@ -151,6 +152,7 @@ export const en: Dictionary = {
     metalAreaTotal: 'Total actual area, m²',
     metalConsumption: 'Metal consumption, m² (each)*',
     metalConsumptionTotal: 'Total consumption, m²',
+    pieces: (full: string, piece: string, rest: string | null) => `pieces: ${full} × ${piece} m${rest ? ` + 1 × ${rest} m` : ''}`,
     consumptionNote: '* Metal consumption: reducers are counted at least 300 mm long (minimum part length), tees and crosses without the branch cut-out. The order, sheets and price follow the consumption, insulation the actual area.',
     insulationTotal: 'Insulation, m²',
     empty: 'Add a fitting to see the calculation.',

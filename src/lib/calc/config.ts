@@ -98,6 +98,8 @@ export interface CalcConfig {
   reducerMinLengthMm: number; // validation floor, never a silent clamp
   consumption: ConsumptionConfig;
   tap: TapConfig;
+  /** Longest straight piece the shop makes, mm, form default only (ADR 0045); 0 = no split. Area never depends on it. */
+  straightPiece: { roundMm: number; rectMm: number };
   thickness: ThicknessTable;
   wasteFactor: WasteFactorTable;
   warnings: WarningConfig;
@@ -168,6 +170,8 @@ export const defaultConfig: CalcConfig = {
   consumption: { minReducerLengthMm: 300 },
   // TODO(confirm): 50 mm is the Excel's Квр ring pi(d/2 + 50)^2 - pi d^2/4 and his tables; the rect ring is our analogue (the Excel Пвр term is broken)
   tap: { ringWidthMm: 50 },
+  // TODO(confirm): no norm (ДБН В.2.5-67 sets no piece length); 3 m spiral round and 1.25 m rect (sheet width) are what the engineer's orders use (2026-11-12)
+  straightPiece: { roundMm: 3000, rectMm: 1250 },
   thickness: dbnThickness,
   wasteFactor: {
     version: 'placeholder-2', // 2: `default` became the user's seam allowance

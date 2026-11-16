@@ -161,6 +161,7 @@ export const uk = {
     branchDiameter: `Діаметр врізки ${sym.smallDiameter}, мм`,
     branchWidth: `Ширина врізки ${sym.smallWidth} (вздовж осі), мм`,
     branchHeight: `Висота врізки ${sym.smallHeight}, мм`,
+    maxPiece: 'Макс. довжина ланки, мм (0 — без поділу)',
   },
   results: {
     title: 'Результати по позиціях',
@@ -170,6 +171,7 @@ export const uk = {
     metalAreaTotal: 'Сума фактичної площі, м²',
     metalConsumption: 'Витрата металу, м² (шт.)*',
     metalConsumptionTotal: 'Сума витрати, м²',
+    pieces: (full: string, piece: string, rest: string | null) => `ланки: ${full} × ${piece} м${rest ? ` + 1 × ${rest} м` : ''}`,
     consumptionNote: '* Витрата металу: переходи рахуються довжиною не менше 300 мм (мінімальна довжина деталі), трійники й хрестовини без вирізу під врізку. Замовлення, листи й ціна йдуть за витратою, утеплення за фактичною площею.',
     insulationTotal: 'Утеплення, м²',
     empty: 'Додайте деталь, щоб побачити розрахунок.',
