@@ -1,6 +1,6 @@
 # 0021. Tees and crosses
 
-- Status: Accepted
+- Status: Accepted. The cut-out subtraction holds for the actual area only; the order uses the metal consumption without it, see [0042](0042-metal-consumption-and-actual-area.md).
 - Date: 2026-10-16
 - Source: engineer answers Q4 of 2026-10-07, Ш7 of 2026-10-16 and 3.5 of 2026-10-19 ([log](../engineer-answers.md)); PR #17, #18, #19
 

@@ -18,7 +18,7 @@ function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outco
     return (
       <tr className="border-t border-line text-muted hover:bg-accent-soft">
         <td className="py-1 pr-3">{index + 1}. {rowTitle(row, dict)}</td>
-        <td colSpan={5} className="px-2 text-right">—</td>
+        <td colSpan={7} className="px-2 text-right">—</td>
       </tr>
     );
   }
@@ -30,6 +30,8 @@ function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outco
       <td className={numCell}>{fmt(r.thicknessMm, 2)}</td>
       <td className={numCell}>{fmt(r.metalArea)}</td>
       <td className={numCell}>{fmt(r.metalAreaTotal)}</td>
+      <td className={numCell}>{fmt(r.metalConsumption)}</td>
+      <td className={numCell}>{fmt(r.metalConsumptionTotal)}</td>
       <td className="pl-2 text-right tabular-nums">{r.insulation ? fmt(r.insulation.areaTotal) : "—"}</td>
     </tr>
   );
@@ -52,6 +54,8 @@ export function ResultsTable({ rows, outcome, calc }: Props) {
                 <th className="px-2 text-right">{dict.results.thickness}</th>
                 <th className="px-2 text-right">{dict.results.metalArea}</th>
                 <th className="px-2 text-right">{dict.results.metalAreaTotal}</th>
+                <th className="px-2 text-right">{dict.results.metalConsumption}</th>
+                <th className="px-2 text-right">{dict.results.metalConsumptionTotal}</th>
                 <th className="pl-2 text-right">{dict.results.insulationTotal}</th>
               </tr>
             </thead>
@@ -62,6 +66,9 @@ export function ResultsTable({ rows, outcome, calc }: Props) {
             </tbody>
           </table>
         </div>
+      )}
+      {calc.rows.some((o) => o.ok && o.result.consumptionDiffers) && (
+        <p className={`mt-2 text-xs ${mutedClass}`}>{dict.results.consumptionNote}</p>
       )}
       {calc.skipped > 0 && <p className="mt-2 text-sm text-amber-700 dark:text-amber-400">{dict.results.skipped(calc.skipped)}</p>}
     </section>

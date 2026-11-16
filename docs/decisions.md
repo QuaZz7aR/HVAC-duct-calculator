@@ -56,6 +56,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0039](adr/0039-english-interface.md) | English interface with a УКР / EN switch | 2026-11-05 | Accepted |
 | [0040](adr/0040-sketch-thumbnail-in-the-card.md) | Sketch thumbnail in the card opens the full sketch | 2026-11-07 | Accepted |
 | [0041](adr/0041-engineer-table-by-equivalent-diameter-and-allowance-count.md) | Engineer's table keys rect by the equivalent diameter; number of allowances per fitting | 2026-11-16 | Accepted; supersedes the rect key of 0007 and the fixed x2 of 0003 |
+| [0042](adr/0042-metal-consumption-and-actual-area.md) | Two areas: metal consumption and actual area | 2026-11-16 | Accepted; the order no longer subtracts the tee cut-out (0021), short reducers are ordered as 300 mm (0005) |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.

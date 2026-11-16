@@ -12,11 +12,11 @@ The interface is in Ukrainian by default, with an English version: the УКР / 
 
 ## What it does
 
-- **Metal area per item.** Developed surface of each fitting from its geometry, with the connection allowance for flanges and the cutting coefficient for elbows.
+- **Metal area per item.** Developed surface of each fitting from its geometry, with the connection allowance for flanges and the cutting coefficient for elbows. Reducers, tees and crosses show two numbers: the actual area and the metal consumption (reducers at least 300 mm long, tees without the branch cut-out), which the order, the sheets and the price use.
 - **Metal thickness.** Looked up from the table of ДБН В.2.5-67:2013, annex Ц (round: by diameter, rectangular: by the larger side). The engineer's own table is available as an option (rectangular parts by the equivalent diameter, as in his orders). Each elbow, reducer, tee and cross can count the flange allowance at 2, 1 or 0 ends.
 - **Metal list by thickness.** Area per thickness, area to order with a margin (20 % by default) and the number of sheets for the chosen sheet size (1000 × 2000, 1250 × 2500 or 1500 × 3000).
 - **Insulation area (beta).** Pick an insulation material per item (six from the engineer's spreadsheet); the outer surface of the layer is the metal geometry with each size increased by twice the layer thickness. Area per item, a list per material and a total. The model will be refined with the engineer.
-- **Cost estimate.** Enter your own price per m² (UAH) for each sheet thickness and insulation material: cost per line and in total. Metal is priced on the area to order. No prices are preset.
+- **Cost estimate.** Enter your own price per m² (UAH) for each sheet thickness and insulation material: cost per line and in total. Metal is priced on the area to order (the consumption with the margin). No prices are preset.
 - **Input warnings.** Unusual but valid input (aspect ratio of 3 and above, over 6.3, a side over 2000 mm, a large elbow radius) is flagged and never changed.
 - **Sketches.** Each fitting card shows a thumbnail of its isometric sketch; a click opens the full sketch with the dimension letters used in the form.
 

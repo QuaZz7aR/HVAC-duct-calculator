@@ -77,12 +77,21 @@ export interface InsulationConfig {
   materials: InsulationMaterial[];
 }
 
+/**
+ * Metal consumption (engineer 2026-11-16, ADR 0042): what a workshop actually spends, shown beside the actual area.
+ * Feeds the order area, the sheet list and the metal price; the actual area and insulation keep the true geometry.
+ */
+export interface ConsumptionConfig {
+  minReducerLengthMm: number; // a reducer shorter than this is cut as if it were this long (the engineer's tables: IF(L < 0.3; 0.3))
+}
+
 /** Boundary-unit defaults (mm). Convert with units.ts before use in the core. */
 export interface CalcConfig {
   air: AirConfig;
   roughnessMm: number; // absolute roughness, steel
   reducerLengthMm: number; // default reducer length
   reducerMinLengthMm: number; // validation floor, never a silent clamp
+  consumption: ConsumptionConfig;
   thickness: ThicknessTable;
   wasteFactor: WasteFactorTable;
   warnings: WarningConfig;
@@ -149,6 +158,8 @@ export const defaultConfig: CalcConfig = {
   roughnessMm: 0.1,
   reducerLengthMm: 300,
   reducerMinLengthMm: 150,
+  // the engineer's minimum part length for reducers, as in his tables and his 2026-11-16 answer
+  consumption: { minReducerLengthMm: 300 },
   thickness: dbnThickness,
   wasteFactor: {
     version: 'placeholder-2', // 2: `default` became the user's seam allowance

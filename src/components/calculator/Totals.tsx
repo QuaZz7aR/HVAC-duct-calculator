@@ -19,6 +19,7 @@ export function Totals({ calc, pricing, priceIssues }: { calc: Calculation; pric
       <h2 id="totals-title" className="mb-3 font-medium">{dict.totals.title}</h2>
       <dl className="space-y-1 text-sm">
         <div className="flex justify-between"><dt>{dict.totals.metalArea}</dt><dd className="tabular-nums font-medium">{fmt(calc.totalMetalArea)}</dd></div>
+        <div className="flex justify-between"><dt>{dict.totals.metalConsumption}</dt><dd className="tabular-nums font-medium">{fmt(calc.totalMetalConsumption)}</dd></div>
         <div className="flex justify-between"><dt>{dict.totals.metalAreaToOrder}</dt><dd className="tabular-nums font-medium">{fmt(calc.totalMetalAreaToOrder)}</dd></div>
         <div className="flex justify-between"><dt>{dict.totals.insulationArea}</dt><dd className="tabular-nums font-medium">{fmt(calc.totalInsulationArea)}</dd></div>
         <div className="flex justify-between border-t border-line pt-1"><dt>{dict.totals.metalCost}</dt><dd className="tabular-nums font-medium">{money(pricing.metalTotal, metalLines, dict.totals.noPrice, fmt)}</dd></div>
