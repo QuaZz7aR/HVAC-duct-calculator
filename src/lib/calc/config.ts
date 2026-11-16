@@ -85,6 +85,11 @@ export interface ConsumptionConfig {
   minReducerLengthMm: number; // a reducer shorter than this is cut as if it were this long (the engineer's tables: IF(L < 0.3; 0.3))
 }
 
+/** Taps (Квр, Пвр): the flat ring around the stub where it sits on the main duct (engineer 2026-11-16, ADR 0043). */
+export interface TapConfig {
+  ringWidthMm: number; // width of the ring beyond the stub on every side; 0 = no ring
+}
+
 /** Boundary-unit defaults (mm). Convert with units.ts before use in the core. */
 export interface CalcConfig {
   air: AirConfig;
@@ -92,6 +97,7 @@ export interface CalcConfig {
   reducerLengthMm: number; // default reducer length
   reducerMinLengthMm: number; // validation floor, never a silent clamp
   consumption: ConsumptionConfig;
+  tap: TapConfig;
   thickness: ThicknessTable;
   wasteFactor: WasteFactorTable;
   warnings: WarningConfig;
@@ -160,6 +166,8 @@ export const defaultConfig: CalcConfig = {
   reducerMinLengthMm: 150,
   // the engineer's minimum part length for reducers, as in his tables and his 2026-11-16 answer
   consumption: { minReducerLengthMm: 300 },
+  // TODO(confirm): 50 mm is the Excel's Квр ring pi(d/2 + 50)^2 - pi d^2/4 and his tables; the rect ring is our analogue (the Excel Пвр term is broken)
+  tap: { ringWidthMm: 50 },
   thickness: dbnThickness,
   wasteFactor: {
     version: 'placeholder-2', // 2: `default` became the user's seam allowance

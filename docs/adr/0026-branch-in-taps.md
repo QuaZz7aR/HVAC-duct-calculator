@@ -1,6 +1,6 @@
 # 0026. Branch-in taps (Квр, Пвр)
 
-- Status: Accepted
+- Status: Accepted. The ring part is superseded by [0043](0043-tap-ring-in-the-metal-consumption.md): the ring is now added to the metal consumption, the actual area stays as below.
 - Date: 2026-10-19
 - Source: engineer answers Q6 of 2026-10-07 and Ш8, Ш9 of 2026-10-16 ([log](../engineer-answers.md)); owner decision on the cut-out (2026-10-19); PR #21
 
