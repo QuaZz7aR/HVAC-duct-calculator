@@ -40,7 +40,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0023](adr/0023-reducer-friction-by-the-mean-diameter.md) | Reducer friction by the mean diameter | 2026-10-19 | Accepted; supersedes the friction part of [0018](adr/0018-reducer-zeta-at-the-mean-velocity.md) |
 | [0024](adr/0024-order-margin-and-sheet-count.md) | Order margin, sheet size and sheet count | 2026-10-19 | Accepted (values `TODO(confirm)`) |
 | [0025](adr/0025-dbn-thickness-table-by-default.md) | ДБН thickness table by default | 2026-10-19 | Accepted; supersedes [0007](adr/0007-engineer-thickness-table.md) as the default |
-| [0026](adr/0026-branch-in-taps.md) | Branch-in taps (Квр, Пвр) | 2026-10-19 | Accepted |
+| [0026](adr/0026-branch-in-taps.md) | Branch-in taps (Квр, Пвр) | 2026-10-19 | Accepted (ring part superseded by [0043](adr/0043-tap-ring-in-the-metal-consumption.md)) |
 | [0027](adr/0027-pressure-losses-hidden-in-the-ui.md) | Pressure losses hidden in the UI | 2026-10-19 | Accepted (temporary, until the aerodynamics mode) |
 | [0028](adr/0028-elbow-radius-suggested-from-the-size.md) | Elbow radius suggested from the size | 2026-10-22 | Accepted (values `TODO(confirm)`) |
 | [0029](adr/0029-fitting-sketches.md) | Fitting sketches on each card | 2026-10-22 | Accepted; the sketch layout is amended by [0032](adr/0032-sketch-panels-and-field-alignment.md), the card shows an isometric sketch since [0033](adr/0033-isometric-sketch.md) |
@@ -57,6 +57,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0040](adr/0040-sketch-thumbnail-in-the-card.md) | Sketch thumbnail in the card opens the full sketch | 2026-11-07 | Accepted |
 | [0041](adr/0041-engineer-table-by-equivalent-diameter-and-allowance-count.md) | Engineer's table keys rect by the equivalent diameter; number of allowances per fitting | 2026-11-16 | Accepted; supersedes the rect key of 0007 and the fixed x2 of 0003 |
 | [0042](adr/0042-metal-consumption-and-actual-area.md) | Two areas: metal consumption and actual area | 2026-11-16 | Accepted; the order no longer subtracts the tee cut-out (0021), short reducers are ordered as 300 mm (0005) |
+| [0043](adr/0043-tap-ring-in-the-metal-consumption.md) | Tap ring in the metal consumption | 2026-11-16 | Accepted (ring width `TODO(confirm)`) |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.
@@ -77,6 +78,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `calc/branch.ts` `allowanceCount` | On tees and crosses the number of allowances counts the ends of the main run; the branch collar stays one `allowance` long ([0041](adr/0041-engineer-table-by-equivalent-diameter-and-allowance-count.md)). |
 | `form/fields.ts` | Prefilled allowance 50 mm and angle 90 in the form: UI convenience only, the core has no default for allowance. |
 | `calc/sheet-area.ts` taps (`roundTap`, `rectTap`) | Centerline 0 (a stub off the main flow); the 100 mm length is only a form prefill. It matches ВСН 353-86 п. 1.5 / 2.5 ("врезку, как правило, следует выполнять высотой h = 100 мм"), a USSR norm; no Ukrainian norm with this figure was found (2026-10-27). |
+| `calc/config.ts` tap | Ring width 50 mm around a tap stub, added to the metal consumption only: the Excel's Квр value; the rect frame (a + 2w)(b + 2w) - ab is our analogue, the Excel Пвр term is broken. Whether the ring also belongs in the actual area is open ([0043](adr/0043-tap-ring-in-the-metal-consumption.md)). |
 | `calc/sheet-area.ts` tees and crosses | Centerline of the main run is the branch size along the axis `E` (no allowance); the Excel has only the run length `E + 2 x allowance`. |
 | `calc/section.ts` | Reducer friction by the mean diameter and mean-velocity `Pd`: both from the engineer (2026-10-19, 2026-10-16). Caps have no friction because their centerline is 0. |
 | `calc/config.ts` elbowRadius | 1.0 D (round centre line) and 0.5 W (rect inner) are common practice, not a norm; form suggestion only. |
