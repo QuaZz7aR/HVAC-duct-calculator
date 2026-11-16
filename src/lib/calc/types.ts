@@ -4,6 +4,12 @@
  * Everything inside the core is converted to SI (see units.ts) - never mix the two.
  */
 
+/**
+ * How many connection ends get the allowance (engineer 2026-11-16, ADR 0041): 2 = both ends (the default), 1 = one end, 0 = none.
+ * Absent = 2. On tees and crosses it counts the ends of the main run; the branch collar length stays `allowance`.
+ */
+export type AllowanceCount = 0 | 1 | 2;
+
 export type Fitting =
   | { kind: 'roundStraight'; diameter: number; length: number }
   | { kind: 'rectStraight'; width: number; height: number; length: number }
@@ -13,7 +19,7 @@ export type Fitting =
   // The cut-out in the main duct is NOT subtracted here (owner decision 2026-10-19).
   | { kind: 'roundTap'; diameter: number; length: number }
   | { kind: 'rectTap'; width: number; height: number; length: number }
-  | { kind: 'roundElbow'; diameter: number; centerRadius: number; angle: number; allowance: number }
+  | { kind: 'roundElbow'; diameter: number; centerRadius: number; angle: number; allowance: number; allowanceCount?: AllowanceCount }
   | {
       kind: 'rectElbow';
       width: number; // size in the bend plane
@@ -21,8 +27,9 @@ export type Fitting =
       innerRadius: number; // NOTE: inner, not center - see CLAUDE.md "Open questions"
       angle: number;
       allowance: number;
+      allowanceCount?: AllowanceCount;
     }
-  | { kind: 'roundReducer'; diameter: number; smallDiameter: number; length: number; allowance: number }
+  | { kind: 'roundReducer'; diameter: number; smallDiameter: number; length: number; allowance: number; allowanceCount?: AllowanceCount }
   | {
       kind: 'rectReducer';
       width: number;
@@ -31,6 +38,7 @@ export type Fitting =
       smallHeight: number;
       length: number;
       allowance: number;
+      allowanceCount?: AllowanceCount;
     }
   | {
       kind: 'rectToRoundReducer';
@@ -39,18 +47,19 @@ export type Fitting =
       smallDiameter: number;
       length: number;
       allowance: number;
+      allowanceCount?: AllowanceCount;
     }
   // Tees and crosses (Excel КТ, КПТ, ПТ, ПКТ / КККр, КПКр, ПККр, ППКр): main run + one branch (tee) or two opposite branches (cross).
   // Main kind first, then the branch kind. `branchWidth` / `branchDiameter` is the branch size ALONG the main axis (the Excel column E);
   // the main run is that size + 2 x allowance long. `allowance` is also the branch collar length.
-  | { kind: 'roundTee'; diameter: number; branchDiameter: number; allowance: number }
-  | { kind: 'roundTeeRectBranch'; diameter: number; branchWidth: number; branchHeight: number; allowance: number }
-  | { kind: 'rectTee'; width: number; height: number; branchWidth: number; branchHeight: number; allowance: number }
-  | { kind: 'rectTeeRoundBranch'; width: number; height: number; branchDiameter: number; allowance: number }
-  | { kind: 'roundCross'; diameter: number; branchDiameter: number; allowance: number }
-  | { kind: 'roundCrossRectBranches'; diameter: number; branchWidth: number; branchHeight: number; allowance: number }
-  | { kind: 'rectCross'; width: number; height: number; branchWidth: number; branchHeight: number; allowance: number }
-  | { kind: 'rectCrossRoundBranches'; width: number; height: number; branchDiameter: number; allowance: number };
+  | { kind: 'roundTee'; diameter: number; branchDiameter: number; allowance: number; allowanceCount?: AllowanceCount }
+  | { kind: 'roundTeeRectBranch'; diameter: number; branchWidth: number; branchHeight: number; allowance: number; allowanceCount?: AllowanceCount }
+  | { kind: 'rectTee'; width: number; height: number; branchWidth: number; branchHeight: number; allowance: number; allowanceCount?: AllowanceCount }
+  | { kind: 'rectTeeRoundBranch'; width: number; height: number; branchDiameter: number; allowance: number; allowanceCount?: AllowanceCount }
+  | { kind: 'roundCross'; diameter: number; branchDiameter: number; allowance: number; allowanceCount?: AllowanceCount }
+  | { kind: 'roundCrossRectBranches'; diameter: number; branchWidth: number; branchHeight: number; allowance: number; allowanceCount?: AllowanceCount }
+  | { kind: 'rectCross'; width: number; height: number; branchWidth: number; branchHeight: number; allowance: number; allowanceCount?: AllowanceCount }
+  | { kind: 'rectCrossRoundBranches'; width: number; height: number; branchDiameter: number; allowance: number; allowanceCount?: AllowanceCount };
 
 export interface AirConditions {
   density: number; // kg/m3

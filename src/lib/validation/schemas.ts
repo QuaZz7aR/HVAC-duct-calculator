@@ -15,6 +15,10 @@ const size = () => z.number({ error: typeError('size.notFinite') }).gt(0, { erro
 
 const allowance = () => z.number({ error: typeError('field.invalid') }).gte(0, { error: 'allowance.negative' });
 
+// How many connection ends get the allowance (ADR 0041); absent = 2.
+const allowanceCount = () =>
+  z.union([z.literal(0), z.literal(1), z.literal(2)], { error: 'allowanceCount.invalid' }).optional();
+
 export function createSchemas(config: CalcConfig) {
   const angle = z
     .number({ error: typeError('field.invalid') })
@@ -45,6 +49,7 @@ export function createSchemas(config: CalcConfig) {
         centerRadius: size(),
         angle,
         allowance: allowance(),
+        allowanceCount: allowanceCount(),
       }),
       obj({
         kind: z.literal('rectElbow'),
@@ -53,6 +58,7 @@ export function createSchemas(config: CalcConfig) {
         innerRadius: size(),
         angle,
         allowance: allowance(),
+        allowanceCount: allowanceCount(),
       }),
       obj({
         kind: z.literal('roundReducer'),
@@ -60,6 +66,7 @@ export function createSchemas(config: CalcConfig) {
         smallDiameter: size(),
         length: reducerLength,
         allowance: allowance(),
+        allowanceCount: allowanceCount(),
       }).check((ctx) => {
         if (ctx.value.diameter === ctx.value.smallDiameter) {
           ctx.issues.push({ code: 'custom', message: 'reducer.noSizeChange', path: ['smallDiameter'], input: ctx.value });
@@ -73,6 +80,7 @@ export function createSchemas(config: CalcConfig) {
         smallHeight: size(),
         length: reducerLength,
         allowance: allowance(),
+        allowanceCount: allowanceCount(),
       }).check((ctx) => {
         const v = ctx.value;
         if (v.width === v.smallWidth && v.height === v.smallHeight) {
@@ -87,15 +95,17 @@ export function createSchemas(config: CalcConfig) {
         smallDiameter: size(),
         length: reducerLength,
         allowance: allowance(),
+        allowanceCount: allowanceCount(),
       }),
       // Tees and crosses: main run + branch size along the axis; allowance is also the collar length.
-      obj({ kind: z.literal('roundTee'), diameter: size(), branchDiameter: size(), allowance: allowance() }),
+      obj({ kind: z.literal('roundTee'), diameter: size(), branchDiameter: size(), allowance: allowance(), allowanceCount: allowanceCount() }),
       obj({
         kind: z.literal('roundTeeRectBranch'),
         diameter: size(),
         branchWidth: size(),
         branchHeight: size(),
         allowance: allowance(),
+        allowanceCount: allowanceCount(),
       }),
       obj({
         kind: z.literal('rectTee'),
@@ -104,6 +114,7 @@ export function createSchemas(config: CalcConfig) {
         branchWidth: size(),
         branchHeight: size(),
         allowance: allowance(),
+        allowanceCount: allowanceCount(),
       }),
       obj({
         kind: z.literal('rectTeeRoundBranch'),
@@ -111,14 +122,16 @@ export function createSchemas(config: CalcConfig) {
         height: size(),
         branchDiameter: size(),
         allowance: allowance(),
+        allowanceCount: allowanceCount(),
       }),
-      obj({ kind: z.literal('roundCross'), diameter: size(), branchDiameter: size(), allowance: allowance() }),
+      obj({ kind: z.literal('roundCross'), diameter: size(), branchDiameter: size(), allowance: allowance(), allowanceCount: allowanceCount() }),
       obj({
         kind: z.literal('roundCrossRectBranches'),
         diameter: size(),
         branchWidth: size(),
         branchHeight: size(),
         allowance: allowance(),
+        allowanceCount: allowanceCount(),
       }),
       obj({
         kind: z.literal('rectCross'),
@@ -127,6 +140,7 @@ export function createSchemas(config: CalcConfig) {
         branchWidth: size(),
         branchHeight: size(),
         allowance: allowance(),
+        allowanceCount: allowanceCount(),
       }),
       obj({
         kind: z.literal('rectCrossRoundBranches'),
@@ -134,6 +148,7 @@ export function createSchemas(config: CalcConfig) {
         height: size(),
         branchDiameter: size(),
         allowance: allowance(),
+        allowanceCount: allowanceCount(),
       }),
     ],
     { error: 'kind.unknown' },

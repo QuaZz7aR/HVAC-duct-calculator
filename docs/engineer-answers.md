@@ -55,6 +55,15 @@ Relayed by the owner; the engineer answered in a messenger and did not remember 
 - **Tees and crosses** (3.5): the flow is counted for the main duct only, confirmed (he added that there are nuances). [ADR 0021](adr/0021-tees-and-crosses.md).
 - **Warnings** (2.3): "some warning, need context"; the warnings stay as decided on 2026-10-16.
 
+## Answers of 2026-11-16
+Relayed by the owner, after the check against the engineer's three orders (2026-11-12, five differences). What was decided from them:
+- **Thickness by the equivalent diameter** (1): approved for his table. [ADR 0041](adr/0041-engineer-table-by-equivalent-diameter-and-allowance-count.md).
+- **Reducers** (2): show two values, the actual metal consumption (footnote: the minimum part length is 300 mm) and the actual part area. Not implemented yet (a separate change).
+- **Tees and crosses** (3): the same, two areas: the metal consumption (cut-out not subtracted) and the actual element area. Not implemented yet (a separate change).
+- **Number of allowances** (4): a per-fitting option, 2, 1 or 0. [ADR 0041](adr/0041-engineer-table-by-equivalent-diameter-and-allowance-count.md).
+- **Taps** (5): "add the stub calculation to the tap"; the meaning is not clear yet, the engineer will answer later.
+- He expects many new options and suggests a "basic" and an "advanced" mode later.
+
 ## Excel template bugs found (2026-10-16)
 Found while checking M27-M30 (reports `check-m27-m30-2026-10-16.md`, `recheck-m27-m30-2026-10-16.md`); the engineer asked to be told of fixes. A corrected copy is `template-fixed-m27-m30-2026-10-16.xlsx` (project files; original untouched).
 - **M27 (ПККр)** mixes units in one factor: `(490 mm*m + 78540 mm2) * 10^-5`. Correct: 0.4704 m2 (Excel 0.7903).

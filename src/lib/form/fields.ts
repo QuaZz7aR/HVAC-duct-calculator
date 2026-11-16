@@ -62,6 +62,8 @@ export interface FormRow {
   quantity: string;
   flow: string;
   zeta: string;
+  /** How many ends get the allowance ('2', '1' or '0', ADR 0041); empty or absent = 2. Used only by kinds with an allowance field. */
+  allowanceCount?: string;
   /** Insulation material code (config.insulation.materials); empty or absent = not insulated. */
   insulation?: string;
   /** Auto-filled fields (see auto-defaults.ts) that the user has typed over; they stop following the size. */
@@ -77,3 +79,6 @@ export function initialValues(kind: FittingKind): FormRow['values'] {
 export function newRow(id: number, kind: FittingKind = 'roundStraight'): FormRow {
   return { id, kind, values: initialValues(kind), quantity: '1', flow: '', zeta: '' };
 }
+
+/** The kind has an allowance, so the number of allowances applies to it. */
+export const hasAllowance = (kind: FittingKind) => kindFields[kind].some((f) => f.key === 'allowance');
