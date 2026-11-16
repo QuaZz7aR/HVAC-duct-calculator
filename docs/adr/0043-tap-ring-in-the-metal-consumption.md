@@ -1,6 +1,6 @@
 # 0043. Tap ring in the metal consumption
 
-- Status: Accepted. Supersedes the ring part of [0026](0026-branch-in-taps.md) (the actual area of a tap is unchanged).
+- Status: Accepted. Supersedes the ring part of [0026](0026-branch-in-taps.md) (the actual area of a tap is unchanged). The actual-area part is superseded by [0044](0044-tap-ring-in-the-actual-area.md): the ring is in the actual area too.
 - Date: 2026-11-16
 - Source: engineer answers of 2026-11-16, item 5, clarified the same day: "the ring around the stub" ([log](../engineer-answers.md#answers-of-2026-11-16)); the check against his orders (`reports/engineer-tables-check-2026-11-12.md` in the project files, Квр d200: 0.1021 m2 against our 0.0628)
 
