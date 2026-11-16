@@ -1,6 +1,6 @@
 # 0005. Reducer length: default 300 mm, floor 150 mm, no silent clamp
 
-- Status: Accepted
+- Status: Accepted. Extended by [0042](0042-metal-consumption-and-actual-area.md): the metal consumption counts a shorter reducer as 300 mm.
 - Date: 2026-10-07
 - Source: engineer answer Q2 of 2026-10-07 ([log](../engineer-answers.md#answers-of-2026-10-07)); PR #9
 

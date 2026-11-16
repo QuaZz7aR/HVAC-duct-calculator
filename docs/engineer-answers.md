@@ -58,8 +58,8 @@ Relayed by the owner; the engineer answered in a messenger and did not remember 
 ## Answers of 2026-11-16
 Relayed by the owner, after the check against the engineer's three orders (2026-11-12, five differences). What was decided from them:
 - **Thickness by the equivalent diameter** (1): approved for his table. [ADR 0041](adr/0041-engineer-table-by-equivalent-diameter-and-allowance-count.md).
-- **Reducers** (2): show two values, the actual metal consumption (footnote: the minimum part length is 300 mm) and the actual part area. Not implemented yet (a separate change).
-- **Tees and crosses** (3): the same, two areas: the metal consumption (cut-out not subtracted) and the actual element area. Not implemented yet (a separate change).
+- **Reducers** (2): show two values, the actual metal consumption (footnote: the minimum part length is 300 mm) and the actual part area. [ADR 0042](adr/0042-metal-consumption-and-actual-area.md).
+- **Tees and crosses** (3): the same, two areas: the metal consumption (cut-out not subtracted) and the actual element area. [ADR 0042](adr/0042-metal-consumption-and-actual-area.md).
 - **Number of allowances** (4): a per-fitting option, 2, 1 or 0. [ADR 0041](adr/0041-engineer-table-by-equivalent-diameter-and-allowance-count.md).
 - **Taps** (5): "add the stub calculation to the tap"; the meaning is not clear yet, the engineer will answer later.
 - He expects many new options and suggests a "basic" and an "advanced" mode later.

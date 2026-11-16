@@ -3,6 +3,7 @@ import { defaultConfig, type CalcConfig } from '../calc/config';
 import { assembleSection } from '../calc/section';
 import { centerlineLength } from '../calc/sheet-area';
 import { metalArea } from '../calc/waste-factor';
+import { consumptionDiffers, metalConsumption } from '../calc/consumption';
 import { insulationArea, insulationList, type InsulationGroup, type InsulationItem } from '../calc/insulation';
 import { orderArea, orderList, type OrderLine } from '../calc/sheet-count';
 import { sheetList } from '../calc/sheet-list';
@@ -29,6 +30,9 @@ export interface RowResult {
   thicknessMm: number;
   metalArea: number; // m2, one piece, waste factor included
   metalAreaTotal: number; // m2, times quantity
+  metalConsumption: number; // m2, one piece, waste factor included: reducers at least the minimum length, tees without cut-outs (ADR 0042)
+  metalConsumptionTotal: number; // m2, times quantity; the order, the sheet list and the price use this
+  consumptionDiffers: boolean; // true when the consumption rule changes this row (a short reducer, a tee or cross)
   insulation: { code: string; area: number; areaTotal: number } | null; // m2 one piece and times quantity; null = not insulated
   centerlineLength: number; // m
   pressureDrop: PressureDrop; // all NaN when `lossesAvailable` is false
@@ -42,9 +46,10 @@ export type RowOutcome = { ok: true; result: RowResult } | { ok: false; id: numb
 export interface Calculation {
   air: { ok: true } | { ok: false; issues: FormIssue[] };
   rows: RowOutcome[];
-  sheetList: OrderLine[]; // per thickness: computed area, area with the order margin, whole sheets
-  totalMetalArea: number; // m2, times quantity, the computed area
-  totalMetalAreaToOrder: number; // m2, the computed area plus the order margin (config.order.marginPercent)
+  sheetList: OrderLine[]; // per thickness, by metal consumption: consumption, consumption with the order margin, whole sheets
+  totalMetalArea: number; // m2, times quantity, the actual area
+  totalMetalConsumption: number; // m2, times quantity, the metal consumption (ADR 0042)
+  totalMetalAreaToOrder: number; // m2, the metal consumption plus the order margin (config.order.marginPercent)
   insulationList: InsulationGroup[]; // m2 per material, times quantity
   totalInsulationArea: number; // m2, all materials
   totalPressureDrop: number; // Pa, times quantity; rows with unavailable losses are left out
@@ -115,6 +120,7 @@ export function calculate(
       try {
         // the area never depends on the loss calculation: that one may overflow for absurd sizes and then only marks the losses unavailable
         const area = metalArea(p.fitting, config);
+        const used = metalConsumption(p.fitting, config);
         let pressureDrop: PressureDrop = { velocity: NaN, reynolds: NaN, dynamicPressure: NaN, frictionFactor: NaN, frictionLoss: NaN, localLoss: NaN };
         let totalLoss = NaN;
         const s = assembleSection({ fitting: p.fitting, flow: p.flow, localCoefficient: p.zeta }, airResult, config);
@@ -131,6 +137,9 @@ export function calculate(
           thicknessMm: thickness(thicknessSize(p.fitting), config),
           metalArea: area,
           metalAreaTotal: area * p.quantity,
+          metalConsumption: used,
+          metalConsumptionTotal: used * p.quantity,
+          consumptionDiffers: consumptionDiffers(p.fitting, config),
           insulation: p.material ? { code: p.material.code, area: ins, areaTotal: ins * p.quantity } : null,
           centerlineLength: centerlineLength(p.fitting),
           pressureDrop,
@@ -140,7 +149,7 @@ export function calculate(
         };
         // sizes near the float limit pass validation but overflow; a size below the first table row has no thickness;
         // a branch cut-out larger than the wall (tees, crosses) gives a non-positive area, which is not a duct
-        if (![result.metalArea, result.metalAreaTotal, result.centerlineLength].every(Number.isFinite) || result.metalArea <= 0) {
+        if (![result.metalArea, result.metalAreaTotal, result.metalConsumptionTotal, result.centerlineLength].every(Number.isFinite) || result.metalArea <= 0) {
           throw new Error('not a valid section');
         }
         if (result.insulation && !(Number.isFinite(result.insulation.areaTotal) && result.insulation.area > 0)) {
@@ -157,15 +166,17 @@ export function calculate(
     }
   }
 
-  const groups = sheetList(valid, config);
-  const totalMetalArea = groups.reduce((sum, g) => sum + g.area, 0);
+  const groups = sheetList(valid, config, metalConsumption);
+  const totalMetalConsumption = groups.reduce((sum, g) => sum + g.area, 0);
+  const totalMetalArea = valid.reduce((sum, v) => sum + v.quantity * metalArea(v.fitting, config), 0);
   const insulation = insulationList(insulatedItems, config);
   return {
     air: air.ok ? { ok: true } : { ok: false, issues: air.issues },
     rows: outcomes,
     sheetList: orderList(groups, config.order),
     totalMetalArea,
-    totalMetalAreaToOrder: orderArea(totalMetalArea, config.order.marginPercent),
+    totalMetalConsumption,
+    totalMetalAreaToOrder: orderArea(totalMetalConsumption, config.order.marginPercent),
     insulationList: insulation,
     totalInsulationArea: insulation.reduce((sum, g) => sum + g.area, 0),
     totalPressureDrop,
