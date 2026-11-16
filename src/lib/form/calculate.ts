@@ -10,7 +10,7 @@ import { thickness, thicknessSize } from '../calc/thickness';
 import { fittingWarnings, type FittingWarning } from '../calc/warnings';
 import type { Fitting, PressureDrop } from '../calc/types';
 import { airInputSchema, createSchemas, validate } from '../validation';
-import { kindFields, type FormRow } from './fields';
+import { hasAllowance, kindFields, type FormRow } from './fields';
 import type { FormIssue } from './messages';
 
 /** Raw text -> number. Accepts a decimal comma; empty -> undefined; anything else non-numeric -> NaN. */
@@ -60,6 +60,9 @@ function parseRow(row: FormRow, schemas: ReturnType<typeof createSchemas>, confi
     const v = parseNumber(row.values[f.key]);
     if (v !== undefined) raw[f.key] = v;
   }
+  // the number of allowances is a choice, not typed text; an empty choice leaves the core default (2)
+  const count = row.allowanceCount ?? '';
+  if (hasAllowance(row.kind) && count !== '') raw.allowanceCount = Number(count);
   // fitting and quantity go through the sheet-list item schema; its issues for the fitting carry a leading 'fitting' path segment
   // an empty quantity is NaN here so it reports quantity.invalid, as before, not the schema's generic field.required
   const item = validate(schemas.sheetListItem, { fitting: raw, quantity: parseNumber(row.quantity) ?? NaN });

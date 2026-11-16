@@ -1,4 +1,4 @@
-import type { Fitting } from './types';
+import type { AllowanceCount, Fitting } from './types';
 import { branchLayout } from './branch';
 import { degToRad, mmToM } from './units';
 
@@ -13,17 +13,17 @@ export function developedLength(f: Fitting): number {
     case 'rectTap':
       return mmToM(f.length);
     case 'roundElbow':
-      // bend arc along the center radius plus the connection allowance at both ends
-      return centerlineLength(f) + 2 * mmToM(f.allowance);
+      // bend arc along the center radius plus the connection allowance at each counted end
+      return centerlineLength(f) + allowanceLength(f);
     case 'rectElbow':
-      // bend arc along the center radius plus the connection allowance at both ends
-      return centerlineLength(f) + 2 * mmToM(f.allowance);
+      // bend arc along the center radius plus the connection allowance at each counted end
+      return centerlineLength(f) + allowanceLength(f);
     case 'rectToRoundReducer':
-      // Area-equivalent length (transition area / mean perimeter), like rectReducer; allowance strips at both ends.
-      return rectToRoundArea(f) / rectToRoundMeanPerimeter(f) + 2 * mmToM(f.allowance);
+      // Area-equivalent length (transition area / mean perimeter), like rectReducer; allowance strips at the counted ends.
+      return rectToRoundArea(f) / rectToRoundMeanPerimeter(f) + allowanceLength(f);
     case 'rectReducer': {
       // Area-equivalent length (total face area / mean perimeter), NOT a physical edge length: there is no single slant.
-      // Top/bottom trapezoids slope by (H - h) / 2, side trapezoids by (W - w) / 2; allowance strips at both ends.
+      // Top/bottom trapezoids slope by (H - h) / 2, side trapezoids by (W - w) / 2; allowance strips at the counted ends.
       const W = mmToM(f.width);
       const H = mmToM(f.height);
       const w = mmToM(f.smallWidth);
@@ -31,12 +31,12 @@ export function developedLength(f: Fitting): number {
       const L = mmToM(f.length);
       const topBottom = (W + w) * Math.sqrt(L ** 2 + ((H - h) / 2) ** 2);
       const sides = (H + h) * Math.sqrt(L ** 2 + ((W - w) / 2) ** 2);
-      return (topBottom + sides) / (W + H + w + h) + 2 * mmToM(f.allowance);
+      return (topBottom + sides) / (W + H + w + h) + allowanceLength(f);
     }
     case 'roundReducer': {
-      // cone generatrix (slant height) plus the connection allowance at both ends
+      // cone generatrix (slant height) plus the connection allowance at each counted end
       const slant = Math.sqrt(mmToM(f.length) ** 2 + ((mmToM(f.diameter) - mmToM(f.smallDiameter)) / 2) ** 2);
-      return slant + 2 * mmToM(f.allowance);
+      return slant + allowanceLength(f);
     }
     case 'roundTee':
     case 'roundTeeRectBranch':
@@ -177,4 +177,9 @@ function rectToRoundArea(f: RectToRound): number {
 
 function assertNever(x: never): never {
   throw new Error(`unknown fitting: ${JSON.stringify(x)}`);
+}
+
+/** Allowance strips along the developed length, m: the allowance at each counted connection end (`allowanceCount`, default 2). */
+export function allowanceLength(f: { allowance: number; allowanceCount?: AllowanceCount }): number {
+  return (f.allowanceCount ?? 2) * mmToM(f.allowance);
 }

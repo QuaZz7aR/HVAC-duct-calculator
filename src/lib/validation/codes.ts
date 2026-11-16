@@ -5,6 +5,7 @@ export const errorCodes = [
   'size.nonPositive',
   'size.notFinite',
   'allowance.negative',
+  'allowanceCount.invalid',
   'angle.outOfRange',
   'reducer.tooShort',
   'reducer.noSizeChange',

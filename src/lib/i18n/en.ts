@@ -170,6 +170,10 @@ export const en: Dictionary = {
     metalLabel: (t: string) => `Metal price ${t} mm`,
     insulationLabel: (m: string) => `Price: ${m}`,
   },
+  allowanceCount: {
+    field: 'Number of allowances',
+    options: { 2: '2 (both ends)', 1: '1 (one end)', 0: '0 (no allowance)' },
+  },
   insulation: {
     field: 'Insulation',
     none: 'No insulation',
@@ -202,6 +206,7 @@ export const en: Dictionary = {
     'size.nonPositive': 'Must be greater than zero',
     'size.notFinite': 'Enter a number',
     'allowance.negative': 'Cannot be negative',
+    'allowanceCount.invalid': 'Number of allowances: 0, 1 or 2',
     'angle.outOfRange': 'The angle must be greater than 0° and not greater than 180°',
     'reducer.tooShort': 'The reducer is shorter than the minimum allowed',
     'reducer.noSizeChange': 'Both ends of the reducer have the same size',

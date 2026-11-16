@@ -27,6 +27,6 @@ export function branchLayout(f: TeeCross) {
     ? (Math.PI * mmToM(f.branchDiameter) ** 2) / 4
     : mmToM(f.branchWidth) * mmToM(f.branchHeight);
   const along = roundBranch ? mmToM(f.branchDiameter) : mmToM(f.branchWidth);
-  // the allowance is the extra wall at each end of the run AND the length of each branch collar
-  return { count, mainPerimeter, mainArea, branchPerimeter, branchArea, along, collar: allowance, runLength: along + 2 * allowance };
+  // the allowance is the extra wall at each counted end of the run (`allowanceCount`, default 2) AND the length of each branch collar
+  return { count, mainPerimeter, mainArea, branchPerimeter, branchArea, along, collar: allowance, runLength: along + (f.allowanceCount ?? 2) * allowance };
 }

@@ -9,7 +9,9 @@ export interface ThicknessTable {
   /** `inclusive`: a band holds sizes >= fromMm. `exclusive`: sizes > fromMm (norm tables that list upper limits, "up to 200 incl."). */
   bandStart: 'inclusive' | 'exclusive';
   round: ThicknessRow[]; // keyed by diameter, ascending fromMm
-  rect: ThicknessRow[]; // keyed by larger side, ascending fromMm
+  rect: ThicknessRow[]; // keyed by `rectKey`, ascending fromMm
+  /** What keys a rect size: the larger side (ДБН) or the equivalent diameter 2AB/(A+B) (the engineer's table, ADR 0041). */
+  rectKey: 'largerSide' | 'equivalentDiameter';
 }
 
 /** One band: applies from `fromMm` (inclusive) up to the next row's `fromMm`. */
@@ -98,6 +100,7 @@ export interface CalcConfig {
 export const dbnThickness: ThicknessTable = {
   version: 'dbn-v-2-5-67-2013-1',
   bandStart: 'exclusive',
+  rectKey: 'largerSide',
   // round, by diameter: up to 200 -> 0.5; 250-450 -> 0.6; 500-800 -> 0.7; 900-1250 -> 1.0; 1400-1600 -> 1.2; 1800-2000 -> 1.4
   round: [
     { fromMm: 0, thicknessMm: 0.5 },
@@ -117,11 +120,12 @@ export const dbnThickness: ThicknessTable = {
 
 /**
  * The engineer's own table: 0.55 mm below 400 mm, 0.7 mm from 400 mm (confirmed 2026-10-16). An option next to the ДБН default.
- * TODO(confirm): rect keyed by the larger side (the Excel used the equivalent diameter, a simplification the engineer acknowledged).
+ * Rect sizes are keyed by the equivalent diameter 2AB/(A+B), as in his template and orders (engineer, 2026-11-16, ADR 0041).
  */
 export const engineerThickness: ThicknessTable = {
-  version: 'engineer-1',
+  version: 'engineer-2', // 2: rect keyed by the equivalent diameter
   bandStart: 'inclusive',
+  rectKey: 'equivalentDiameter',
   round: [
     { fromMm: 0, thicknessMm: 0.55 },
     { fromMm: 400, thicknessMm: 0.7 },

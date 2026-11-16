@@ -1,7 +1,7 @@
 import { defaultConfig } from "@/lib/calc/config";
 import { autoKey, isAuto } from "@/lib/form/auto-defaults";
 import { fieldColumns, isLongLabel } from "@/lib/form/layout";
-import { kindFields, type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
+import { hasAllowance, kindFields, type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
 import type { RowOutcome } from "@/lib/form/calculate";
 import { useI18n } from "@/components/i18n";
 import { kindTitle } from "./format";
@@ -35,7 +35,7 @@ export function FittingCard({ row, index, justAdded, showSketch, collapsed, onTo
   const fieldLabel = (f: (typeof kindFields)[FittingKind][number]) =>
     `${dict.fields[f.key]}${f.optional ? ` (${dict.optional}: ${defaultConfig.reducerLengthMm})` : ""}`;
   // the (авто) hint or the reset link sits after the label, so reserve room for the longer one on the suggested field
-  const labels = [...kindFields[row.kind].map((f) => fieldLabel(f) + (autoKey(row.kind) === f.key ? ` ${dict.autoValue.length > dict.resetAuto.length ? `(${dict.autoValue})` : dict.resetAuto}` : "")), dict.quantity, dict.insulation.field];
+  const labels = [...kindFields[row.kind].map((f) => fieldLabel(f) + (autoKey(row.kind) === f.key ? ` ${dict.autoValue.length > dict.resetAuto.length ? `(${dict.autoValue})` : dict.resetAuto}` : "")), ...(hasAllowance(row.kind) ? [dict.allowanceCount.field] : []), dict.quantity, dict.insulation.field];
   if (collapsed) {
     // one compact tile: number, kind and the typed values; the whole tile expands the card
     const summary = [...kindFields[row.kind].map((f) => row.values[f.key] ?? ""), row.quantity].map((v) => v || "–").join(" · ");
@@ -103,6 +103,16 @@ export function FittingCard({ row, index, justAdded, showSketch, collapsed, onTo
             />
           );
         })}
+        {hasAllowance(row.kind) && (
+          <label className="flex flex-col">
+            <span className={labelClass}>{dict.allowanceCount.field}</span>
+            <select className={`mt-auto ${selectClass}`} value={row.allowanceCount || "2"} onChange={(e) => onPatch({ allowanceCount: e.target.value })}>
+              {(["2", "1", "0"] as const).map((n) => (
+                <option key={n} value={n} className="bg-panel text-foreground">{dict.allowanceCount.options[n]}</option>
+              ))}
+            </select>
+          </label>
+        )}
         <TextField label={dict.quantity} inputMode="numeric" value={row.quantity} onChange={(quantity) => onPatch({ quantity })} />
         <label className="col-span-2 flex flex-col sm:col-span-1">
           <span className={labelClass}>{dict.insulation.field}</span>

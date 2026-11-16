@@ -189,6 +189,10 @@ export const uk = {
     metalLabel: (t: string) => `Ціна металу ${t} мм`,
     insulationLabel: (m: string) => `Ціна: ${m}`,
   },
+  allowanceCount: {
+    field: 'Кількість припусків',
+    options: { 2: '2 (на обох кінцях)', 1: '1 (на одному кінці)', 0: '0 (без припуску)' },
+  },
   insulation: {
     field: 'Утеплення',
     none: 'Без утеплення',
@@ -222,6 +226,7 @@ export const uk = {
     'size.nonPositive': 'Має бути більше нуля',
     'size.notFinite': 'Введіть число',
     'allowance.negative': 'Не може бути від’ємним',
+    'allowanceCount.invalid': 'Кількість припусків: 0, 1 або 2',
     'angle.outOfRange': 'Кут має бути більшим за 0° і не більшим за 180°',
     'reducer.tooShort': 'Довжина переходу менша за мінімально допустиму',
     'reducer.noSizeChange': 'Розміри кінців переходу однакові',
