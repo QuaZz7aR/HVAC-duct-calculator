@@ -27,7 +27,9 @@ describe('tees and crosses in the form layer', () => {
     expect(out.ok).toBe(true);
     if (!out.ok) return;
     expect(out.result.metalArea).toBeCloseTo(area, 6);
-    expect(calc.sheetList[0].area).toBeCloseTo(area, 6);
+    // the sheet list follows the metal consumption: the cut-outs are not subtracted (ADR 0042)
+    expect(calc.sheetList[0].area).toBeCloseTo(out.result.metalConsumption, 12);
+    expect(out.result.metalConsumption).toBeGreaterThan(area);
   });
 
   it('the field list is exactly the schema keys', () => {
