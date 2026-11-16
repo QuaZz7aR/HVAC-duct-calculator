@@ -9,8 +9,12 @@ describe('engineer thickness table (option)', () => {
   it.each([
     [{ shape: 'round', diameter: 399 }, 0.55],
     [{ shape: 'round', diameter: 400 }, 0.7],
-    [{ shape: 'rect', width: 300, height: 200 }, 0.55],
-    [{ shape: 'rect', width: 300, height: 400 }, 0.7],
+    // rect by the equivalent diameter 2AB/(A+B) (ADR 0041)
+    [{ shape: 'rect', width: 300, height: 200 }, 0.55], // 240
+    [{ shape: 'rect', width: 300, height: 400 }, 0.55], // 342.9; by the larger side it was 0.7
+    [{ shape: 'rect', width: 500, height: 200 }, 0.55], // 285.7
+    [{ shape: 'rect', width: 1000, height: 250 }, 0.7], // 400, band start inclusive
+    [{ shape: 'rect', width: 400, height: 400 }, 0.7], // 400
   ] as const)('%j -> %s', (size, expected) => {
     expect(thickness(size, config)).toBe(expected);
   });
