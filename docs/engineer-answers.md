@@ -61,7 +61,7 @@ Relayed by the owner, after the check against the engineer's three orders (2026-
 - **Reducers** (2): show two values, the actual metal consumption (footnote: the minimum part length is 300 mm) and the actual part area. [ADR 0042](adr/0042-metal-consumption-and-actual-area.md).
 - **Tees and crosses** (3): the same, two areas: the metal consumption (cut-out not subtracted) and the actual element area. [ADR 0042](adr/0042-metal-consumption-and-actual-area.md).
 - **Number of allowances** (4): a per-fitting option, 2, 1 or 0. [ADR 0041](adr/0041-engineer-table-by-equivalent-diameter-and-allowance-count.md).
-- **Taps** (5): "add the stub calculation to the tap", clarified the same day as "the ring around the stub", as in his tables: pi((d/2 + 50)^2 - d^2/4) for Квр. Added to the metal consumption. [ADR 0043](adr/0043-tap-ring-in-the-metal-consumption.md).
+- **Taps** (5): "add the stub calculation to the tap", clarified the same day as "the ring around the stub", as in his tables: pi((d/2 + 50)^2 - d^2/4) for Квр. Added to the metal consumption ([ADR 0043](adr/0043-tap-ring-in-the-metal-consumption.md)); asked again, he said it is the actual metal area and rect taps need it too ([ADR 0044](adr/0044-tap-ring-in-the-actual-area.md)).
 - He expects many new options and suggests a "basic" and an "advanced" mode later.
 
 ## Excel template bugs found (2026-10-16)

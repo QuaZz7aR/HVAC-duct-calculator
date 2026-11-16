@@ -151,7 +151,7 @@ export const en: Dictionary = {
     metalAreaTotal: 'Total actual area, m²',
     metalConsumption: 'Metal consumption, m² (each)*',
     metalConsumptionTotal: 'Total consumption, m²',
-    consumptionNote: '* Metal consumption: reducers are counted at least 300 mm long (minimum part length), tees and crosses without the branch cut-out, taps with the ring around the stub (50 mm). The order, sheets and price follow the consumption, insulation the actual area.',
+    consumptionNote: '* Metal consumption: reducers are counted at least 300 mm long (minimum part length), tees and crosses without the branch cut-out. The order, sheets and price follow the consumption, insulation the actual area.',
     insulationTotal: 'Insulation, m²',
     empty: 'Add a fitting to see the calculation.',
     skipped: (n: number) => `Items with errors not counted: ${n}.`,
@@ -202,7 +202,7 @@ export const en: Dictionary = {
     orderArea: 'To order, m²',
     sheets: 'Sheets, pcs',
     priceNote: 'Metal cost is taken from the area to order (with margin).',
-    note: 'Metal consumption with the cutting coefficient (reducers at least 300 mm, tees without the cut-out, taps with the ring). Sheets = round up (area to order / sheet area), for each thickness separately.',
+    note: 'Metal consumption with the cutting coefficient (reducers at least 300 mm, tees without the cut-out). Sheets = round up (area to order / sheet area), for each thickness separately.',
   },
   errors: {
     'field.required': 'Required field',

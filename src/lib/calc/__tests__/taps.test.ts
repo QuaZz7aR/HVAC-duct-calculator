@@ -16,9 +16,10 @@ describe('tap sheet area', () => {
     expect(sheetArea(input)).toBeCloseTo(area, 6);
   });
 
-  it.each(tapCases)('$id: metal area has no waste factor', ({ input, area }) => {
-    expect(wasteFactor(input, defaultConfig)).toBe(1);
-    expect(metalArea(input, defaultConfig)).toBeCloseTo(area, 6);
+  it.each(tapCases)('$id: metal area has no waste factor (ring off)', ({ input, area }) => {
+    const noRing = { ...defaultConfig, tap: { ringWidthMm: 0 } };
+    expect(wasteFactor(input, noRing)).toBe(1);
+    expect(metalArea(input, noRing)).toBeCloseTo(area, 6);
   });
 
   it('developed length is the stub length, with no allowance', () => {
@@ -41,7 +42,7 @@ describe('tap thickness and sheet list', () => {
     const tap: Fitting = { kind: 'roundTap', diameter: 150, length: 100 };
     const [group] = sheetList([{ fitting: tap, quantity: 4 }], defaultConfig);
     expect(group.thicknessMm).toBe(0.5);
-    expect(group.area).toBeCloseTo(4 * 0.04712389, 6);
+    expect(group.area).toBeCloseTo(4 * 0.078539816, 6); // stub + 50 mm ring (ADR 0044)
   });
 });
 
@@ -55,7 +56,7 @@ describe('tap warnings and section', () => {
     const fitting: Fitting = { kind: 'roundTap', diameter: 150, length: 100 };
     expect(centerlineLength(fitting)).toBe(0);
     const r = assembleSection({ fitting, flow: 265, localCoefficient: 0 }, air, defaultConfig);
-    expect(r.metalArea).toBeCloseTo(0.04712389, 6);
+    expect(r.metalArea).toBeCloseTo(0.078539816, 6); // stub + 50 mm ring (ADR 0044)
     expect(r.pressureDrop.frictionLoss).toBe(0);
   });
 });

@@ -1,5 +1,6 @@
 import type { CalcConfig, WasteRow } from './config';
 import { sheetArea } from './sheet-area';
+import { tapRingArea } from './tap-ring';
 import type { Fitting } from './types';
 
 /** Equivalent diameter of a rectangle in mm: the round duct with the same friction per unit length. */
@@ -34,5 +35,6 @@ export function wasteFactor(f: Fitting, config: CalcConfig): number {
 
 /** Sheet-metal area in m2 including the cutting-waste factor. */
 export function metalArea(f: Fitting, config: CalcConfig): number {
-  return sheetArea(f) * wasteFactor(f, config);
+  // the wall geometry plus, for a tap, the flat ring around the stub (engineer 2026-11-16, ADR 0044)
+  return (sheetArea(f) + tapRingArea(f, config)) * wasteFactor(f, config);
 }

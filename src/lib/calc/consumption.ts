@@ -1,14 +1,16 @@
 import { branchLayout, isTeeCross } from './branch';
 import type { CalcConfig } from './config';
 import { sheetArea } from './sheet-area';
+import { tapRingArea } from './tap-ring';
+
+export { tapRingArea };
 import type { Fitting } from './types';
-import { mmToM } from './units';
 import { wasteFactor } from './waste-factor';
 
 /**
  * Metal consumption of one piece without the waste factor, m2 (engineer 2026-11-16, ADR 0042).
  * Reducers: cut at least `config.consumption.minReducerLengthMm` long. Tees and crosses: the branch cut-outs are not subtracted.
- * Taps: the stub plus the flat ring around it (ADR 0043). Every other kind: the actual sheet area. The fitting itself is never changed, so the actual area and insulation keep what was typed.
+ * Taps: the stub plus the flat ring around it, the same as their actual area (ADR 0044). Every other kind: the actual sheet area. The fitting itself is never changed, so the actual area and insulation keep what was typed.
  */
 export function consumptionArea(f: Fitting, config: CalcConfig): number {
   switch (f.kind) {
@@ -30,26 +32,6 @@ export function consumptionArea(f: Fitting, config: CalcConfig): number {
   }
 }
 
-/** Flat ring around a tap stub in m2, `config.tap.ringWidthMm` wide on every side (ADR 0043); 0 for other kinds. */
-export function tapRingArea(f: Fitting, config: CalcConfig): number {
-  const w = mmToM(config.tap.ringWidthMm);
-  switch (f.kind) {
-    case 'roundTap': {
-      // annulus: outer circle of radius d/2 + w minus the stub opening
-      const r = mmToM(f.diameter) / 2;
-      return Math.PI * ((r + w) ** 2 - r ** 2);
-    }
-    case 'rectTap': {
-      // rectangular frame: outer rectangle (a + 2w)(b + 2w) minus the stub opening ab
-      const a = mmToM(f.width);
-      const b = mmToM(f.height);
-      return (a + 2 * w) * (b + 2 * w) - a * b;
-    }
-    default:
-      return 0;
-  }
-}
-
 /** Metal consumption of one piece in m2, the cutting-waste factor included: what the order, the sheet list and the price use. */
 export function metalConsumption(f: Fitting, config: CalcConfig): number {
   return consumptionArea(f, config) * wasteFactor(f, config);
@@ -58,7 +40,6 @@ export function metalConsumption(f: Fitting, config: CalcConfig): number {
 /** True when the consumption of this fitting differs from its actual area by rule (not by the waste factor). */
 export function consumptionDiffers(f: Fitting, config: CalcConfig): boolean {
   if (isTeeCross(f)) return true;
-  if (f.kind === 'roundTap' || f.kind === 'rectTap') return tapRingArea(f, config) > 0;
   return (
     (f.kind === 'roundReducer' || f.kind === 'rectReducer' || f.kind === 'rectToRoundReducer') &&
     f.length < config.consumption.minReducerLengthMm
