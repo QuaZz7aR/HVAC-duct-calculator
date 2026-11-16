@@ -15,6 +15,6 @@ describe('calculate: branch-in taps', () => {
     const out = calculate([row], air).rows[0];
     expect(out.ok).toBe(true);
     if (!out.ok) return;
-    expect(out.result.metalArea).toBeCloseTo(0.04712389, 6);
+    expect(out.result.metalArea).toBeCloseTo(0.078539816, 6); // stub + 50 mm ring (ADR 0044)
   });
 });
