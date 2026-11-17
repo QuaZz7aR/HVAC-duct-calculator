@@ -74,7 +74,7 @@ export function FittingList({ rows, view, outcome, onKindChange, onValueChange, 
         </div>
       </div>
       {/* one grid for the page: single cards and folded tiles share the 1-3 columns, a repeated kind is a full-width section with a grid of its own; open cards span the full width */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 min-[1800px]:grid-cols-5">
         {groupByKind(rows).map(([kind, items]) => {
           if (items.length === 1) return card(items[0].row, items[0].index);
           const groupFolded = items.every((i) => isFolded(i.row.id));
@@ -92,7 +92,7 @@ export function FittingList({ rows, view, outcome, onKindChange, onValueChange, 
                   {groupFolded ? dict.expandGroup : dict.collapseGroup}
                 </button>
               </div>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">{items.map(({ row, index }) => card(row, index))}</div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 min-[1800px]:grid-cols-5">{items.map(({ row, index }) => card(row, index))}</div>
             </div>
           );
         })}
