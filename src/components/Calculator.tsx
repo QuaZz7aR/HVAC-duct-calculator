@@ -35,12 +35,12 @@ function CalculatorPage() {
     <div className="mx-auto w-full max-w-[120rem] flex-1 gap-6 px-4 py-8 xl:px-8 lg:grid lg:grid-cols-[7.5rem_minmax(0,1fr)]">
       <KindRail count={countOf} onAdd={addRow} view={view} hasRows={rows.length > 0} twoColumns={twoColumns} onColumns={setTwoColumns} />
       <main className="min-w-0 space-y-6">
-        <header className="flex items-start justify-between gap-4">
+        <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div>
             <h1 className="text-2xl font-semibold">{dict.appTitle}</h1>
             <p className={`mt-1 text-sm ${mutedClass}`}>{dict.appSubtitle}</p>
           </div>
-          <div className="flex shrink-0 flex-wrap justify-end gap-2 lg:hidden">
+          <div className="flex shrink-0 flex-wrap gap-2 sm:justify-end lg:hidden">
             <HelpButton />
             <LangSwitch />
           </div>
