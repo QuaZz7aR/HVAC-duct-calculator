@@ -4,7 +4,7 @@ import { kindGroups, searchKinds, type KindGroupId } from "@/lib/form/kind-group
 import { useI18n } from "@/components/i18n";
 import { HelpButton } from "./HelpDialog";
 import { KindGlyph } from "./KindGlyph";
-import { LangSwitch } from "./LangSwitch";
+import { LangRailButton } from "./LangSwitch";
 import { scrollToTop } from "./scrollToTop";
 import { FoldIcon, SketchesIcon, UpIcon } from "./ViewIcons";
 import { buttonClass, inputClass } from "./styles";
@@ -64,8 +64,8 @@ export function KindRail({ count, onAdd, view, hasRows, twoColumns = false, onCo
       <div ref={box} className="sticky top-4">
       <div className="flex h-[calc(100vh-2rem)] flex-col gap-1.5 overflow-y-auto rounded-lg border border-line bg-panel p-1.5">
       <div className={railBox}>
-        <p className="grid justify-items-center gap-0.5 border-b border-line px-0.5 pb-2 pt-1 text-center text-xs font-semibold leading-tight">
-          <span aria-hidden="true" className="grid h-8 w-8 place-items-center rounded-full bg-accent text-xl leading-none text-background">+</span>
+        <p className="grid justify-items-center gap-0.5 border-b border-line px-0.5 pb-2 pt-1 text-center text-sm font-semibold leading-tight">
+          <span aria-hidden="true" className="grid h-7 w-7 place-items-center rounded-full bg-accent text-xl leading-none text-background">+</span>
           {dict.palette.title}
         </p>
         <div className="grid grid-cols-1 gap-0.5">
@@ -78,9 +78,9 @@ export function KindRail({ count, onAdd, view, hasRows, twoColumns = false, onCo
               setTop(box.current ? e.currentTarget.getBoundingClientRect().top - box.current.getBoundingClientRect().top : 0);
               setOpen(open === g.id ? null : g.id);
             }}
-            className={`grid justify-items-center gap-1 rounded-md border px-0.5 py-1 text-xs leading-tight hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent ${open === g.id ? "border-line bg-accent-soft text-foreground" : "border-transparent text-muted"}`}
+            className={`grid justify-items-center gap-1 rounded-md border px-0.5 py-0.5 text-sm leading-tight hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent ${open === g.id ? "border-line bg-accent-soft text-foreground" : "border-transparent text-muted"}`}
           >
-            <KindGlyph kind={g.kinds[0]} className="h-6 w-10 text-accent" />
+            <KindGlyph kind={g.kinds[0]} className="h-7 w-11 text-accent" />
             <span>{dict.kindGroups[g.id]}</span>
           </button>
         ))}
@@ -110,9 +110,9 @@ export function KindRail({ count, onAdd, view, hasRows, twoColumns = false, onCo
           </button>
         </div>
         {/* help and language sit at the bottom of the rail on desktop, beside the work; the phone keeps them in the page header */}
-        <div className={`${railBox} mt-auto items-center gap-2 pb-1`}>
-          <HelpButton />
-          <LangSwitch />
+        <div className={`${railBox} mt-auto grid grid-cols-2 pb-1`}>
+          <HelpButton rail />
+          <LangRailButton />
         </div>
       </div>
       {group && (

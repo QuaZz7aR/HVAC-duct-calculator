@@ -32,7 +32,7 @@ function CalculatorPage() {
   const [twoColumns, setTwoColumns] = useState(false);
 
   return (
-    <div className="mx-auto w-full max-w-[120rem] flex-1 gap-6 px-4 py-8 xl:px-8 lg:grid lg:grid-cols-[7.5rem_minmax(0,1fr)]">
+    <div className="mx-auto w-full max-w-[120rem] flex-1 gap-6 px-4 py-8 xl:px-8 lg:grid lg:grid-cols-[8.5rem_minmax(0,1fr)]">
       <KindRail count={countOf} onAdd={addRow} view={view} hasRows={rows.length > 0} twoColumns={twoColumns} onColumns={setTwoColumns} />
       <main className="min-w-0 space-y-6">
         <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">

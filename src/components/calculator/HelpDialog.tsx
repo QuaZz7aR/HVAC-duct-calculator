@@ -1,9 +1,9 @@
 import { useId, useRef } from "react";
 import { useI18n } from "@/components/i18n";
-import { buttonClass } from "./styles";
+import { buttonClass, railItemClass } from "./styles";
 
 /** The «Довідка» button in the header and the short how-to it opens (a native modal dialog: Esc and the cross close it). */
-export function HelpButton() {
+export function HelpButton({ rail = false }: { rail?: boolean }) {
   const { dict } = useI18n();
   const ref = useRef<HTMLDialogElement>(null);
   // the button is rendered twice (phone header, desktop rail), so the title id must be unique
@@ -11,9 +11,17 @@ export function HelpButton() {
   const g = dict.help.guide;
   return (
     <>
-      <button type="button" className={`${buttonClass} shrink-0`} onClick={() => ref.current?.showModal()} aria-haspopup="dialog">
-        {g.button}
-      </button>
+      {rail ? (
+        // desktop rail: an icon over a label, like the other rail items
+        <button type="button" className={railItemClass} onClick={() => ref.current?.showModal()} aria-haspopup="dialog">
+          <span aria-hidden="true" className="grid h-6 w-6 place-items-center rounded-full border-2 border-accent text-sm font-bold leading-none text-accent">?</span>
+          {g.button}
+        </button>
+      ) : (
+        <button type="button" className={`${buttonClass} shrink-0`} onClick={() => ref.current?.showModal()} aria-haspopup="dialog">
+          {g.button}
+        </button>
+      )}
       <dialog
         ref={ref}
         aria-labelledby={titleId}

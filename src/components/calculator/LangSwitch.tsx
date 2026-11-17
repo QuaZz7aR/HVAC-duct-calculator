@@ -1,5 +1,6 @@
 import { useI18n } from "@/components/i18n";
 import { langs } from "@/lib/i18n";
+import { railItemClass } from "./styles";
 
 /** Two-button language switch (УКР / EN) in the page header. */
 export function LangSwitch() {
@@ -19,5 +20,17 @@ export function LangSwitch() {
         </button>
       ))}
     </div>
+  );
+}
+
+/** Desktop rail: one item showing the current language; a click switches to the next one. */
+export function LangRailButton() {
+  const { lang, dict, setLang } = useI18n();
+  const next = langs[(langs.indexOf(lang) + 1) % langs.length];
+  return (
+    <button type="button" onClick={() => setLang(next)} className={railItemClass} aria-label={`${dict.language.label}: ${dict.language[next]}`} title={dict.language.label}>
+      <span aria-hidden="true" className="grid h-6 min-w-8 place-items-center rounded-md border-2 border-accent px-1 text-xs font-bold leading-none text-accent">{dict.language[lang]}</span>
+      {dict.language.short}
+    </button>
   );
 }

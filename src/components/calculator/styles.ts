@@ -11,3 +11,7 @@ export const primaryButtonClass =
 export const dangerButtonClass =
   "rounded-md border border-red-300 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-red-500 dark:border-red-900 dark:text-red-300 dark:hover:bg-red-950";
 export const selectClass = `${inputClass} select-chevron`;
+
+/** One item of the desktop side rail: an icon over a short label. */
+export const railItemClass =
+  "grid justify-items-center gap-1 rounded-md border border-transparent px-1 py-1.5 text-center text-sm leading-tight text-muted hover:border-line hover:bg-accent-soft hover:text-foreground focus-visible:outline-2 focus-visible:outline-accent";
