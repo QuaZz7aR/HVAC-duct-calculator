@@ -3,6 +3,7 @@ import { priceKey, type Pricing } from "@/lib/form/price";
 import { useI18n } from "@/components/i18n";
 import { PriceInput } from "./PriceInput";
 import { cardClass, mutedClass } from "./styles";
+import { Info } from "./Info";
 
 interface Props {
   groups: Calculation["sheetList"];
@@ -22,9 +23,9 @@ export function SheetList({ groups, prices, costs, onPrice }: Props) {
             <tr>
               <th className="py-1">{dict.sheetList.thickness}</th>
               <th className="text-right">{dict.sheetList.area}</th>
-              <th className="text-right">{dict.sheetList.orderArea}</th>
-              <th className="text-right">{dict.sheetList.sheets}</th>
-              <th className="pl-2 text-right">{dict.price.perM2}</th>
+              <th className="text-right">{dict.sheetList.orderArea}<Info text={dict.help.columns.orderArea} /></th>
+              <th className="text-right">{dict.sheetList.sheets}<Info text={dict.help.columns.sheets} /></th>
+              <th className="pl-2 text-right">{dict.price.perM2}<Info text={dict.help.columns.price} /></th>
               <th className="pl-2 text-right">{dict.price.cost}</th>
             </tr>
           </thead>

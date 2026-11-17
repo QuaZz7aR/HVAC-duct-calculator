@@ -4,6 +4,7 @@ import { sheetKey, type SettingsText, type ThicknessTableKey } from "@/lib/form/
 import { useI18n } from "@/components/i18n";
 import { ErrorList } from "./ErrorList";
 import { cardClass, selectClass, labelClass, mutedClass } from "./styles";
+import { Info } from "./Info";
 import { TextField } from "./TextField";
 
 interface Props {
@@ -20,7 +21,7 @@ export function SettingsPanel({ settings, onChange, issues }: Props) {
       <h2 id="settings-title" className="mb-3 font-medium">{dict.settings.title}</h2>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <label>
-          <span className={labelClass}>{dict.settings.thicknessTable}</span>
+          <span className={labelClass}>{dict.settings.thicknessTable}<Info text={dict.help.settings.thicknessTable} /></span>
           <select
             className={selectClass}
             value={settings.thicknessTable}
@@ -30,10 +31,10 @@ export function SettingsPanel({ settings, onChange, issues }: Props) {
             <option value="engineer" className="bg-panel text-foreground">{dict.settings.thicknessEngineer}</option>
           </select>
         </label>
-        <TextField label={dict.settings.seamPercent} value={settings.seamPercent} onChange={(seamPercent) => onChange({ ...settings, seamPercent })} />
-        <TextField label={dict.settings.marginPercent} value={settings.marginPercent} onChange={(marginPercent) => onChange({ ...settings, marginPercent })} />
+        <TextField label={dict.settings.seamPercent} info={dict.help.settings.seamPercent} value={settings.seamPercent} onChange={(seamPercent) => onChange({ ...settings, seamPercent })} />
+        <TextField label={dict.settings.marginPercent} info={dict.help.settings.marginPercent} value={settings.marginPercent} onChange={(marginPercent) => onChange({ ...settings, marginPercent })} />
         <label>
-          <span className={labelClass}>{dict.settings.sheet}</span>
+          <span className={labelClass}>{dict.settings.sheet}<Info text={dict.help.settings.sheet} /></span>
           <select className={selectClass} value={settings.sheet} onChange={(e) => onChange({ ...settings, sheet: e.target.value })}>
             {defaultConfig.order.sheetSizes.map((s) => (
               <option key={sheetKey(s)} value={sheetKey(s)} className="bg-panel text-foreground">{s.widthMm} × {s.heightMm}</option>

@@ -3,6 +3,7 @@ import type { Pricing } from "@/lib/form/price";
 import { useI18n } from "@/components/i18n";
 import { PriceInput } from "./PriceInput";
 import { cardClass, mutedClass } from "./styles";
+import { Info } from "./Info";
 
 interface Props {
   groups: Calculation["insulationList"];
@@ -25,7 +26,7 @@ export function InsulationList({ groups, prices, costs, onPrice }: Props) {
               <tr>
                 <th className="py-1">{dict.insulation.material}</th>
                 <th className="text-right">{dict.insulation.area}</th>
-                <th className="pl-2 text-right">{dict.price.perM2}</th>
+                <th className="pl-2 text-right">{dict.price.perM2}<Info text={dict.help.columns.price} /></th>
                 <th className="pl-2 text-right">{dict.price.cost}</th>
               </tr>
             </thead>
