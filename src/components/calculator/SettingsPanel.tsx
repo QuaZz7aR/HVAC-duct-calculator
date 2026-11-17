@@ -20,10 +20,10 @@ export function SettingsPanel({ settings, onChange, issues }: Props) {
     <section className={cardClass} aria-labelledby="settings-title">
       <h2 id="settings-title" className="mb-3 font-medium">{dict.settings.title}</h2>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <label>
+        <label className="flex flex-col">
           <span className={labelClass}>{dict.settings.thicknessTable}<Info text={dict.help.settings.thicknessTable} /></span>
           <select
-            className={selectClass}
+            className={`mt-auto ${selectClass}`}
             value={settings.thicknessTable}
             onChange={(e) => onChange({ ...settings, thicknessTable: e.target.value as ThicknessTableKey })}
           >
@@ -33,9 +33,9 @@ export function SettingsPanel({ settings, onChange, issues }: Props) {
         </label>
         <TextField label={dict.settings.seamPercent} info={dict.help.settings.seamPercent} value={settings.seamPercent} onChange={(seamPercent) => onChange({ ...settings, seamPercent })} />
         <TextField label={dict.settings.marginPercent} info={dict.help.settings.marginPercent} value={settings.marginPercent} onChange={(marginPercent) => onChange({ ...settings, marginPercent })} />
-        <label>
+        <label className="flex flex-col">
           <span className={labelClass}>{dict.settings.sheet}<Info text={dict.help.settings.sheet} /></span>
-          <select className={selectClass} value={settings.sheet} onChange={(e) => onChange({ ...settings, sheet: e.target.value })}>
+          <select className={`mt-auto ${selectClass}`} value={settings.sheet} onChange={(e) => onChange({ ...settings, sheet: e.target.value })}>
             {defaultConfig.order.sheetSizes.map((s) => (
               <option key={sheetKey(s)} value={sheetKey(s)} className="bg-panel text-foreground">{s.widthMm} × {s.heightMm}</option>
             ))}
