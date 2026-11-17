@@ -110,7 +110,7 @@ export function KindRail({ count, onAdd, view, hasRows, twoColumns = false, onCo
           </button>
         </div>
         {/* help and language sit at the bottom of the rail on desktop, beside the work; the phone keeps them in the page header */}
-        <div className={`${railBox} mt-auto grid grid-cols-2 pb-1`}>
+        <div className={`${railBox} mt-auto pb-1`}>
           <HelpButton rail />
           <LangRailButton />
         </div>
