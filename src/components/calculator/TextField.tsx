@@ -18,7 +18,7 @@ interface Props {
 export function TextField({ label, value, onChange, inputMode = "decimal", hint, action, wide, info }: Props) {
   return (
     // a column, with the input pushed to the bottom: a label that wraps to two lines does not lower its input below the neighbours
-    <label className={`flex flex-col ${wide ? "col-span-2 sm:col-span-1" : ""}`}>
+    <label className={`flex flex-col justify-end ${wide ? "col-span-2 sm:col-span-1" : ""}`}>
       <span className={labelClass}>
         {label}
         {info && <Info text={info} />}
