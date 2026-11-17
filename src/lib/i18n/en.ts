@@ -240,5 +240,46 @@ export const en: Dictionary = {
     'branch.larger': (value: string) =>
       `The branch cross-section is larger than the main duct (${value} times): check the sizes, the area may come out wrong.`,
   },
+  help: {
+    info: 'Explanation',
+    fields: {
+      allowance: 'Allowance p: extra wall length at each connection, so a flange has somewhere to attach. The flange itself is not counted.',
+      allowanceCount: 'How many ends of the fitting get the allowance: 2 both, 1 one, 0 none. On tees and crosses these are the ends of the run.',
+      centerRadius: 'Suggested from the size (R = d₁) until you type your own value. «reset to auto» brings the suggestion back.',
+      innerRadius: 'Suggested from the size (R = 0.5 a₁) until you type your own value. «reset to auto» brings the suggestion back.',
+      maxPiece: 'The straight is split into pieces of this length, to show how many to order. 0 turns splitting off. The area does not change.',
+      length: 'Length of the fitting along its axis. A reducer may be left empty: then 300 mm.',
+      quantity: 'How many identical fittings. The area totals are multiplied by it.',
+      insulation: 'Insulation material for this fitting. The area is the outer surface of the layer.',
+    },
+    settings: {
+      thicknessTable: 'Which table picks the sheet thickness: ДБН В.2.5-67:2013 (annex Ц) or the engineer’s table.',
+      seamPercent: 'Seam allowance added to the area of every fitting except elbows, which have their own cutting coefficients. 0 turns it off.',
+      marginPercent: 'Order margin for the metal. It changes only the area to order, the sheet count and the price, never the computed area.',
+      sheet: 'Metal sheet size. The sheet count per thickness comes from it.',
+    },
+    columns: {
+      thickness: 'Sheet thickness from the chosen table, by the main duct size of the fitting.',
+      metalArea: 'Developed area of the fitting with allowances and the cutting coefficient: the metal in the finished part.',
+      metalConsumption: 'Metal used to make it: reducers at least 300 mm long, tees and crosses without the branch cut-out. The order, sheets and price use it.',
+      insulation: 'Insulation area for all pieces of the line. No order margin.',
+      orderArea: 'Area including the order margin.',
+      sheets: 'Sheets = round up (area to order / sheet area), per thickness.',
+      price: 'Type a price per m² to see the cost. An empty field means «no price», not zero.',
+    },
+    guide: {
+      button: 'Help',
+      title: 'How to use the calculator',
+      close: 'Close',
+      steps: [
+        { title: 'Add fittings', text: 'Pick a fitting kind in the left panel (on a phone, the «+» button on the right). The page starts with an example of every kind: remove or change them.' },
+        { title: 'Enter sizes', text: 'Sizes in millimetres, angles in degrees. The thumbnail in the card header opens a sketch with the size letters. The «i» button next to a field explains it.' },
+        { title: 'Check the calculation settings', text: 'At the top: thickness table, seam allowance, order margin and sheet size. They apply to every fitting.' },
+        { title: 'Read the results', text: 'The results table shows the area and thickness of each line. Below are the totals, the metal list by thickness (with the sheet count) and the insulation list.' },
+        { title: 'Set prices', text: 'In the metal and insulation lists, type a price per m² for each thickness and material. Metal is priced including the order margin.' },
+      ],
+      outro: 'Everything is computed in your browser; nothing is sent anywhere or kept after a page reload.',
+    },
+  },
   footer: 'Calculated by a method checked against a practising engineer’s Excel. Cutting coefficients are preliminary; the thickness table is chosen in the calculation settings.',
 };

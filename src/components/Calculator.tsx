@@ -2,6 +2,7 @@
 
 import { I18nProvider, useI18n } from "@/components/i18n";
 import { LangSwitch } from "./calculator/LangSwitch";
+import { HelpButton } from "./calculator/HelpDialog";
 import { FittingList } from "./calculator/FittingList";
 import { SettingsPanel } from "./calculator/SettingsPanel";
 import { ResultsTable } from "./calculator/ResultsTable";
@@ -37,7 +38,10 @@ function CalculatorPage() {
             <h1 className="text-2xl font-semibold">{dict.appTitle}</h1>
             <p className={`mt-1 text-sm ${mutedClass}`}>{dict.appSubtitle}</p>
           </div>
-          <LangSwitch />
+          <div className="flex shrink-0 flex-wrap justify-end gap-2">
+            <HelpButton />
+            <LangSwitch />
+          </div>
         </header>
 
         <SettingsPanel settings={settings} onChange={setSettings} issues={settingsIssues} />

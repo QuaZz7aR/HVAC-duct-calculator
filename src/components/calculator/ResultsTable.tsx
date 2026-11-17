@@ -2,6 +2,7 @@ import type { Calculation, RowOutcome } from "@/lib/form/calculate";
 import type { FormRow } from "@/lib/form/fields";
 import { useI18n } from "@/components/i18n";
 import { rowTitle } from "./format";
+import { Info } from "./Info";
 import { cardClass, mutedClass } from "./styles";
 
 interface Props {
@@ -58,12 +59,12 @@ export function ResultsTable({ rows, outcome, calc }: Props) {
               <tr>
                 <th className="py-1 pr-3">{dict.results.item}</th>
                 <th className="px-2 text-right">{dict.quantity}</th>
-                <th className="px-2 text-right">{dict.results.thickness}</th>
-                <th className="px-2 text-right">{dict.results.metalArea}</th>
+                <th className="px-2 text-right">{dict.results.thickness}<Info text={dict.help.columns.thickness} /></th>
+                <th className="px-2 text-right">{dict.results.metalArea}<Info text={dict.help.columns.metalArea} /></th>
                 <th className="px-2 text-right">{dict.results.metalAreaTotal}</th>
-                <th className="px-2 text-right">{dict.results.metalConsumption}</th>
+                <th className="px-2 text-right">{dict.results.metalConsumption}<Info text={dict.help.columns.metalConsumption} /></th>
                 <th className="px-2 text-right">{dict.results.metalConsumptionTotal}</th>
-                <th className="pl-2 text-right">{dict.results.insulationTotal}</th>
+                <th className="pl-2 text-right">{dict.results.insulationTotal}<Info text={dict.help.columns.insulation} /></th>
               </tr>
             </thead>
             <tbody>

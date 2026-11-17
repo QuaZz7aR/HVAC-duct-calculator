@@ -60,6 +60,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0043](adr/0043-tap-ring-in-the-metal-consumption.md) | Tap ring in the metal consumption | 2026-11-16 | Accepted (actual-area part superseded by [0044](adr/0044-tap-ring-in-the-actual-area.md)) |
 | [0044](adr/0044-tap-ring-in-the-actual-area.md) | Tap ring in the actual area | 2026-11-16 | Accepted |
 | [0045](adr/0045-straight-piece-length.md) | Straight ducts split into shop pieces | 2026-11-16 | Accepted (defaults `TODO(confirm)`) |
+| [0046](adr/0046-in-app-help.md) | In-app help: «i» explanations and a short how-to | 2026-11-17 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.
@@ -92,6 +93,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 - `npm audit`: 5 high findings, one chain (`braces` <- `micromatch` <- `fast-glob` <- `@next/eslint-plugin-next` <- `eslint-config-next`), dev tooling only, nothing ships to the browser or the server. No non-breaking fix exists: `npm audit fix --force` would downgrade `eslint-config-next` to 14.2.35 (Next 16 here). Wait for a `eslint-config-next` release that updates `fast-glob`/`micromatch`; do not run `npm audit fix`.
 - eslint 9 -> 10: blocked upstream. `eslint-config-next` 16.3.8 itself allows `eslint >=9`, but the plugins it bundles (`eslint-plugin-react` 7.37.5, `eslint-plugin-import` 2.32.0, `eslint-plugin-jsx-a11y` 6.10.2, all at their latest releases) declare peers only up to `^9`. Retry when those publish eslint 10 support; do not force it with overrides.
 - Share the equivalent-diameter helper between `aero.ts` (m) and `waste-factor.ts` (mm).
+- Help: GIFs or video guides (ADR 0046 has text only).
 - Sheet count has no nesting or offcut model (a plain ceil of area over sheet area); a cutting plan would need part shapes.
 - Next features (engineer's order, 2026-10-16): insulation (beta done, [0037](adr/0037-insulation-area-beta.md)), price (done as UAH per m² per thickness and material, [0038](adr/0038-price-per-square-metre.md); a price per fitting or per sheet, labour and a price list are deferred), then aerodynamics as a separate mode. XLSX export waits for the engineer's reference files.
 - A user-defined (custom) thickness table, which the engineer mentioned as a possible later step.

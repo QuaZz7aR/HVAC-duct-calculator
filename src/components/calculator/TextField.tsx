@@ -1,3 +1,4 @@
+import { Info } from "./Info";
 import { inputClass, labelClass } from "./styles";
 
 interface Props {
@@ -10,14 +11,17 @@ interface Props {
   action?: { label: string; onClick: () => void };
   /** Phone: take both columns of the card (a long label), so the neighbour is not misaligned. */
   wide?: boolean;
+  /** Explanation behind an «i» button after the label. */
+  info?: string;
 }
 
-export function TextField({ label, value, onChange, inputMode = "decimal", hint, action, wide }: Props) {
+export function TextField({ label, value, onChange, inputMode = "decimal", hint, action, wide, info }: Props) {
   return (
     // a column, with the input pushed to the bottom: a label that wraps to two lines does not lower its input below the neighbours
     <label className={`flex flex-col ${wide ? "col-span-2 sm:col-span-1" : ""}`}>
       <span className={labelClass}>
         {label}
+        {info && <Info text={info} />}
         {hint && <span className="ml-1 text-accent">({hint})</span>}
         {action && (
           <button type="button" className="ml-1 text-accent underline" onClick={action.onClick}>

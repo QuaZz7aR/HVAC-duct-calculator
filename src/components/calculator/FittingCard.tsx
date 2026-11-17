@@ -10,6 +10,7 @@ import { isoLegend } from "./sketch-spec";
 import { ErrorList, WarningList } from "./ErrorList";
 import { KindMenu } from "./KindMenu";
 import { buttonClass, cardClass, dangerButtonClass, labelClass, selectClass } from "./styles";
+import { Info } from "./Info";
 import { TextField } from "./TextField";
 
 interface Props {
@@ -99,13 +100,14 @@ export function FittingCard({ row, index, justAdded, showSketch, collapsed, onTo
               onChange={(v) => onValueChange(f.key, v)}
               hint={hint}
               action={action}
+              info={(dict.help.fields as Partial<Record<string, string>>)[f.key]}
               wide={isLongLabel(`${fieldLabel(f)} ${hint ? `(${hint})` : ""} ${action?.label ?? ""}`.trim())}
             />
           );
         })}
         {hasAllowance(row.kind) && (
           <label className="flex flex-col">
-            <span className={labelClass}>{dict.allowanceCount.field}</span>
+            <span className={labelClass}>{dict.allowanceCount.field}<Info text={dict.help.fields.allowanceCount} /></span>
             <select className={`mt-auto ${selectClass}`} value={row.allowanceCount || "2"} onChange={(e) => onPatch({ allowanceCount: e.target.value })}>
               {(["2", "1", "0"] as const).map((n) => (
                 <option key={n} value={n} className="bg-panel text-foreground">{dict.allowanceCount.options[n]}</option>
@@ -113,9 +115,9 @@ export function FittingCard({ row, index, justAdded, showSketch, collapsed, onTo
             </select>
           </label>
         )}
-        <TextField label={dict.quantity} inputMode="numeric" value={row.quantity} onChange={(quantity) => onPatch({ quantity })} />
+        <TextField label={dict.quantity} info={dict.help.fields.quantity} inputMode="numeric" value={row.quantity} onChange={(quantity) => onPatch({ quantity })} />
         <label className="col-span-2 flex flex-col sm:col-span-1">
-          <span className={labelClass}>{dict.insulation.field}</span>
+          <span className={labelClass}>{dict.insulation.field}<Info text={dict.help.fields.insulation} /></span>
           <select className={`mt-auto ${selectClass}`} value={row.insulation ?? ""} onChange={(e) => onPatch({ insulation: e.target.value })}>
             <option value="" className="bg-panel text-foreground">{dict.insulation.none}</option>
             {defaultConfig.insulation.materials.map((m) => (
