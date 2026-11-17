@@ -37,8 +37,8 @@ function groupByKind(rows: FormRow[]) {
 export function FittingList({ rows, view, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove, lastAddedId, twoColumns = false }: Props) {
   const { dict } = useI18n();
   const { sketchOpen, isFolded, setFoldedMany } = view;
-  // two-column mode (desktop, xl+): open cards and tiles share two equal columns
-  const gridClass = twoColumns ? "grid grid-cols-1 gap-3 sm:grid-cols-2" : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 min-[1800px]:grid-cols-5";
+  // two-column mode (desktop, xl+): four tile columns, an open card spans two of them
+  const gridClass = twoColumns ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 min-[1800px]:grid-cols-5";
 
   useEffect(() => {
     if (lastAddedId === null) return;

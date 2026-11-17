@@ -17,7 +17,7 @@ interface Props {
   row: FormRow;
   index: number;
   justAdded: boolean;
-  /** two-column mode: the open card takes one of two columns on xl screens */
+  /** two-column mode: the open card spans half the grid (2 of 4 columns) on xl screens */
   half?: boolean;
   showSketch: boolean;
   collapsed: boolean;
@@ -58,7 +58,7 @@ export function FittingCard({ row, index, justAdded, half, showSketch, collapsed
     );
   }
   return (
-    <div id={`fitting-${row.id}`} className={`${cardClass} col-span-full ${half ? "xl:col-span-1" : ""} scroll-mt-16 ${justAdded ? "flash-card" : ""}`}>
+    <div id={`fitting-${row.id}`} className={`${cardClass} col-span-full ${half ? "xl:col-span-2" : ""} scroll-mt-16 ${justAdded ? "flash-card" : ""}`}>
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <button
           type="button"
