@@ -46,7 +46,7 @@ const railAction =
   "grid grid-cols-[auto_1fr] items-center gap-2 rounded-md border border-line px-2.5 py-2 text-left text-sm leading-tight hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
 
 /** Desktop: a narrow rail of the kind groups, always in view; a group opens a list of its kinds beside the rail. */
-export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardView; hasRows: boolean }) {
+export function KindRail({ count, onAdd, view, hasRows, twoColumns = false, onColumns }: Props & { view: CardView; hasRows: boolean; twoColumns?: boolean; onColumns?: (two: boolean) => void }) {
   const { dict } = useI18n();
   const [open, setOpen] = useState<KindGroupId | null>(null);
   // top of the open group's button inside the sticky box: the list opens level with it
@@ -93,6 +93,10 @@ export function KindRail({ count, onAdd, view, hasRows }: Props & { view: CardVi
             <button type="button" onClick={() => view.setAllFolded(!view.allFolded)} className={railAction}>
               <FoldIcon folded={view.allFolded} className="h-5 w-8 text-accent" />
               {view.allFolded ? dict.palette.expandCards : dict.palette.collapseCards}
+            </button>
+            <button type="button" onClick={() => onColumns?.(!twoColumns)} aria-pressed={twoColumns} className={`${railAction} ${onColumns ? "hidden xl:grid" : "hidden"}`}>
+              <ColumnsIcon two={!twoColumns} className="h-5 w-8 text-accent" />
+              {twoColumns ? dict.palette.oneColumn : dict.palette.twoColumns}
             </button>
           </div>
         )}
@@ -202,5 +206,21 @@ export function Sheet({ found, query, setQuery, count, onClose, onAdd }: { found
         <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={dict.palette.search} aria-label={dict.palette.search} className={inputClass} />
       </div>
     </>
+  );
+}
+
+/** Two (or one) column bars: the layout the button switches to. */
+function ColumnsIcon({ two, className }: { two: boolean; className?: string }) {
+  return (
+    <svg viewBox="0 0 32 20" fill="none" stroke="currentColor" strokeWidth="1.6" className={className} aria-hidden="true">
+      {two ? (
+        <>
+          <rect x="4" y="3" width="11" height="14" rx="1.5" />
+          <rect x="17" y="3" width="11" height="14" rx="1.5" />
+        </>
+      ) : (
+        <rect x="4" y="3" width="24" height="14" rx="1.5" />
+      )}
+    </svg>
   );
 }

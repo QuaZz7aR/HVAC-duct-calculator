@@ -17,6 +17,8 @@ interface Props {
   row: FormRow;
   index: number;
   justAdded: boolean;
+  /** two-column mode: the open card takes one of two columns on xl screens */
+  half?: boolean;
   showSketch: boolean;
   collapsed: boolean;
   onToggleSketch: () => void;
@@ -31,7 +33,7 @@ interface Props {
 }
 
 /** One fitting: kind selector, the size fields that kind needs, quantity. */
-export function FittingCard({ row, index, justAdded, showSketch, collapsed, onToggleSketch, onToggleCollapsed, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove }: Props) {
+export function FittingCard({ row, index, justAdded, half, showSketch, collapsed, onToggleSketch, onToggleCollapsed, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove }: Props) {
   const { dict } = useI18n();
   const fieldLabel = (f: (typeof kindFields)[FittingKind][number]) =>
     `${dict.fields[f.key]}${f.optional ? ` (${dict.optional}: ${defaultConfig.reducerLengthMm})` : ""}`;
@@ -56,7 +58,7 @@ export function FittingCard({ row, index, justAdded, showSketch, collapsed, onTo
     );
   }
   return (
-    <div id={`fitting-${row.id}`} className={`${cardClass} col-span-full scroll-mt-16 ${justAdded ? "flash-card" : ""}`}>
+    <div id={`fitting-${row.id}`} className={`${cardClass} col-span-full ${half ? "xl:col-span-1" : ""} scroll-mt-16 ${justAdded ? "flash-card" : ""}`}>
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <button
           type="button"

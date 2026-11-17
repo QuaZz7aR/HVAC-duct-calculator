@@ -33,6 +33,8 @@ export const en: Dictionary = {
     viewTitle: 'View',
     toTop: 'To top',
     collapseCards: 'Fold all fittings',
+    twoColumns: 'Fittings in two columns',
+    oneColumn: 'Fittings in one column',
     expandCards: 'Expand all fittings',
     hintRail: 'To add a fitting, pick its type in the panel on the left.',
     hintBar: 'To add a fitting, tap “+” at the bottom right.',
