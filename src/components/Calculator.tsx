@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 
 import { I18nProvider, useI18n } from "@/components/i18n";
 import { LangSwitch } from "./calculator/LangSwitch";
@@ -28,10 +29,11 @@ function CalculatorPage() {
   const { rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, removeRow, prices, costs, setMetalPrice, setInsulationPrice } = useCalculator();
 
   const view = useCardView(rows);
+  const [twoColumns, setTwoColumns] = useState(false);
 
   return (
-    <div className="mx-auto w-full max-w-7xl flex-1 gap-6 px-4 py-8 lg:grid lg:grid-cols-[15rem_minmax(0,1fr)]">
-      <KindRail count={countOf} onAdd={addRow} view={view} hasRows={rows.length > 0} />
+    <div className="mx-auto w-full max-w-[120rem] flex-1 gap-6 px-4 py-8 xl:px-8 lg:grid lg:grid-cols-[15rem_minmax(0,1fr)]">
+      <KindRail count={countOf} onAdd={addRow} view={view} hasRows={rows.length > 0} twoColumns={twoColumns} onColumns={setTwoColumns} />
       <main className="min-w-0 space-y-6">
         <header className="flex items-start justify-between gap-4">
           <div>
@@ -48,6 +50,7 @@ function CalculatorPage() {
         <FittingList
           rows={rows}
           view={view}
+          twoColumns={twoColumns}
           lastAddedId={lastAddedId}
           outcome={outcome}
           onKindChange={setKind}
