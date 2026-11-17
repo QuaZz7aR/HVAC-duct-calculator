@@ -29,16 +29,22 @@ export function Info({ text }: { text: string }) {
   };
 
   return (
-    <span ref={ref} className="inline-block align-baseline">
+    <span ref={ref} className="inline whitespace-nowrap">
+      {"\u2060" /* word joiner: the icon stays on the line of the last word */}
       <button
         type="button"
-        className="ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full border border-current align-[-2px] text-[10px] font-semibold not-italic leading-none text-accent hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent"
+        className="ml-1 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full align-[-3px] text-accent hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
         aria-label={dict.help.info}
         aria-expanded={pos !== null}
         aria-controls={pos ? id : undefined}
         onClick={toggle}
       >
-        i
+        {/* drawn, not a font glyph: a letter sits off centre by the font's own metrics */}
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" className="block">
+          <circle cx="8" cy="8" r="7.25" fill="none" stroke="currentColor" strokeWidth="1.5" />
+          <circle cx="8" cy="4.9" r="1" fill="currentColor" />
+          <rect x="7.25" y="6.9" width="1.5" height="5" rx="0.75" fill="currentColor" />
+        </svg>
       </button>
       {pos && (
         <span
