@@ -42,7 +42,8 @@ function KindItem({ kind, count, onPick }: { kind: FittingKind; count: number; o
   );
 }
 
-const railBox = "flex flex-col gap-1 rounded-lg border border-line bg-panel p-1.5";
+// sections of the one rail panel, split by a line
+const railBox = "flex flex-col gap-1 border-t border-line pt-1.5 first:border-t-0 first:pt-0";
 
 const railAction =
   "grid justify-items-center gap-1 rounded-md border border-transparent px-1 py-1.5 text-center text-xs leading-tight text-muted hover:border-line hover:text-foreground hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
@@ -61,12 +62,7 @@ export function KindRail({ count, onAdd, view, hasRows, twoColumns = false, onCo
     <nav ref={ref} aria-label={dict.palette.title} className="hidden lg:block">
       {/* the list opens inside the sticky box, so it stays beside the rail wherever the page is scrolled */}
       <div ref={box} className="sticky top-4">
-      <div className="flex max-h-[calc(100vh-2rem)] flex-col gap-2 overflow-y-auto">
-        {/* help and language sit at the top of the rail on desktop, beside the work; the phone keeps them in the page header */}
-        <div className={`${railBox} items-center gap-2 py-2`}>
-          <HelpButton />
-          <LangSwitch />
-        </div>
+      <div className="flex h-[calc(100vh-2rem)] flex-col gap-1.5 overflow-y-auto rounded-lg border border-line bg-panel p-1.5">
       <div className={railBox}>
         <p className="grid justify-items-center gap-0.5 border-b border-line px-0.5 pb-2 pt-1 text-center text-xs font-semibold leading-tight">
           <span aria-hidden="true" className="grid h-8 w-8 place-items-center rounded-full bg-accent text-xl leading-none text-background">+</span>
@@ -112,6 +108,11 @@ export function KindRail({ count, onAdd, view, hasRows, twoColumns = false, onCo
             <UpIcon className="h-5 w-8 text-accent" />
             {dict.palette.toTop}
           </button>
+        </div>
+        {/* help and language sit at the bottom of the rail on desktop, beside the work; the phone keeps them in the page header */}
+        <div className={`${railBox} mt-auto items-center gap-2 pb-1`}>
+          <HelpButton />
+          <LangSwitch />
         </div>
       </div>
       {group && (
