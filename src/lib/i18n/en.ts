@@ -12,7 +12,7 @@ export const en: Dictionary = {
   symbols: sym,
   locale: 'en-GB',
   decimal: '.',
-  language: { label: 'Interface language', uk: 'УКР', en: 'EN' },
+  language: { short: 'Language', label: 'Interface language', uk: 'УКР', en: 'EN' },
   appTitle: 'Duct calculator',
   appSubtitle: 'List of duct fittings → sheet metal area and thickness. Everything is calculated in your browser.',
   settings: {

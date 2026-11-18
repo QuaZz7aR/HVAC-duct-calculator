@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import type { FittingKind } from "@/lib/form/fields";
 import { kindGroups, searchKinds, type KindGroupId } from "@/lib/form/kind-groups";
 import { useI18n } from "@/components/i18n";
+import { HelpButton } from "./HelpDialog";
 import { KindGlyph } from "./KindGlyph";
+import { LangRailButton } from "./LangSwitch";
 import { scrollToTop } from "./scrollToTop";
 import { FoldIcon, SketchesIcon, UpIcon } from "./ViewIcons";
 import { buttonClass, inputClass } from "./styles";
@@ -40,12 +42,13 @@ function KindItem({ kind, count, onPick }: { kind: FittingKind; count: number; o
   );
 }
 
-const railBox = "flex flex-col gap-1 rounded-lg border border-line bg-panel p-1.5";
+// sections of the one rail panel, split by a line
+const railBox = "flex flex-col gap-1 border-t border-line pt-1.5 first:border-t-0 first:pt-0";
 
 const railAction =
-  "grid grid-cols-[auto_1fr] items-center gap-2 rounded-md border border-line px-2.5 py-2 text-left text-sm leading-tight hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
+  "grid justify-items-center gap-1 rounded-md border border-transparent px-1 py-1.5 text-center text-xs leading-tight text-muted hover:border-line hover:text-foreground hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
 
-/** Desktop: a narrow rail of the kind groups, always in view; a group opens a list of its kinds beside the rail. */
+/** Desktop: a narrow single-column rail (icon over label) of the kind groups, view toggles, help and language, always in view; a group opens a list of its kinds beside the rail. */
 export function KindRail({ count, onAdd, view, hasRows, twoColumns = false, onColumns }: Props & { view: CardView; hasRows: boolean; twoColumns?: boolean; onColumns?: (two: boolean) => void }) {
   const { dict } = useI18n();
   const [open, setOpen] = useState<KindGroupId | null>(null);
@@ -59,13 +62,13 @@ export function KindRail({ count, onAdd, view, hasRows, twoColumns = false, onCo
     <nav ref={ref} aria-label={dict.palette.title} className="hidden lg:block">
       {/* the list opens inside the sticky box, so it stays beside the rail wherever the page is scrolled */}
       <div ref={box} className="sticky top-4">
-      <div className="flex max-h-[calc(100vh-2rem)] flex-col gap-2 overflow-y-auto">
+      <div className="flex h-[calc(100vh-2rem)] flex-col gap-1.5 overflow-y-auto rounded-lg border border-line bg-panel p-1.5">
       <div className={railBox}>
-        <p className="grid justify-items-center gap-0.5 border-b border-line px-0.5 pb-2.5 pt-1 text-center text-sm font-semibold leading-tight">
-          <span aria-hidden="true" className="grid h-8 w-8 place-items-center rounded-full bg-accent text-xl leading-none text-background">+</span>
+        <p className="grid justify-items-center gap-0.5 border-b border-line px-0.5 pb-2 pt-1 text-center text-sm font-semibold leading-tight">
+          <span aria-hidden="true" className="grid h-7 w-7 place-items-center rounded-full bg-accent text-xl leading-none text-background">+</span>
           {dict.palette.title}
         </p>
-        <div className="grid grid-cols-2 gap-1">
+        <div className="grid grid-cols-1 gap-0.5">
         {kindGroups.map((g) => (
           <button
             key={g.id}
@@ -75,9 +78,9 @@ export function KindRail({ count, onAdd, view, hasRows, twoColumns = false, onCo
               setTop(box.current ? e.currentTarget.getBoundingClientRect().top - box.current.getBoundingClientRect().top : 0);
               setOpen(open === g.id ? null : g.id);
             }}
-            className={`grid justify-items-center gap-1 rounded-md border px-0.5 py-2 text-sm leading-tight hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent ${open === g.id ? "border-line bg-accent-soft text-foreground" : "border-transparent text-muted"}`}
+            className={`grid justify-items-center gap-1 rounded-md border px-0.5 py-0.5 text-sm leading-tight hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent ${open === g.id ? "border-line bg-accent-soft text-foreground" : "border-transparent text-muted"}`}
           >
-            <KindGlyph kind={g.kinds[0]} className="h-9 w-[3.25rem] text-accent" />
+            <KindGlyph kind={g.kinds[0]} className="h-7 w-11 text-accent" />
             <span>{dict.kindGroups[g.id]}</span>
           </button>
         ))}
@@ -85,7 +88,7 @@ export function KindRail({ count, onAdd, view, hasRows, twoColumns = false, onCo
       </div>
         {hasRows && (
           <div className={railBox}>
-            <p className="px-0.5 pt-0.5 text-center text-xs uppercase tracking-wider text-muted">{dict.palette.viewTitle}</p>
+            <p className="px-0.5 pt-0.5 text-center text-[0.65rem] uppercase tracking-wider text-muted">{dict.palette.viewTitle}</p>
             <button type="button" onClick={() => view.setAllSketches(!view.allSketchesOpen)} className={railAction}>
               <SketchesIcon crossed={view.allSketchesOpen} className="h-5 w-8 text-accent" />
               {view.allSketchesOpen ? dict.hideAllSketches : dict.showAllSketches}
@@ -105,6 +108,11 @@ export function KindRail({ count, onAdd, view, hasRows, twoColumns = false, onCo
             <UpIcon className="h-5 w-8 text-accent" />
             {dict.palette.toTop}
           </button>
+        </div>
+        {/* help and language sit at the bottom of the rail on desktop, beside the work; the phone keeps them in the page header */}
+        <div className={`${railBox} mt-auto pb-1`}>
+          <HelpButton rail />
+          <LangRailButton />
         </div>
       </div>
       {group && (

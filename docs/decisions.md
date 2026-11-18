@@ -62,6 +62,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0045](adr/0045-straight-piece-length.md) | Straight ducts split into shop pieces | 2026-11-16 | Accepted (defaults `TODO(confirm)`) |
 | [0046](adr/0046-in-app-help.md) | In-app help: «i» explanations and a short how-to | 2026-11-17 | Accepted |
 | [0047](adr/0047-wider-desktop-layout.md) | Wider desktop layout (page cap 1920 px, up to 5 tile columns, optional two-column cards) | 2026-11-17 | Accepted |
+| [0048](adr/0048-narrow-rail-with-help-and-language.md) | Narrow side rail (icon over label) with help and language at its bottom | 2026-11-17 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.
