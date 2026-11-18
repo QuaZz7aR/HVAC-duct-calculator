@@ -110,7 +110,7 @@ export function FittingCard({ row, index, justAdded, half, showSketch, collapsed
         {hasAllowance(row.kind) && (
           <label className="flex flex-col justify-end">
             <span className={labelClass}>{dict.allowanceCount.field}<Info text={dict.help.fields.allowanceCount} /></span>
-            <select className={`mt-auto ${selectClass}`} value={row.allowanceCount || "2"} onChange={(e) => onPatch({ allowanceCount: e.target.value })}>
+            <select className={selectClass} value={row.allowanceCount || "2"} onChange={(e) => onPatch({ allowanceCount: e.target.value })}>
               {(["2", "1", "0"] as const).map((n) => (
                 <option key={n} value={n} className="bg-panel text-foreground">{dict.allowanceCount.options[n]}</option>
               ))}
@@ -120,7 +120,7 @@ export function FittingCard({ row, index, justAdded, half, showSketch, collapsed
         <TextField label={dict.quantity} info={dict.help.fields.quantity} inputMode="numeric" value={row.quantity} onChange={(quantity) => onPatch({ quantity })} />
         <label className="col-span-2 flex flex-col justify-end sm:col-span-1">
           <span className={labelClass}>{dict.insulation.field}<Info text={dict.help.fields.insulation} /></span>
-          <select className={`mt-auto ${selectClass}`} value={row.insulation ?? ""} onChange={(e) => onPatch({ insulation: e.target.value })}>
+          <select className={selectClass} value={row.insulation ?? ""} onChange={(e) => onPatch({ insulation: e.target.value })}>
             <option value="" className="bg-panel text-foreground">{dict.insulation.none}</option>
             {defaultConfig.insulation.materials.map((m) => (
               <option key={m.code} value={m.code} className="bg-panel text-foreground">{dict.insulation.materials[m.code] ?? m.code}</option>
