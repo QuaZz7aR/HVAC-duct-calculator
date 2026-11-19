@@ -9,6 +9,7 @@ import { insertIndex } from "@/lib/form/kind-groups";
 import { moveBlock, moveBy } from "@/lib/form/order";
 import { defaultValues, presetRow } from "@/lib/form/defaults";
 import { type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
+import { toFormRows, type ImportRow } from "@/lib/import/mapping";
 
 /**
  * The page shows areas only; pressure losses are hidden for now (docs/decisions.md). The core still needs a flow and
@@ -88,11 +89,19 @@ export function useCalculator() {
     setLastAddedId(copyId);
     return copyId;
   };
+  // rows read from a spec table (ADR 0061), in file order: they replace the list or go after it
+  const importRows = (imported: ImportRow[], replace: boolean) => {
+    const added = toFormRows(imported, nextId.current, built.config);
+    nextId.current += added.length;
+    setRows((rs) => (replace ? added : [...rs, ...added]));
+    if (added.length) setLastAddedId(added[0].id);
+    return added.length;
+  };
   const removeRow = (id: number) => setRows((rs) => rs.filter((r) => r.id !== id));
   // manual order (ADR 0049): the list, the results and the numbers follow the rows array
   const moveRow = (id: number, step: number) => setRows((rs) => moveBy(rs, id, step));
   // a card or a whole section (its ids) takes the place of the target row
   const dropRows = (ids: number[], targetId: number) => setRows((rs) => moveBlock(rs, ids, targetId));
 
-  return { rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice };
+  return { rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice };
 }
