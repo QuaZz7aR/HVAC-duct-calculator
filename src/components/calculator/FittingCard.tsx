@@ -133,14 +133,11 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
         <h3 className="min-w-0 flex-1 self-center text-base font-medium leading-snug">
           <span className="text-muted">{position}.</span> {kindTitle(row.kind, dict)}
         </h3>
-        {/* phone: a line of its own, first of the buttons (ADR 0060) */}
-        <div className="w-full sm:w-auto">
-          <button type="button" className={`${foldButtonClass} sm:mr-1`} onClick={onToggleCollapsed}>
+        <div className="flex max-w-full flex-wrap gap-2">
+          <button type="button" className={foldButtonClass} onClick={onToggleCollapsed}>
             <svg aria-hidden="true" viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10l4-4 4 4" /></svg>
             {dict.collapseCard}
           </button>
-        </div>
-        <div className="flex max-w-full flex-wrap gap-2">
           {moveButtons}
           <button type="button" className={buttonClass} onClick={onClone}>
             {dict.cloneItem}
