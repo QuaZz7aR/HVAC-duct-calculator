@@ -20,7 +20,25 @@ export function InsulationList({ groups, prices, costs, onPrice }: Props) {
       {groups.length === 0 ? (
         <p className={`text-sm ${mutedClass}`}>{dict.insulation.empty}</p>
       ) : (
-        <div className="overflow-x-auto">
+        <>
+        {/* phone: one block per material, label beside value (ADR 0058) */}
+        <ul className="space-y-2 sm:hidden">
+          {groups.map((g, i) => {
+            const name = dict.insulation.materials[g.code] ?? g.code;
+            const cost = costs[i];
+            return (
+              <li key={g.code} className="rounded-md border border-line p-2 text-sm">
+                <p className="mb-1 font-medium">{name}</p>
+                <dl className="space-y-1">
+                  <div className="flex justify-between gap-2"><dt className={mutedClass}>{dict.insulation.area}</dt><dd className="tabular-nums">{fmt(g.area)}</dd></div>
+                  <div className="flex items-center justify-between gap-2"><dt className={mutedClass}>{dict.price.perM2}<Info text={dict.help.columns.price} /></dt><dd><PriceInput label={dict.price.insulationLabel(name)} value={prices[g.code] ?? ""} onChange={(v) => onPrice(g.code, v)} /></dd></div>
+                  <div className="flex justify-between gap-2"><dt className={mutedClass}>{dict.price.cost}</dt><dd className="tabular-nums font-medium">{cost === undefined ? dict.totals.noPrice : fmt(cost, 2)}</dd></div>
+                </dl>
+              </li>
+            );
+          })}
+        </ul>
+        <div className="hidden overflow-x-auto sm:block">
           <table className="w-full text-sm">
             <thead className={`text-left text-xs ${mutedClass}`}>
               <tr>
@@ -48,6 +66,7 @@ export function InsulationList({ groups, prices, costs, onPrice }: Props) {
             </tbody>
           </table>
         </div>
+        </>
       )}
       <p className={`mt-2 text-xs ${mutedClass}`}>{dict.insulation.note}</p>
     </section>

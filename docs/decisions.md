@@ -72,6 +72,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0055](adr/0055-sections-in-the-results.md) | The results table shows the list sections with their sums | 2026-11-19 | Accepted |
 | [0056](adr/0056-clone-keeps-the-card-view.md) | A clone opens folded or open, as its original | 2026-11-19 | Accepted |
 | [0057](adr/0057-section-highlight-after-results-jump.md) | A section is highlighted after a jump from its results title | 2026-11-19 | Accepted |
+| [0058](adr/0058-phone-cards-instead-of-tables.md) | On a phone the results, sheet list and insulation list are blocks, not tables | 2026-11-19 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.

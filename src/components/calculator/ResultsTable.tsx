@@ -92,6 +92,55 @@ function SectionRows({ kind, items, outcome }: { kind: FormRow["kind"]; items: {
   );
 }
 
+/** Phone: one block per row, label beside value; a section keeps its title and sums (ADR 0058). */
+function PhoneResults({ rows, outcome }: { rows: FormRow[]; outcome: Props["outcome"] }) {
+  const { dict, fmt } = useI18n();
+  const line = (label: string, value: string, strong = false) => (
+    <div className="flex justify-between gap-2"><dt className={mutedClass}>{label}</dt><dd className={`tabular-nums ${strong ? "font-medium" : ""}`}>{value}</dd></div>
+  );
+  return (
+    <div className="space-y-3 sm:hidden">
+      {groupRuns(rows).map(({ kind, items }) => {
+        const ok = items.flatMap(({ row }) => { const o = outcome(row.id); return o?.ok ? [o.result] : []; });
+        const sum = (f: (r: (typeof ok)[number]) => number) => fmt(ok.reduce((a, r) => a + f(r), 0));
+        const section = items.length > 1;
+        return (
+          <div key={items[0].row.id} className={section ? "space-y-2 rounded-md bg-accent-soft/40 p-2" : ""}>
+            {section && (
+              <button type="button" className="text-left text-sm font-medium hover:text-accent" onClick={() => scrollToSection(items[0].row.id)}>
+                <span className="text-muted">{positionSpan(items.map((i) => positionLabel(i.row, i.index)))}.</span> {kindTitle(kind, dict)} <span className="text-muted">× {items.length}</span>
+                <span className={`block text-xs font-normal ${mutedClass}`}>{dict.results.metalAreaTotal}: {sum((r) => r.metalAreaTotal)} · {dict.results.metalConsumptionTotal}: {sum((r) => r.metalConsumptionTotal)}</span>
+              </button>
+            )}
+            {items.map(({ row, index }) => {
+              const o = outcome(row.id);
+              const r = o?.ok ? o.result : undefined;
+              const p = r?.pieces;
+              return (
+                <div key={row.id} className="rounded-md border border-line bg-panel p-2 text-sm">
+                  <RowName row={row} index={index} />
+                  {p && <span className={`block text-xs ${mutedClass}`}>{dict.results.pieces(String(p.full), metres(p.pieceMm, dict.locale), p.restMm > 0 ? metres(p.restMm, dict.locale) : null)}</span>}
+                  {r ? (
+                    <dl className="mt-1 space-y-0.5">
+                      {line(dict.quantity, String(r.quantity))}
+                      {line(dict.results.thickness, fmt(r.thicknessMm, 2))}
+                      {line(dict.results.metalArea, fmt(r.metalArea))}
+                      {line(dict.results.metalAreaTotal, fmt(r.metalAreaTotal), true)}
+                      {r.consumptionDiffers && line(dict.results.metalConsumption, fmt(r.metalConsumption))}
+                      {r.consumptionDiffers && line(dict.results.metalConsumptionTotal, fmt(r.metalConsumptionTotal), true)}
+                      {r.insulation && line(dict.results.insulationTotal, fmt(r.insulation.areaTotal))}
+                    </dl>
+                  ) : <p className={mutedClass}>—</p>}
+                </div>
+              );
+            })}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export function ResultsTable({ rows, outcome, calc }: Props) {
   const { dict } = useI18n();
   return (
@@ -100,7 +149,9 @@ export function ResultsTable({ rows, outcome, calc }: Props) {
       {calc.rows.length === 0 ? (
         <p className={`text-sm ${mutedClass}`}>{dict.results.empty}</p>
       ) : (
-        <div className="overflow-x-auto">
+        <>
+        <PhoneResults rows={rows} outcome={outcome} />
+        <div className="hidden overflow-x-auto sm:block">
           <table className="w-full text-sm">
             <thead className={`text-left text-xs ${mutedClass}`}>
               <tr>
@@ -121,6 +172,7 @@ export function ResultsTable({ rows, outcome, calc }: Props) {
             </tbody>
           </table>
         </div>
+        </>
       )}
       {calc.rows.some((o) => o.ok && o.result.consumptionDiffers) && (
         <p className={`mt-2 text-xs ${mutedClass}`}>{dict.results.consumptionNote}</p>
