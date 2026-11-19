@@ -175,6 +175,7 @@ export const uk = {
   results: {
     title: 'Результати по позиціях',
     item: 'Деталь',
+    goToCard: 'Показати картку деталі',
     thickness: 'Товщина металу, мм',
     metalArea: 'Фактична площа, м² (шт.)',
     metalAreaTotal: 'Сума фактичної площі, м²',

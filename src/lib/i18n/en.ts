@@ -156,6 +156,7 @@ export const en: Dictionary = {
   results: {
     title: 'Results by item',
     item: 'Fitting',
+    goToCard: 'Show the fitting card',
     thickness: 'Sheet thickness, mm',
     metalArea: 'Actual area, m² (each)',
     metalAreaTotal: 'Total actual area, m²',

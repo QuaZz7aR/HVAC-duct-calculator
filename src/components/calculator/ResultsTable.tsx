@@ -2,7 +2,7 @@ import type { Calculation, RowOutcome } from "@/lib/form/calculate";
 import type { FormRow } from "@/lib/form/fields";
 import { useI18n } from "@/components/i18n";
 import { positionLabel } from "@/lib/form/order";
-import { rowTitle } from "./format";
+import { rowTitle, sizeLabel } from "./format";
 import { Info } from "./Info";
 import { cardClass, mutedClass } from "./styles";
 
@@ -17,12 +17,32 @@ const metres = (mm: number, locale: string) => (mm / 1000).toLocaleString(locale
 
 const numCell = "px-2 text-right tabular-nums";
 
+/** Position, kind and the sizes; a click scrolls to the card, so rows of one kind (a clone) can be told apart and found. */
+function RowName({ row, index }: { row: FormRow; index: number }) {
+  const { dict } = useI18n();
+  const sizes = sizeLabel(row, dict);
+  return (
+    <button
+      type="button"
+      className="text-left hover:text-accent hover:underline"
+      title={dict.results.goToCard}
+      onClick={() => {
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        document.getElementById(`fitting-${row.id}`)?.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+      }}
+    >
+      {positionLabel(row, index)}. {rowTitle(row, dict)}
+      {sizes && <span className={`block font-mono text-xs ${mutedClass}`}>{sizes}</span>}
+    </button>
+  );
+}
+
 function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outcome: RowOutcome | undefined }) {
   const { dict, fmt } = useI18n();
   if (!outcome?.ok) {
     return (
       <tr className="border-t border-line text-muted hover:bg-accent-soft">
-        <td className="py-1 pr-3">{positionLabel(row, index)}. {rowTitle(row, dict)}</td>
+        <td className="py-1 pr-3"><RowName row={row} index={index} /></td>
         <td colSpan={7} className="px-2 text-right">—</td>
       </tr>
     );
@@ -32,7 +52,7 @@ function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outco
   return (
     <tr className="border-t border-line hover:bg-accent-soft">
       <td className="py-1 pr-3">
-        {positionLabel(row, index)}. {rowTitle(row, dict)}
+        <RowName row={row} index={index} />
         {p && <span className={`block text-xs ${mutedClass}`}>{dict.results.pieces(String(p.full), metres(p.pieceMm, dict.locale), p.restMm > 0 ? metres(p.restMm, dict.locale) : null)}</span>}
       </td>
       <td className={numCell}>{r.quantity}</td>
