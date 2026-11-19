@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { RowOutcome } from "@/lib/form/calculate";
 import type { FieldKey, FittingKind, FormRow } from "@/lib/form/fields";
 import { useI18n } from "@/components/i18n";
@@ -49,6 +49,36 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
   const [drag, setDrag] = useState<{ id: number; overId: number; prevId?: number } | null>(null);
   const rows = drag ? moveOnto(listRows, drag.id, drag.overId) : listRows;
 
+  // cards glide to their new place when the order changes (FLIP): measure after the change, start each card at its old place, let it slide to zero
+  const orderKey = rows.map((r) => r.id).join(",");
+  const places = useRef(new Map<string, DOMRect>());
+  const lastOrder = useRef(orderKey);
+  useLayoutEffect(() => {
+    const cards = [...document.querySelectorAll<HTMLElement>("#items [id^=fitting-]")];
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (lastOrder.current !== orderKey && !reduce) {
+      for (const el of cards) {
+        const old = places.current.get(el.id);
+        if (!old) continue;
+        const now = el.getBoundingClientRect();
+        const dx = old.left - now.left;
+        const dy = old.top - now.top;
+        if (!dx && !dy) continue;
+        el.style.transition = "none";
+        el.style.transform = `translate(${dx}px, ${dy}px)`;
+        requestAnimationFrame(() => {
+          el.style.transition = "transform 200ms ease";
+          el.style.transform = "";
+        });
+      }
+    }
+    lastOrder.current = orderKey;
+  });
+  // the old places are taken just before an order change, so scrolling and folding in between do not count
+  const remember = () => {
+    places.current = new Map([...document.querySelectorAll<HTMLElement>("#items [id^=fitting-]")].map((el) => [el.id, el.getBoundingClientRect()]));
+  };
+
   useEffect(() => {
     if (lastAddedId === null) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -63,13 +93,19 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
       position={positionLabel(row, index)}
       first={index === 0}
       last={index === rows.length - 1}
-      onMove={(step) => onMove(row.id, step)}
+      onMove={(step) => {
+        remember();
+        onMove(row.id, step);
+      }}
       dragging={drag?.id === row.id}
       onDragStart={() => setDrag({ id: row.id, overId: row.id })}
       onDragEnd={() => setDrag(null)}
       // the dragged card and the last two cards it displaced are ignored: after the preview move either may sit under the pointer, so the list does not flicker back and forth
       onDragOverHere={() => {
-        if (drag && drag.id !== row.id && drag.overId !== row.id && drag.prevId !== row.id) setDrag({ ...drag, overId: row.id, prevId: drag.overId });
+        if (drag && drag.id !== row.id && drag.overId !== row.id && drag.prevId !== row.id) {
+          remember();
+          setDrag({ ...drag, overId: row.id, prevId: drag.overId });
+        }
       }}
       justAdded={row.id === lastAddedId}
       showSketch={sketchOpen(row.id)}
