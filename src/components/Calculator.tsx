@@ -65,8 +65,8 @@ function CalculatorPage() {
         <ResultsTable rows={rows} outcome={outcome} calc={calc} />
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <Totals calc={calc} pricing={costs} priceIssues={costs.issues} />
-          <SheetList groups={calc.sheetList} prices={prices.metal} costs={costs.metal} onPrice={setMetalPrice} />
+          <Totals calc={calc} pricing={costs} priceIssues={costs.issues} settings={settings} onSettings={setSettings} />
+          <SheetList groups={calc.sheetList} prices={prices.metal} costs={costs.metal} onPrice={setMetalPrice} settings={settings} onSettings={setSettings} />
           <InsulationList groups={calc.insulationList} prices={prices.insulation} costs={costs.insulation} onPrice={setInsulationPrice} />
         </div>
 
