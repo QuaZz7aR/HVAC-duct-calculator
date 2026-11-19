@@ -9,7 +9,7 @@ import { FittingSketch } from "./FittingSketch";
 import { isoLegend } from "./sketch-spec";
 import { ErrorList, WarningList } from "./ErrorList";
 import { KindMenu } from "./KindMenu";
-import { buttonClass, cardClass, dangerButtonClass, labelClass, selectClass } from "./styles";
+import { buttonClass, cardClass, dangerButtonClass, foldButtonClass, labelClass, selectClass } from "./styles";
 import { Info } from "./Info";
 import { TextField } from "./TextField";
 
@@ -135,9 +135,6 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
         </h3>
         <div className="flex max-w-full flex-wrap gap-2">
           {moveButtons}
-          <button type="button" className={buttonClass} onClick={onToggleCollapsed}>
-            {dict.collapseCard}
-          </button>
           <button type="button" className={buttonClass} onClick={onClone}>
             {dict.cloneItem}
           </button>
@@ -146,6 +143,10 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
             {dict.removeItem}
           </button>
         </div>
+        <button type="button" className={`${foldButtonClass} sm:ml-2`} onClick={onToggleCollapsed}>
+          <svg aria-hidden="true" viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10l4-4 4 4" /></svg>
+          {dict.collapseCard}
+        </button>
       </div>
       {/* phone: the open sketch sits right under the thumbnail (ADR 0059); from sm up it stays below the inputs */}
       {showSketch && <div className="mb-4 sm:hidden [&>figure]:mt-0">{sketch}</div>}
