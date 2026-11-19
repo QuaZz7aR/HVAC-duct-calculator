@@ -229,7 +229,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
           const next = runs[r + 1]?.items.at(-1)?.row.id;
           return (
             // the dragged section keeps its key while the preview merges it with a neighbour, so its handle stays mounted
-            <div key={`${kind}-${drag && ids.includes(drag.ids[0]) ? drag.ids[0] : items[0].row.id}`} id={`section-${items[0].row.id}`} className={`col-span-full space-y-3 rounded-lg border border-line p-3 ${dragging ? "border-2 border-dashed !border-accent bg-accent-soft opacity-60" : ""}`}>
+            <div key={`${kind}-${drag && ids.includes(drag.ids[0]) ? drag.ids[0] : items[0].row.id}`} id={`section-${items[0].row.id}`} className={`col-span-full scroll-mt-16 space-y-3 rounded-lg border border-line p-3 ${dragging ? "border-2 border-dashed !border-accent bg-accent-soft opacity-60" : ""}`}>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span
                   draggable

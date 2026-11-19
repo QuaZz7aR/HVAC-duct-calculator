@@ -25,7 +25,26 @@ export function SheetList({ groups, prices, costs, onPrice, settings, onSettings
         <ThicknessTableField settings={settings} onChange={onSettings} />
         <SheetField settings={settings} onChange={onSettings} />
       </div>
-      <div className="overflow-x-auto">
+      {/* phone: one block per thickness, label beside value (ADR 0058) */}
+      <ul className="space-y-2 sm:hidden">
+        {groups.map((g, i) => {
+          const key = priceKey(g.thicknessMm);
+          const cost = costs[i];
+          return (
+            <li key={g.thicknessMm} className="rounded-md border border-line p-2 text-sm">
+              <p className="mb-1 font-medium">{dict.sheetList.thickness}: {fmt(g.thicknessMm, 2)}</p>
+              <dl className="space-y-1">
+                <div className="flex justify-between gap-2"><dt className={mutedClass}>{dict.sheetList.area}</dt><dd className="tabular-nums">{fmt(g.area)}</dd></div>
+                <div className="flex justify-between gap-2"><dt className={mutedClass}>{dict.sheetList.orderArea}<Info text={dict.help.columns.orderArea} /></dt><dd className="tabular-nums">{fmt(g.orderArea)}</dd></div>
+                <div className="flex justify-between gap-2"><dt className={mutedClass}>{dict.sheetList.sheets}<Info text={dict.help.columns.sheets} /></dt><dd className="tabular-nums">{g.sheets}</dd></div>
+                <div className="flex items-center justify-between gap-2"><dt className={mutedClass}>{dict.price.perM2}<Info text={dict.help.columns.price} /></dt><dd><PriceInput label={dict.price.metalLabel(fmt(g.thicknessMm, 2))} value={prices[key] ?? ""} onChange={(v) => onPrice(key, v)} /></dd></div>
+                <div className="flex justify-between gap-2"><dt className={mutedClass}>{dict.price.cost}</dt><dd className="tabular-nums font-medium">{cost === undefined ? dict.totals.noPrice : fmt(cost, 2)}</dd></div>
+              </dl>
+            </li>
+          );
+        })}
+      </ul>
+      <div className="hidden overflow-x-auto sm:block">
         <table className="w-full text-sm">
           <thead className={`text-left text-xs ${mutedClass}`}>
             <tr>
