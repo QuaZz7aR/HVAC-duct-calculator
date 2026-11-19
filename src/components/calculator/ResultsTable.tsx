@@ -1,5 +1,6 @@
 import type { Calculation, RowOutcome } from "@/lib/form/calculate";
 import type { FormRow } from "@/lib/form/fields";
+import { scrollToCard } from "./highlightCard";
 import { useI18n } from "@/components/i18n";
 import { positionLabel } from "@/lib/form/order";
 import { rowTitle, sizeLabel } from "./format";
@@ -26,10 +27,7 @@ function RowName({ row, index }: { row: FormRow; index: number }) {
       type="button"
       className="text-left hover:text-accent hover:underline"
       title={dict.results.goToCard}
-      onClick={() => {
-        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        document.getElementById(`fitting-${row.id}`)?.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
-      }}
+      onClick={() => scrollToCard(row.id)}
     >
       {positionLabel(row, index)}. {rowTitle(row, dict)}
       {sizes && <span className={`block font-mono text-xs ${mutedClass}`}>{sizes}</span>}
