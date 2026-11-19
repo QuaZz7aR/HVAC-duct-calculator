@@ -105,6 +105,17 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
       </div>
     );
   }
+  const sketch = (
+        <figure className="mt-4 flex flex-col rounded-md border border-line bg-background p-4">
+          <button type="button" className="flex flex-col text-left" onClick={onToggleSketch} aria-expanded={true} title={dict.sketch.hide}>
+            <strong className="text-[13px] font-semibold uppercase tracking-wide text-muted">{dict.sketch.isoTitle}</strong>
+            <FittingSketch kind={row.kind} view="iso" />
+          </button>
+          <figcaption className="pt-2 text-sm leading-snug text-muted">
+            {isoLegend(row.kind, dict).join("; ")}. {dict.sketch.note}
+          </figcaption>
+        </figure>
+  );
   return (
     <div id={`fitting-${row.id}`} {...dropTarget} className={`${cardClass} col-span-full ${half ? "xl:col-span-2" : ""} scroll-mt-16 ${justAdded ? "flash-card" : ""} ${dragging ? "!border-2 !border-dashed !border-accent bg-accent-soft opacity-60 pointer-events-none" : ""}`}>
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
@@ -136,6 +147,8 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
           </button>
         </div>
       </div>
+      {/* phone: the open sketch sits right under the thumbnail (ADR 0059); from sm up it stays below the inputs */}
+      {showSketch && <div className="mb-4 sm:hidden [&>figure]:mt-0">{sketch}</div>}
       {row.preset && <p className="-mt-2 mb-3 text-xs text-muted">{dict.defaultsNote}</p>}
       <div
         className="grid grid-cols-2 gap-3 sm:[grid-template-columns:repeat(var(--cols),minmax(0,1fr))]"
@@ -186,17 +199,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
           </select>
         </label>
       </div>
-      {showSketch && (
-        <figure className="mt-4 flex flex-col rounded-md border border-line bg-background p-4">
-          <button type="button" className="flex flex-col text-left" onClick={onToggleSketch} aria-expanded={true} title={dict.sketch.hide}>
-            <strong className="text-[13px] font-semibold uppercase tracking-wide text-muted">{dict.sketch.isoTitle}</strong>
-            <FittingSketch kind={row.kind} view="iso" />
-          </button>
-          <figcaption className="pt-2 text-sm leading-snug text-muted">
-            {isoLegend(row.kind, dict).join("; ")}. {dict.sketch.note}
-          </figcaption>
-        </figure>
-      )}
+      {showSketch && <div className="hidden sm:block">{sketch}</div>}
       {outcome && !outcome.ok && <ErrorList issues={outcome.issues} />}
       {outcome?.ok && <WarningList warnings={outcome.result.warnings} />}
     </div>
