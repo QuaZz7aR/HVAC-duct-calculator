@@ -5,7 +5,7 @@ interface Props {
   label: string;
   value: string;
   onChange: (value: string) => void;
-  inputMode?: "decimal" | "numeric";
+  inputMode?: "decimal" | "numeric" | "text";
   /** Small note next to the label, e.g. that the value is suggested from the size. */
   hint?: string;
   action?: { label: string; onClick: () => void };
@@ -13,9 +13,10 @@ interface Props {
   wide?: boolean;
   /** Explanation behind an «i» button after the label. */
   info?: string;
+  placeholder?: string;
 }
 
-export function TextField({ label, value, onChange, inputMode = "decimal", hint, action, wide, info }: Props) {
+export function TextField({ label, value, onChange, inputMode = "decimal", hint, action, wide, info, placeholder }: Props) {
   return (
     // a column packed to the bottom: a neighbour label that wraps to two lines leaves this label right above its input, and the inputs stay level
     <label className={`flex flex-col justify-end ${wide ? "col-span-2 sm:col-span-1" : ""}`}>
@@ -29,7 +30,7 @@ export function TextField({ label, value, onChange, inputMode = "decimal", hint,
           </button>
         )}
       </span>
-      <input className={inputClass} inputMode={inputMode} value={value} onChange={(e) => onChange(e.target.value)} />
+      <input className={inputClass} inputMode={inputMode} value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
     </label>
   );
 }

@@ -72,6 +72,8 @@ export interface FormRow {
   insulation?: string;
   /** Auto-filled fields (see auto-defaults.ts) that the user has typed over; they stop following the size. */
   manual?: FieldKey[];
+  /** Position label typed by the user (П1, В2); empty or absent = the list number (ADR 0049). */
+  position?: string;
   /** The values are the untouched defaults of the kind (see defaults.ts); the card says so until the user edits something. */
   preset?: boolean;
 }

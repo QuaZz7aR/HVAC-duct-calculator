@@ -59,6 +59,13 @@ export const en: Dictionary = {
   },
   removeItem: 'Delete',
   cloneItem: 'Clone',
+  order: {
+    position: 'Position',
+    positionInfo: 'The fitting number in the specification. Empty = its number in the list (1, 2, 3). You can type your own, e.g. S1, E2.',
+    up: 'Move up',
+    down: 'Move down',
+    drag: 'Drag to change the order',
+  },
   collapseCard: 'Fold',
   cardHasErrors: 'This fitting has errors',
   expandCard: 'Expand',
