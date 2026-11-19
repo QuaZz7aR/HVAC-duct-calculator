@@ -25,6 +25,8 @@ interface Props {
   /** the drag ended, dropped or cancelled */
   onDragEnd: () => void;
   onDragOverHere: () => void;
+  /** a touch or pen pressed the handle: the list drives the drag with pointer events */
+  onTouchDrag: (e: React.PointerEvent) => void;
   /** this card is being dragged: shown as the drop place */
   dragging?: boolean;
   justAdded: boolean;
@@ -44,7 +46,7 @@ interface Props {
 }
 
 /** One fitting: kind selector, the size fields that kind needs, quantity. */
-export function FittingCard({ row, index, position, first, last, onMove, onDragStart, onDragEnd, onDragOverHere, dragging, justAdded, half, showSketch, collapsed, onToggleSketch, onToggleCollapsed, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove }: Props) {
+export function FittingCard({ row, index, position, first, last, onMove, onDragStart, onDragEnd, onDragOverHere, onTouchDrag, dragging, justAdded, half, showSketch, collapsed, onToggleSketch, onToggleCollapsed, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove }: Props) {
   const { dict } = useI18n();
   // the card under the pointer becomes the drop place (the list takes the drop itself); only the handle starts a drag, so text in the inputs can still be selected
   const dropTarget = {
@@ -56,7 +58,10 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
       role="img"
       aria-label={dict.order.drag}
       title={dict.order.drag}
-      className="hidden shrink-0 cursor-grab select-none px-1 text-lg leading-none text-muted hover:text-foreground active:cursor-grabbing lg:inline"
+      className="shrink-0 cursor-grab touch-none select-none px-2 py-2 text-xl leading-none text-muted hover:text-foreground active:cursor-grabbing lg:px-1 lg:py-0 lg:text-lg"
+      onPointerDown={(e) => {
+        if (e.pointerType !== "mouse") onTouchDrag(e);
+      }}
       onDragStart={(e) => {
         e.dataTransfer.effectAllowed = "move";
         e.dataTransfer.setData("text/plain", String(row.id));

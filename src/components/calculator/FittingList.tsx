@@ -79,6 +79,58 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
     places.current = new Map([...document.querySelectorAll<HTMLElement>("#items [id^=fitting-]")].map((el) => [el.id, el.getBoundingClientRect()]));
   };
 
+  // the card under the pointer becomes the drop place; the dragged card and the last two cards it displaced are ignored: after the preview move either may sit under the pointer, so the list does not flicker back and forth
+  const overCard = (targetId: number) => {
+    remember();
+    setDrag((d) => (d && d.id !== targetId && d.overId !== targetId && d.prevId !== targetId ? { ...d, overId: targetId, prevId: d.overId } : d));
+  };
+  const dragNow = useRef(drag);
+  useEffect(() => {
+    dragNow.current = drag;
+  }, [drag]);
+
+  // touch drag by the handle (phone, ADR 0049): the browser's drag and drop does not work by touch on iOS, so pointer events drive the same preview; near the screen edge the page scrolls
+  const startTouch = (id: number, start: React.PointerEvent) => {
+    start.preventDefault();
+    setDrag({ id, overId: id });
+    let x = start.clientX;
+    let y = start.clientY;
+    let frame = 0;
+    const hit = () => {
+      const el = document.elementFromPoint(x, y)?.closest<HTMLElement>("#items [id^=fitting-]");
+      if (el) overCard(Number(el.id.slice("fitting-".length)));
+    };
+    const tick = () => {
+      const edge = 80;
+      const step = y < edge ? -(edge - y) / 4 : y > window.innerHeight - edge ? (y - (window.innerHeight - edge)) / 4 : 0;
+      if (step) {
+        window.scrollBy(0, step);
+        hit();
+      }
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    const move = (e: PointerEvent) => {
+      x = e.clientX;
+      y = e.clientY;
+      hit();
+    };
+    const end = (commit: boolean) => () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", cancel);
+      const d = dragNow.current;
+      if (commit && d && d.overId !== d.id) onDrop(d.id, d.overId);
+      setDrag(null);
+    };
+    const up = end(true);
+    const cancel = end(false);
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", cancel);
+  };
+
   useEffect(() => {
     if (lastAddedId === null) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -100,13 +152,8 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
       dragging={drag?.id === row.id}
       onDragStart={() => setDrag({ id: row.id, overId: row.id })}
       onDragEnd={() => setDrag(null)}
-      // the dragged card and the last two cards it displaced are ignored: after the preview move either may sit under the pointer, so the list does not flicker back and forth
-      onDragOverHere={() => {
-        if (drag && drag.id !== row.id && drag.overId !== row.id && drag.prevId !== row.id) {
-          remember();
-          setDrag({ ...drag, overId: row.id, prevId: drag.overId });
-        }
-      }}
+      onDragOverHere={() => drag && overCard(row.id)}
+      onTouchDrag={(e) => startTouch(row.id, e)}
       justAdded={row.id === lastAddedId}
       showSketch={sketchOpen(row.id)}
       collapsed={isFolded(row.id)}
