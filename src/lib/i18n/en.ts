@@ -65,6 +65,9 @@ export const en: Dictionary = {
     up: 'Move up',
     down: 'Move down',
     drag: 'Drag to change the order',
+    dragSection: 'Drag to move the section',
+    sectionUp: 'Move the section up',
+    sectionDown: 'Move the section down',
   },
   collapseCard: 'Fold',
   cardHasErrors: 'This fitting has errors',
@@ -156,6 +159,7 @@ export const en: Dictionary = {
   results: {
     title: 'Results by item',
     item: 'Fitting',
+    goToCard: 'Show the fitting card',
     thickness: 'Sheet thickness, mm',
     metalArea: 'Actual area, m² (each)',
     metalAreaTotal: 'Total actual area, m²',

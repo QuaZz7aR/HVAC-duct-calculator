@@ -84,6 +84,9 @@ export const uk = {
     up: 'Вище',
     down: 'Нижче',
     drag: 'Перетягніть, щоб змінити порядок',
+    dragSection: 'Перетягніть, щоб перемістити розділ',
+    sectionUp: 'Розділ вище',
+    sectionDown: 'Розділ нижче',
   },
   collapseCard: 'Згорнути',
   cardHasErrors: 'У деталі є помилки',
@@ -175,6 +178,7 @@ export const uk = {
   results: {
     title: 'Результати по позиціях',
     item: 'Деталь',
+    goToCard: 'Показати картку деталі',
     thickness: 'Товщина металу, мм',
     metalArea: 'Фактична площа, м² (шт.)',
     metalAreaTotal: 'Сума фактичної площі, м²',

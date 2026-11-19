@@ -6,7 +6,7 @@ import { buildConfig, defaultSettings, type SettingsText } from "@/lib/form/sett
 import { resetToAuto, setFieldValue, withKind } from "@/lib/form/auto-defaults";
 import { sampleRows } from "@/lib/form/sample-rows";
 import { insertIndex } from "@/lib/form/kind-groups";
-import { moveBy, moveOnto } from "@/lib/form/order";
+import { moveBlock, moveBy } from "@/lib/form/order";
 import { defaultValues, presetRow } from "@/lib/form/defaults";
 import { type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
 
@@ -90,7 +90,8 @@ export function useCalculator() {
   const removeRow = (id: number) => setRows((rs) => rs.filter((r) => r.id !== id));
   // manual order (ADR 0049): the list, the results and the numbers follow the rows array
   const moveRow = (id: number, step: number) => setRows((rs) => moveBy(rs, id, step));
-  const dropRow = (id: number, targetId: number) => setRows((rs) => moveOnto(rs, id, targetId));
+  // a card or a whole section (its ids) takes the place of the target row
+  const dropRows = (ids: number[], targetId: number) => setRows((rs) => moveBlock(rs, ids, targetId));
 
-  return { rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, removeRow, moveRow, dropRow, prices, costs, setMetalPrice, setInsulationPrice };
+  return { rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice };
 }
