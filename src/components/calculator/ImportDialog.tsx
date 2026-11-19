@@ -33,6 +33,16 @@ function saveMapping(table: Table, guessed: number, m: Mapping) {
   }
 }
 
+function forgetMapping(table: Table, guessed: number) {
+  const key = storageKey(table, guessed);
+  if (!key) return;
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // nothing stored or storage blocked
+  }
+}
+
 /** Column letter of an index: 0 -> A, 27 -> AB. */
 function letter(i: number): string {
   let s = "";
@@ -95,6 +105,14 @@ export function ImportButton({ onImport, className = "" }: { onImport: (rows: Im
     setChosen(new Map());
     if (table) saveMapping(table, guessMapping(table).header, m);
   };
+  // back to the site's own guess, and the remembered choice for this layout is dropped
+  const resetMapping = () => {
+    if (!table) return;
+    const g = guessMapping(table);
+    forgetMapping(table, g.header);
+    setMapping(g);
+    setChosen(new Map());
+  };
   const setColumn = (key: ColumnKey, value: string) => {
     if (!mapping) return;
     const columns = { ...mapping.columns };
@@ -155,7 +173,10 @@ export function ImportButton({ onImport, className = "" }: { onImport: (rows: Im
             <>
               <details open className="space-y-3">
                 <summary className="cursor-pointer font-medium">{t.columnsTitle}</summary>
-                <p className="mt-2 text-sm text-muted">{t.columnsHint}</p>
+                <div className="mt-2 flex flex-wrap items-start justify-between gap-2">
+                  <p className="text-sm text-muted">{t.columnsHint}</p>
+                  <button type="button" className={buttonClass} onClick={resetMapping}>{t.resetMapping}</button>
+                </div>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   <div>
                     <label className={labelClass} htmlFor={`${fileId}-header`}>{t.headerRow}</label>

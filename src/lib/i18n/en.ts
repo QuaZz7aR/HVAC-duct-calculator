@@ -305,6 +305,7 @@ export const en: Dictionary = {
     reading: 'Reading the file…',
     headerRow: 'Header row',
     columnsTitle: 'Columns',
+    resetMapping: 'Reset to auto-detect',
     columnsHint: 'The site picked the columns itself; check them and change any if needed. The choice is remembered for files with the same headers.',
     none: '—',
     column: 'Column',
