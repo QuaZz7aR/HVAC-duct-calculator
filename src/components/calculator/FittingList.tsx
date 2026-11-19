@@ -20,7 +20,7 @@ interface Props {
   onValueChange: (id: number, key: FieldKey, value: string) => void;
   onReset: (id: number, key: FieldKey) => void;
   onPatch: (id: number, patch: Partial<FormRow>) => void;
-  onClone: (id: number) => void;
+  onClone: (id: number) => number;
   onRemove: (id: number) => void;
   /** one step up (-1) or down (+1) */
   onMove: (id: number, step: number) => void;
@@ -179,7 +179,12 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
       onValueChange={(key, value) => onValueChange(row.id, key, value)}
       onReset={(key) => onReset(row.id, key)}
       onPatch={(patch) => onPatch(row.id, patch)}
-      onClone={() => onClone(row.id)}
+      onClone={() => {
+        // the copy opens in its original's view (folded tile or full card, sketch open or closed)
+        const copyId = onClone(row.id);
+        if (isFolded(row.id)) setFoldedMany([copyId], true);
+        if (sketchOpen(row.id) !== sketchOpen(copyId)) view.toggleSketch(copyId);
+      }}
       onRemove={() => onRemove(row.id)}
     />
   );
