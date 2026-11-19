@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { RowOutcome } from "@/lib/form/calculate";
 import type { FieldKey, FittingKind, FormRow } from "@/lib/form/fields";
 import { useI18n } from "@/components/i18n";
-import { moveOnto, positionLabel, positionSpan } from "@/lib/form/order";
+import { moveBlock, positionLabel, positionSpan } from "@/lib/form/order";
 import { FittingCard } from "./FittingCard";
 import { kindTitle } from "./format";
 import { buttonClass } from "./styles";
@@ -24,8 +24,8 @@ interface Props {
   onRemove: (id: number) => void;
   /** one step up (-1) or down (+1) */
   onMove: (id: number, step: number) => void;
-  /** drag and drop: `id` takes the place of `targetId` */
-  onDrop: (id: number, targetId: number) => void;
+  /** drag and drop: a card or a whole section (`ids`) takes the place of `targetId` */
+  onDrop: (ids: number[], targetId: number) => void;
 }
 
 /** Runs of neighbouring rows of one kind, in list order; each row keeps its list number. The order is the user's (ADR 0049), so a section is only what already stands together. */
@@ -46,8 +46,8 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
   const gridClass = twoColumns ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 min-[1800px]:grid-cols-5";
 
   // live preview while dragging (ADR 0049): the list is shown as if the card were already dropped on the card under the pointer
-  const [drag, setDrag] = useState<{ id: number; overId: number; prevId?: number } | null>(null);
-  const rows = drag ? moveOnto(listRows, drag.id, drag.overId) : listRows;
+  const [drag, setDrag] = useState<{ ids: number[]; overId: number; prevId?: number; touch?: boolean } | null>(null);
+  const rows = drag ? moveBlock(listRows, drag.ids, drag.overId) : listRows;
 
   // cards glide to their new place when the order changes (FLIP): measure after the change, start each card at its old place, let it slide to zero
   const orderKey = rows.map((r) => r.id).join(",");
@@ -82,17 +82,29 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
   // the card under the pointer becomes the drop place; the dragged card and the last two cards it displaced are ignored: after the preview move either may sit under the pointer, so the list does not flicker back and forth
   const overCard = (targetId: number) => {
     remember();
-    setDrag((d) => (d && d.id !== targetId && d.overId !== targetId && d.prevId !== targetId ? { ...d, overId: targetId, prevId: d.overId } : d));
+    setDrag((d) => (d && !d.ids.includes(targetId) && d.overId !== targetId && d.prevId !== targetId ? { ...d, overId: targetId, prevId: d.overId } : d));
   };
+  // a mouse drag whose source left the page (a card that moved into or out of a section during the preview) gets no dragend;
+  // the browser sends no mouse events during a drag, so the first one after it ends the stale preview
+  useEffect(() => {
+    if (!drag || drag.touch) return;
+    const clear = () => setDrag(null);
+    window.addEventListener("mousemove", clear);
+    window.addEventListener("dragend", clear, true);
+    return () => {
+      window.removeEventListener("mousemove", clear);
+      window.removeEventListener("dragend", clear, true);
+    };
+  }, [drag]);
   const dragNow = useRef(drag);
   useEffect(() => {
     dragNow.current = drag;
   }, [drag]);
 
   // touch drag by the handle (phone, ADR 0049): the browser's drag and drop does not work by touch on iOS, so pointer events drive the same preview; near the screen edge the page scrolls
-  const startTouch = (id: number, start: React.PointerEvent) => {
+  const startTouch = (ids: number[], start: React.PointerEvent) => {
     start.preventDefault();
-    setDrag({ id, overId: id });
+    setDrag({ ids, overId: ids[0], touch: true });
     let x = start.clientX;
     let y = start.clientY;
     let frame = 0;
@@ -121,7 +133,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
       window.removeEventListener("pointerup", up);
       window.removeEventListener("pointercancel", cancel);
       const d = dragNow.current;
-      if (commit && d && d.overId !== d.id) onDrop(d.id, d.overId);
+      if (commit && d && !d.ids.includes(d.overId)) onDrop(d.ids, d.overId);
       setDrag(null);
     };
     const up = end(true);
@@ -137,6 +149,8 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
     document.getElementById(`fitting-${lastAddedId}`)?.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
   }, [lastAddedId]);
 
+  const runs = groupRuns(rows);
+
   const card = (row: FormRow, index: number) => (
     <FittingCard
       key={row.id}
@@ -149,11 +163,11 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
         remember();
         onMove(row.id, step);
       }}
-      dragging={drag?.id === row.id}
-      onDragStart={() => setDrag({ id: row.id, overId: row.id })}
+      dragging={!!drag?.ids.includes(row.id)}
+      onDragStart={() => setDrag({ ids: [row.id], overId: row.id })}
       onDragEnd={() => setDrag(null)}
       onDragOverHere={() => drag && overCard(row.id)}
-      onTouchDrag={(e) => startTouch(row.id, e)}
+      onTouchDrag={(e) => startTouch([row.id], e)}
       justAdded={row.id === lastAddedId}
       showSketch={sketchOpen(row.id)}
       collapsed={isFolded(row.id)}
@@ -180,7 +194,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
       onDrop={(e) => {
         if (!drag) return;
         e.preventDefault();
-        if (drag.overId !== drag.id) onDrop(drag.id, drag.overId);
+        if (!drag.ids.includes(drag.overId)) onDrop(drag.ids, drag.overId);
         setDrag(null);
       }}
     >
@@ -195,15 +209,48 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
       </div>
       {/* one grid for the page: single cards and folded tiles share the 1-3 columns, a repeated kind is a full-width section with a grid of its own; open cards span the full width */}
       <div className={gridClass}>
-        {groupRuns(rows).map(({ kind, items }) => {
+        {runs.map(({ kind, items }, r) => {
           if (items.length === 1) return card(items[0].row, items[0].index);
           const groupFolded = items.every((i) => isFolded(i.row.id));
+          const ids = items.map((i) => i.row.id);
+          const dragging = !!drag && ids.every((id) => drag.ids.includes(id));
+          // a section moves as a whole past the neighbouring run (ADR 0052)
+          const moveSection = (target: number | undefined) => {
+            if (target === undefined) return;
+            remember();
+            onDrop(ids, target);
+          };
+          const prev = runs[r - 1]?.items[0]?.row.id;
+          const next = runs[r + 1]?.items.at(-1)?.row.id;
           return (
-            <div key={`${kind}-${items[0].row.id}`} className="col-span-full space-y-3 rounded-lg border border-line p-3">
+            // the dragged section keeps its key while the preview merges it with a neighbour, so its handle stays mounted
+            <div key={`${kind}-${drag && ids.includes(drag.ids[0]) ? drag.ids[0] : items[0].row.id}`} id={`section-${items[0].row.id}`} className={`col-span-full space-y-3 rounded-lg border border-line p-3 ${dragging ? "border-2 border-dashed !border-accent bg-accent-soft opacity-60" : ""}`}>
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <h3 className="text-sm font-medium">
+                <span
+                  draggable
+                  role="img"
+                  aria-label={dict.order.dragSection}
+                  title={dict.order.dragSection}
+                  className="shrink-0 cursor-grab touch-none select-none px-2 py-2 text-xl leading-none text-muted hover:text-foreground active:cursor-grabbing lg:px-1 lg:py-0 lg:text-lg"
+                  onPointerDown={(e) => {
+                    if (e.pointerType !== "mouse") startTouch(ids, e);
+                  }}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "move";
+                    e.dataTransfer.setData("text/plain", ids.join(","));
+                    const el = document.getElementById(`section-${items[0].row.id}`);
+                    if (el) e.dataTransfer.setDragImage(el, 20, 20);
+                    setTimeout(() => setDrag({ ids, overId: ids[0] }), 0);
+                  }}
+                  onDragEnd={() => setDrag(null)}
+                >
+                  ⠿
+                </span>
+                <h3 className="min-w-0 flex-1 text-sm font-medium">
                   <span className="text-muted">{positionSpan(items.map((i) => positionLabel(i.row, i.index)))}.</span> {kindTitle(kind, dict)} <span className="text-muted">× {items.length}</span>
                 </h3>
+                <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1 disabled:cursor-default disabled:opacity-40`} disabled={prev === undefined} onClick={() => moveSection(prev)} aria-label={dict.order.sectionUp} title={dict.order.sectionUp}>↑</button>
+                <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1 disabled:cursor-default disabled:opacity-40`} disabled={next === undefined} onClick={() => moveSection(next)} aria-label={dict.order.sectionDown} title={dict.order.sectionDown}>↓</button>
                 <button
                   type="button"
                   className={buttonClass}

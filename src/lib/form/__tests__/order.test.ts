@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { newRow } from '../fields';
-import { moveBy, moveOnto, moveTo, positionLabel, positionSpan } from '../order';
+import { moveBy, moveOnto, moveTo, moveBlock, positionLabel, positionSpan } from '../order';
 
 const rows = [1, 2, 3, 4].map((id) => newRow(id));
 const ids = (rs: typeof rows) => rs.map((r) => r.id);
@@ -41,5 +41,17 @@ describe('positionSpan', () => {
     expect(positionSpan(['П1', 'П2'])).toBe('П1, П2');
     expect(positionSpan(['4', '7'])).toBe('4, 7');
     expect(positionSpan(['5'])).toBe('5');
+  });
+});
+
+describe('moveBlock', () => {
+  const six = [1, 2, 3, 4, 5, 6].map((id) => newRow(id));
+  it('moves a section down and up as a whole', () => {
+    expect(ids(moveBlock(six, [2, 3], 5))).toEqual([1, 4, 5, 2, 3, 6]);
+    expect(ids(moveBlock(six, [4, 5], 1))).toEqual([4, 5, 1, 2, 3, 6]);
+  });
+  it('agrees with moveOnto for one row and ignores a target inside the block', () => {
+    expect(ids(moveBlock(six, [1], 3))).toEqual(ids(moveOnto(six, 1, 3)));
+    expect(moveBlock(six, [2, 3], 3)).toBe(six);
   });
 });
