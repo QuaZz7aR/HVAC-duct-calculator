@@ -75,6 +75,8 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0058](adr/0058-phone-cards-instead-of-tables.md) | On a phone the results, sheet list and insulation list are blocks, not tables | 2026-11-19 | Accepted |
 | [0059](adr/0059-phone-sketch-under-the-thumbnail.md) | On a phone the open sketch sits under the thumbnail | 2026-11-19 | Accepted |
 | [0060](adr/0060-fold-button-set-apart.md) | The card's «Згорнути» button comes first and is tinted | 2026-11-19 | Accepted |
+| [0061](adr/0061-import-from-excel.md) | Import of a spec table from .xlsx / .csv: column mapping, kind recognition, every row shown | 2026-11-19 | Accepted |
+| [0062](adr/0062-delete-all-fittings.md) | «Видалити всі» over the list, confirmed by a second tap | 2026-11-19 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.
@@ -108,6 +110,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 - eslint 9 -> 10: blocked upstream. `eslint-config-next` 16.3.8 itself allows `eslint >=9`, but the plugins it bundles (`eslint-plugin-react` 7.37.5, `eslint-plugin-import` 2.32.0, `eslint-plugin-jsx-a11y` 6.10.2, all at their latest releases) declare peers only up to `^9`. Retry when those publish eslint 10 support; do not force it with overrides.
 - Share the equivalent-diameter helper between `aero.ts` (m) and `waste-factor.ts` (mm).
 - Help: GIFs or video guides (ADR 0046 has text only).
+- Import ([0061](adr/0061-import-from-excel.md)): PDF (tables drawn or scanned need OCR), sheets other than the first, old .xls, insulation / thickness columns.
 - Sheet count has no nesting or offcut model (a plain ceil of area over sheet area); a cutting plan would need part shapes.
 - Next features (engineer's order, 2026-10-16): insulation (beta done, [0037](adr/0037-insulation-area-beta.md)), price (done as UAH per m² per thickness and material, [0038](adr/0038-price-per-square-metre.md); a price per fitting or per sheet, labour and a price list are deferred), then aerodynamics as a separate mode. XLSX export waits for the engineer's reference files.
 - A user-defined (custom) thickness table, which the engineer mentioned as a possible later step.

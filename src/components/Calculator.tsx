@@ -4,6 +4,7 @@ import { useState } from "react";
 import { I18nProvider, useI18n } from "@/components/i18n";
 import { LangSwitch } from "./calculator/LangSwitch";
 import { HelpButton } from "./calculator/HelpDialog";
+import { ImportButton } from "./calculator/ImportDialog";
 import { FittingList } from "./calculator/FittingList";
 import { SettingsPanel } from "./calculator/SettingsPanel";
 import { ResultsTable } from "./calculator/ResultsTable";
@@ -26,7 +27,7 @@ export function Calculator() {
 
 function CalculatorPage() {
   const { dict } = useI18n();
-  const { rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice } = useCalculator();
+  const { rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice } = useCalculator();
 
   const view = useCardView(rows);
   const [twoColumns, setTwoColumns] = useState(false);
@@ -40,9 +41,12 @@ function CalculatorPage() {
             <h1 className="text-2xl font-semibold">{dict.appTitle}</h1>
             <p className={`mt-1 text-sm ${mutedClass}`}>{dict.appSubtitle}</p>
           </div>
-          <div className="flex shrink-0 flex-wrap gap-2 sm:justify-end lg:hidden">
-            <HelpButton />
-            <LangSwitch />
+          <div className="flex shrink-0 flex-wrap gap-2 sm:justify-end">
+            <ImportButton onImport={importRows} />
+            <span className="contents lg:hidden">
+              <HelpButton />
+              <LangSwitch />
+            </span>
           </div>
         </header>
 
@@ -59,6 +63,7 @@ function CalculatorPage() {
           onPatch={update}
           onClone={cloneRow}
           onRemove={removeRow}
+          onClear={clearRows}
           onMove={moveRow}
           onDrop={dropRows}
         />
