@@ -1,8 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import type { RowOutcome } from "@/lib/form/calculate";
 import type { FieldKey, FittingKind, FormRow } from "@/lib/form/fields";
 import { useI18n } from "@/components/i18n";
-import { positionLabel } from "@/lib/form/order";
+import { moveOnto, positionLabel } from "@/lib/form/order";
 import { FittingCard } from "./FittingCard";
 import { kindTitle } from "./format";
 import { buttonClass } from "./styles";
@@ -39,13 +39,15 @@ export function groupRuns(rows: FormRow[]) {
   return runs;
 }
 
-export function FittingList({ rows, view, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove, onMove, onDrop, lastAddedId, twoColumns = false }: Props) {
+export function FittingList({ rows: listRows, view, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove, onMove, onDrop, lastAddedId, twoColumns = false }: Props) {
   const { dict } = useI18n();
   const { sketchOpen, isFolded, setFoldedMany } = view;
   // two-column mode (desktop, xl+): four tile columns, an open card spans two of them
   const gridClass = twoColumns ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 min-[1800px]:grid-cols-5";
 
-  const dragged = useRef<number | null>(null);
+  // live preview while dragging (ADR 0049): the list is shown as if the card were already dropped on the card under the pointer
+  const [drag, setDrag] = useState<{ id: number; overId: number; prevId?: number } | null>(null);
+  const rows = drag ? moveOnto(listRows, drag.id, drag.overId) : listRows;
 
   useEffect(() => {
     if (lastAddedId === null) return;
@@ -62,11 +64,12 @@ export function FittingList({ rows, view, outcome, onKindChange, onValueChange, 
       first={index === 0}
       last={index === rows.length - 1}
       onMove={(step) => onMove(row.id, step)}
-      onDragStart={() => (dragged.current = row.id)}
-      onDragEnd={() => (dragged.current = null)}
-      onDropHere={() => {
-        if (dragged.current !== null && dragged.current !== row.id) onDrop(dragged.current, row.id);
-        dragged.current = null;
+      dragging={drag?.id === row.id}
+      onDragStart={() => setDrag({ id: row.id, overId: row.id })}
+      onDragEnd={() => setDrag(null)}
+      // the dragged card and the last two cards it displaced are ignored: after the preview move either may sit under the pointer, so the list does not flicker back and forth
+      onDragOverHere={() => {
+        if (drag && drag.id !== row.id && drag.overId !== row.id && drag.prevId !== row.id) setDrag({ ...drag, overId: row.id, prevId: drag.overId });
       }}
       justAdded={row.id === lastAddedId}
       showSketch={sketchOpen(row.id)}
@@ -85,7 +88,19 @@ export function FittingList({ rows, view, outcome, onKindChange, onValueChange, 
   );
 
   return (
-    <section id="items" aria-labelledby="items-title" className="scroll-mt-28 space-y-3">
+    <section
+      id="items"
+      aria-labelledby="items-title"
+      className="scroll-mt-28 space-y-3"
+      // the whole list takes the drop, so a drop in a gap between cards (or on the moving card) still lands where the preview shows
+      onDragOver={(e) => drag && e.preventDefault()}
+      onDrop={(e) => {
+        if (!drag) return;
+        e.preventDefault();
+        if (drag.overId !== drag.id) onDrop(drag.id, drag.overId);
+        setDrag(null);
+      }}
+    >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 id="items-title" className="font-medium">{dict.itemsTitle}</h2>

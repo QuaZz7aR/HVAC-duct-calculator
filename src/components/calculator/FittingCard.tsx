@@ -24,7 +24,9 @@ interface Props {
   onDragStart: () => void;
   /** the drag ended, dropped or cancelled */
   onDragEnd: () => void;
-  onDropHere: () => void;
+  onDragOverHere: () => void;
+  /** this card is being dragged: shown as the drop place */
+  dragging?: boolean;
   justAdded: boolean;
   /** two-column mode: the open card spans half the grid (2 of 4 columns) on xl screens */
   half?: boolean;
@@ -42,15 +44,11 @@ interface Props {
 }
 
 /** One fitting: kind selector, the size fields that kind needs, quantity. */
-export function FittingCard({ row, index, position, first, last, onMove, onDragStart, onDragEnd, onDropHere, justAdded, half, showSketch, collapsed, onToggleSketch, onToggleCollapsed, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove }: Props) {
+export function FittingCard({ row, index, position, first, last, onMove, onDragStart, onDragEnd, onDragOverHere, dragging, justAdded, half, showSketch, collapsed, onToggleSketch, onToggleCollapsed, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove }: Props) {
   const { dict } = useI18n();
-  // the card is a drop target; only the handle starts a drag, so text in the inputs can still be selected
+  // the card under the pointer becomes the drop place (the list takes the drop itself); only the handle starts a drag, so text in the inputs can still be selected
   const dropTarget = {
-    onDragOver: (e: React.DragEvent) => e.preventDefault(),
-    onDrop: (e: React.DragEvent) => {
-      e.preventDefault();
-      onDropHere();
-    },
+    onDragOver: onDragOverHere,
   };
   const handle = (
     <span
@@ -64,7 +62,8 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
         e.dataTransfer.setData("text/plain", String(row.id));
         const card = document.getElementById(`fitting-${row.id}`);
         if (card) e.dataTransfer.setDragImage(card, 20, 20);
-        onDragStart();
+        // after the browser has taken the drag image, so the image is the card as it looks now
+        setTimeout(onDragStart, 0);
       }}
       onDragEnd={onDragEnd}
     >
@@ -85,7 +84,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
     // one compact tile: number, kind and the typed values; the whole tile expands the card
     const summary = [...kindFields[row.kind].map((f) => row.values[f.key] ?? ""), row.quantity].map((v) => v || "–").join(" · ");
     return (
-      <div id={`fitting-${row.id}`} {...dropTarget} className={`${cardClass} flex scroll-mt-16 items-center gap-2 !p-2 ${justAdded ? "flash-card" : ""}`}>
+      <div id={`fitting-${row.id}`} {...dropTarget} className={`${cardClass} flex scroll-mt-16 items-center gap-2 !p-2 ${justAdded ? "flash-card" : ""} ${dragging ? "!border-2 !border-dashed !border-accent bg-accent-soft opacity-60 pointer-events-none" : ""}`}>
         {handle}
         <button type="button" className="min-w-0 flex-1 text-left" onClick={onToggleCollapsed} aria-expanded={false} title={`${dict.expandCard}: ${kindTitle(row.kind, dict)}`}>
           <span className="block text-sm font-medium leading-tight">{outcome && !outcome.ok && <span className="mr-1 text-red-600 dark:text-red-400" aria-label={dict.cardHasErrors} title={dict.cardHasErrors}>⚠</span>}{position}. {kindTitle(row.kind, dict)}</span>
@@ -102,7 +101,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
     );
   }
   return (
-    <div id={`fitting-${row.id}`} {...dropTarget} className={`${cardClass} col-span-full ${half ? "xl:col-span-2" : ""} scroll-mt-16 ${justAdded ? "flash-card" : ""}`}>
+    <div id={`fitting-${row.id}`} {...dropTarget} className={`${cardClass} col-span-full ${half ? "xl:col-span-2" : ""} scroll-mt-16 ${justAdded ? "flash-card" : ""} ${dragging ? "!border-2 !border-dashed !border-accent bg-accent-soft opacity-60 pointer-events-none" : ""}`}>
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <span className="flex self-center">{handle}</span>
         <button
