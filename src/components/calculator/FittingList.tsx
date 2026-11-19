@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { RowOutcome } from "@/lib/form/calculate";
 import type { FieldKey, FittingKind, FormRow } from "@/lib/form/fields";
 import { useI18n } from "@/components/i18n";
-import { moveOnto, positionLabel } from "@/lib/form/order";
+import { moveOnto, positionLabel, positionSpan } from "@/lib/form/order";
 import { FittingCard } from "./FittingCard";
 import { kindTitle } from "./format";
 import { buttonClass } from "./styles";
@@ -202,7 +202,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
             <div key={`${kind}-${items[0].row.id}`} className="col-span-full space-y-3 rounded-lg border border-line p-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h3 className="text-sm font-medium">
-                  {kindTitle(kind, dict)} <span className="text-muted">× {items.length}</span>
+                  <span className="text-muted">{positionSpan(items.map((i) => positionLabel(i.row, i.index)))}.</span> {kindTitle(kind, dict)} <span className="text-muted">× {items.length}</span>
                 </h3>
                 <button
                   type="button"

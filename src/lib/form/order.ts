@@ -18,3 +18,10 @@ export const moveOnto = (rows: FormRow[], id: number, targetId: number) => moveT
 
 /** The position label of a row: what the user typed (П1, В2), else its list number 1, 2, 3 (ADR 0049). */
 export const positionLabel = (row: FormRow, index: number) => row.position?.trim() || String(index + 1);
+
+/** The positions of a section for its title: consecutive numbers as a span "1–3", anything else listed "П1, П2" (ADR 0051). */
+export function positionSpan(labels: string[]): string {
+  const nums = labels.map(Number);
+  const consecutive = labels.length > 1 && labels.every((l) => /^\d+$/.test(l)) && nums.every((n, i) => i === 0 || n === nums[i - 1] + 1);
+  return consecutive ? `${labels[0]}–${labels[labels.length - 1]}` : labels.join(", ");
+}
