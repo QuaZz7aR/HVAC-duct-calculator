@@ -133,6 +133,13 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
         <h3 className="min-w-0 flex-1 self-center text-base font-medium leading-snug">
           <span className="text-muted">{position}.</span> {kindTitle(row.kind, dict)}
         </h3>
+        {/* phone: a line of its own, first of the buttons (ADR 0060) */}
+        <div className="w-full sm:w-auto">
+          <button type="button" className={`${foldButtonClass} sm:mr-1`} onClick={onToggleCollapsed}>
+            <svg aria-hidden="true" viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10l4-4 4 4" /></svg>
+            {dict.collapseCard}
+          </button>
+        </div>
         <div className="flex max-w-full flex-wrap gap-2">
           {moveButtons}
           <button type="button" className={buttonClass} onClick={onClone}>
@@ -143,10 +150,6 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
             {dict.removeItem}
           </button>
         </div>
-        <button type="button" className={`${foldButtonClass} sm:ml-2`} onClick={onToggleCollapsed}>
-          <svg aria-hidden="true" viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10l4-4 4 4" /></svg>
-          {dict.collapseCard}
-        </button>
       </div>
       {/* phone: the open sketch sits right under the thumbnail (ADR 0059); from sm up it stays below the inputs */}
       {showSketch && <div className="mb-4 sm:hidden [&>figure]:mt-0">{sketch}</div>}
