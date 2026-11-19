@@ -76,6 +76,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0059](adr/0059-phone-sketch-under-the-thumbnail.md) | On a phone the open sketch sits under the thumbnail | 2026-11-19 | Accepted |
 | [0060](adr/0060-fold-button-set-apart.md) | The card's «Згорнути» button comes first and is tinted | 2026-11-19 | Accepted |
 | [0061](adr/0061-import-from-excel.md) | Import of a spec table from .xlsx / .csv: column mapping, kind recognition, every row shown | 2026-11-19 | Accepted |
+| [0062](adr/0062-delete-all-fittings.md) | «Видалити всі» over the list, confirmed by a second tap | 2026-11-19 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.

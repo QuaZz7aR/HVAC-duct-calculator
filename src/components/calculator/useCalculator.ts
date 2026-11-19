@@ -97,11 +97,12 @@ export function useCalculator() {
     if (added.length) setLastAddedId(added[0].id);
     return added.length;
   };
+  const clearRows = () => setRows([]);
   const removeRow = (id: number) => setRows((rs) => rs.filter((r) => r.id !== id));
   // manual order (ADR 0049): the list, the results and the numbers follow the rows array
   const moveRow = (id: number, step: number) => setRows((rs) => moveBy(rs, id, step));
   // a card or a whole section (its ids) takes the place of the target row
   const dropRows = (ids: number[], targetId: number) => setRows((rs) => moveBlock(rs, ids, targetId));
 
-  return { rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice };
+  return { rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice };
 }

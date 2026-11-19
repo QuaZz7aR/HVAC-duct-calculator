@@ -5,7 +5,7 @@ import { useI18n } from "@/components/i18n";
 import { moveBlock, positionLabel, positionSpan } from "@/lib/form/order";
 import { FittingCard } from "./FittingCard";
 import { kindTitle } from "./format";
-import { buttonClass } from "./styles";
+import { buttonClass, dangerButtonClass } from "./styles";
 import type { CardView } from "./useCardView";
 
 interface Props {
@@ -24,6 +24,8 @@ interface Props {
   onRemove: (id: number) => void;
   /** one step up (-1) or down (+1) */
   onMove: (id: number, step: number) => void;
+  /** removes every row */
+  onClear?: () => void;
   /** drag and drop: a card or a whole section (`ids`) takes the place of `targetId` */
   onDrop: (ids: number[], targetId: number) => void;
 }
@@ -39,7 +41,22 @@ export function groupRuns(rows: FormRow[]) {
   return runs;
 }
 
-export function FittingList({ rows: listRows, view, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove, onMove, onDrop, lastAddedId, twoColumns = false }: Props) {
+/** «Видалити всі»: a second tap confirms, so one slip does not empty the list (no browser dialog). */
+function ClearAll({ count, onClear }: { count: number; onClear: () => void }) {
+  const { dict } = useI18n();
+  const t = dict.clearAll;
+  const [asking, setAsking] = useState(false);
+  if (!asking) return <button type="button" className={dangerButtonClass} onClick={() => setAsking(true)}>{t.button}</button>;
+  return (
+    <div role="group" aria-label={t.button} className="flex flex-wrap items-center gap-2">
+      <span className="text-sm">{t.confirm(count)}</span>
+      <button type="button" className={dangerButtonClass} onClick={() => { onClear(); setAsking(false); }}>{t.yes}</button>
+      <button type="button" className={buttonClass} onClick={() => setAsking(false)}>{t.no}</button>
+    </div>
+  );
+}
+
+export function FittingList({ rows: listRows, view, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove, onClear, onMove, onDrop, lastAddedId, twoColumns = false }: Props) {
   const { dict } = useI18n();
   const { sketchOpen, isFolded, setFoldedMany } = view;
   // two-column mode (desktop, xl+): four tile columns, an open card spans two of them
@@ -211,6 +228,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
             <span className="lg:hidden">{dict.palette.hintBar}</span>
           </p>
         </div>
+        {listRows.length > 0 && onClear && <ClearAll count={listRows.length} onClear={onClear} />}
       </div>
       {/* one grid for the page: single cards and folded tiles share the 1-3 columns, a repeated kind is a full-width section with a grid of its own; open cards span the full width */}
       <div className={gridClass}>
