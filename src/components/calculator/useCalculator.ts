@@ -86,6 +86,7 @@ export function useCalculator() {
       return [...rs.slice(0, at + 1), copy, ...rs.slice(at + 1)];
     });
     setLastAddedId(copyId);
+    return copyId;
   };
   const removeRow = (id: number) => setRows((rs) => rs.filter((r) => r.id !== id));
   // manual order (ADR 0049): the list, the results and the numbers follow the rows array

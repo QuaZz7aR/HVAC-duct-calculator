@@ -1,8 +1,10 @@
 import type { Calculation, RowOutcome } from "@/lib/form/calculate";
 import type { FormRow } from "@/lib/form/fields";
+import { scrollToCard } from "./highlightCard";
 import { useI18n } from "@/components/i18n";
-import { positionLabel } from "@/lib/form/order";
-import { rowTitle, sizeLabel } from "./format";
+import { positionLabel, positionSpan } from "@/lib/form/order";
+import { groupRuns } from "./FittingList";
+import { kindTitle, rowTitle, sizeLabel } from "./format";
 import { Info } from "./Info";
 import { cardClass, mutedClass } from "./styles";
 
@@ -26,10 +28,7 @@ function RowName({ row, index }: { row: FormRow; index: number }) {
       type="button"
       className="text-left hover:text-accent hover:underline"
       title={dict.results.goToCard}
-      onClick={() => {
-        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        document.getElementById(`fitting-${row.id}`)?.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
-      }}
+      onClick={() => scrollToCard(row.id)}
     >
       {positionLabel(row, index)}. {rowTitle(row, dict)}
       {sizes && <span className={`block font-mono text-xs ${mutedClass}`}>{sizes}</span>}
@@ -37,11 +36,12 @@ function RowName({ row, index }: { row: FormRow; index: number }) {
   );
 }
 
-function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outcome: RowOutcome | undefined }) {
+function ResultRow({ row, index, outcome, inSection = false }: { row: FormRow; index: number; outcome: RowOutcome | undefined; inSection?: boolean }) {
+  const tint = inSection ? "bg-accent-soft/40" : "";
   const { dict, fmt } = useI18n();
   if (!outcome?.ok) {
     return (
-      <tr className="border-t border-line text-muted hover:bg-accent-soft">
+      <tr className={`border-t border-line text-muted hover:bg-accent-soft ${tint}`}>
         <td className="py-1 pr-3"><RowName row={row} index={index} /></td>
         <td colSpan={7} className="px-2 text-right">—</td>
       </tr>
@@ -50,7 +50,7 @@ function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outco
   const r = outcome.result;
   const p = r.pieces;
   return (
-    <tr className="border-t border-line hover:bg-accent-soft">
+    <tr className={`border-t border-line hover:bg-accent-soft ${tint}`}>
       <td className="py-1 pr-3">
         <RowName row={row} index={index} />
         {p && <span className={`block text-xs ${mutedClass}`}>{dict.results.pieces(String(p.full), metres(p.pieceMm, dict.locale), p.restMm > 0 ? metres(p.restMm, dict.locale) : null)}</span>}
@@ -63,6 +63,32 @@ function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outco
       <td className={numCell}>{fmt(r.metalConsumptionTotal)}</td>
       <td className="pl-2 text-right tabular-nums">{r.insulation ? fmt(r.insulation.areaTotal) : "—"}</td>
     </tr>
+  );
+}
+
+/** A run of neighbouring rows of one kind, titled and summed as in the list (ADR 0055); a single row has no title. */
+function SectionRows({ kind, items, outcome }: { kind: FormRow["kind"]; items: { row: FormRow; index: number }[]; outcome: Props["outcome"] }) {
+  const { dict, fmt } = useI18n();
+  const rows = items.map(({ row, index }) => <ResultRow key={row.id} row={row} index={index} outcome={outcome(row.id)} inSection={items.length > 1} />);
+  if (items.length === 1) return rows;
+  const ok = items.flatMap(({ row }) => { const o = outcome(row.id); return o?.ok ? [o.result] : []; });
+  const sum = (f: (r: (typeof ok)[number]) => number) => fmt(ok.reduce((a, r) => a + f(r), 0));
+  const cell = "px-2 pt-3 pb-1 text-right tabular-nums font-medium";
+  return (
+    <>
+      <tr className="border-t-2 border-line bg-accent-soft">
+        <td colSpan={4} className="pt-3 pb-1 pr-3 font-medium">
+          <button type="button" className="text-left hover:text-accent hover:underline" title={dict.results.goToCard} onClick={() => document.getElementById(`section-${items[0].row.id}`)?.scrollIntoView({ block: "start", behavior: "smooth" })}>
+            <span className="text-muted">{positionSpan(items.map((i) => positionLabel(i.row, i.index)))}.</span> {kindTitle(kind, dict)} <span className="text-muted">× {items.length}</span>
+          </button>
+        </td>
+        <td className={cell}>{sum((r) => r.metalAreaTotal)}</td>
+        <td />
+        <td className={cell}>{sum((r) => r.metalConsumptionTotal)}</td>
+        <td className={`pl-2 pt-3 pb-1 text-right tabular-nums font-medium`}>{ok.some((r) => r.insulation) ? sum((r) => r.insulation?.areaTotal ?? 0) : "—"}</td>
+      </tr>
+      {rows}
+    </>
   );
 }
 
@@ -89,8 +115,8 @@ export function ResultsTable({ rows, outcome, calc }: Props) {
               </tr>
             </thead>
             <tbody>
-              {rows.map((row, idx) => (
-                <ResultRow key={row.id} row={row} index={idx} outcome={outcome(row.id)} />
+              {groupRuns(rows).map(({ kind, items }) => (
+                <SectionRows key={items[0].row.id} kind={kind} items={items} outcome={outcome} />
               ))}
             </tbody>
           </table>

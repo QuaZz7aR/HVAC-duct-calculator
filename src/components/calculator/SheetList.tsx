@@ -1,7 +1,9 @@
 import type { Calculation } from "@/lib/form/calculate";
 import { priceKey, type Pricing } from "@/lib/form/price";
 import { useI18n } from "@/components/i18n";
+import type { SettingsText } from "@/lib/form/settings";
 import { PriceInput } from "./PriceInput";
+import { SheetField, ThicknessTableField } from "./SettingsPanel";
 import { cardClass, mutedClass } from "./styles";
 import { Info } from "./Info";
 
@@ -10,13 +12,19 @@ interface Props {
   prices: Record<string, string>;
   costs: Pricing["metal"];
   onPrice: (key: string, value: string) => void;
+  settings: SettingsText;
+  onSettings: (settings: SettingsText) => void;
 }
 
-export function SheetList({ groups, prices, costs, onPrice }: Props) {
+export function SheetList({ groups, prices, costs, onPrice, settings, onSettings }: Props) {
   const { dict, fmt } = useI18n();
   return (
     <section className={`min-w-0 ${cardClass}`} aria-labelledby="sheets-title">
       <h2 id="sheets-title" className="mb-3 font-medium">{dict.sheetList.title}</h2>
+      <div className="mb-3 grid gap-3 sm:grid-cols-2">
+        <ThicknessTableField settings={settings} onChange={onSettings} />
+        <SheetField settings={settings} onChange={onSettings} />
+      </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead className={`text-left text-xs ${mutedClass}`}>

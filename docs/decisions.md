@@ -67,6 +67,10 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0050](adr/0050-sizes-in-the-results.md) | Results rows show a size line (sketch letters) and scroll to the card on click | 2026-11-19 | Accepted |
 | [0051](adr/0051-positions-in-section-titles.md) | Section titles start with their positions (1–2, or П1, П2) | 2026-11-19 | Accepted |
 | [0052](adr/0052-moving-a-whole-section.md) | A section moves as a block: its own drag handle and ↑ / ↓ | 2026-11-19 | Accepted |
+| [0053](adr/0053-settings-repeated-in-the-results.md) | Seam, margin, thickness table and sheet size also editable in the results blocks | 2026-11-19 | Accepted |
+| [0054](adr/0054-highlight-card-after-results-jump.md) | The card is highlighted for 1.5 s after a jump from the results | 2026-11-19 | Accepted |
+| [0055](adr/0055-sections-in-the-results.md) | The results table shows the list sections with their sums | 2026-11-19 | Accepted |
+| [0056](adr/0056-clone-keeps-the-card-view.md) | A clone opens folded or open, as its original | 2026-11-19 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.
