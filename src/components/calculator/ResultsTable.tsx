@@ -1,6 +1,7 @@
 import type { Calculation, RowOutcome } from "@/lib/form/calculate";
 import type { FormRow } from "@/lib/form/fields";
 import { useI18n } from "@/components/i18n";
+import { positionLabel } from "@/lib/form/order";
 import { rowTitle } from "./format";
 import { Info } from "./Info";
 import { cardClass, mutedClass } from "./styles";
@@ -21,7 +22,7 @@ function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outco
   if (!outcome?.ok) {
     return (
       <tr className="border-t border-line text-muted hover:bg-accent-soft">
-        <td className="py-1 pr-3">{index + 1}. {rowTitle(row, dict)}</td>
+        <td className="py-1 pr-3">{positionLabel(row, index)}. {rowTitle(row, dict)}</td>
         <td colSpan={7} className="px-2 text-right">—</td>
       </tr>
     );
@@ -31,7 +32,7 @@ function ResultRow({ row, index, outcome }: { row: FormRow; index: number; outco
   return (
     <tr className="border-t border-line hover:bg-accent-soft">
       <td className="py-1 pr-3">
-        {index + 1}. {rowTitle(row, dict)}
+        {positionLabel(row, index)}. {rowTitle(row, dict)}
         {p && <span className={`block text-xs ${mutedClass}`}>{dict.results.pieces(String(p.full), metres(p.pieceMm, dict.locale), p.restMm > 0 ? metres(p.restMm, dict.locale) : null)}</span>}
       </td>
       <td className={numCell}>{r.quantity}</td>

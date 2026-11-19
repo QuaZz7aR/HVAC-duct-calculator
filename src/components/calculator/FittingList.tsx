@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import type { RowOutcome } from "@/lib/form/calculate";
 import type { FieldKey, FittingKind, FormRow } from "@/lib/form/fields";
 import { useI18n } from "@/components/i18n";
+import { positionLabel } from "@/lib/form/order";
 import { FittingCard } from "./FittingCard";
 import { kindTitle } from "./format";
 import { buttonClass } from "./styles";
@@ -21,24 +22,30 @@ interface Props {
   onPatch: (id: number, patch: Partial<FormRow>) => void;
   onClone: (id: number) => void;
   onRemove: (id: number) => void;
+  /** one step up (-1) or down (+1) */
+  onMove: (id: number, step: number) => void;
+  /** drag and drop: `id` takes the place of `targetId` */
+  onDrop: (id: number, targetId: number) => void;
 }
 
-/** Rows of one kind next to each other, kinds in the order they first appear; each row keeps its list number. */
-function groupByKind(rows: FormRow[]) {
-  const groups = new Map<FittingKind, { row: FormRow; index: number }[]>();
+/** Runs of neighbouring rows of one kind, in list order; each row keeps its list number. The order is the user's (ADR 0049), so a section is only what already stands together. */
+export function groupRuns(rows: FormRow[]) {
+  const runs: { kind: FittingKind; items: { row: FormRow; index: number }[] }[] = [];
   rows.forEach((row, index) => {
-    const g = groups.get(row.kind) ?? [];
-    g.push({ row, index });
-    groups.set(row.kind, g);
+    const last = runs[runs.length - 1];
+    if (last && last.kind === row.kind) last.items.push({ row, index });
+    else runs.push({ kind: row.kind, items: [{ row, index }] });
   });
-  return [...groups.entries()];
+  return runs;
 }
 
-export function FittingList({ rows, view, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove, lastAddedId, twoColumns = false }: Props) {
+export function FittingList({ rows, view, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove, onMove, onDrop, lastAddedId, twoColumns = false }: Props) {
   const { dict } = useI18n();
   const { sketchOpen, isFolded, setFoldedMany } = view;
   // two-column mode (desktop, xl+): four tile columns, an open card spans two of them
   const gridClass = twoColumns ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 min-[1800px]:grid-cols-5";
+
+  const dragged = useRef<number | null>(null);
 
   useEffect(() => {
     if (lastAddedId === null) return;
@@ -51,6 +58,16 @@ export function FittingList({ rows, view, outcome, onKindChange, onValueChange, 
       key={row.id}
       row={row}
       index={index}
+      position={positionLabel(row, index)}
+      first={index === 0}
+      last={index === rows.length - 1}
+      onMove={(step) => onMove(row.id, step)}
+      onDragStart={() => (dragged.current = row.id)}
+      onDragEnd={() => (dragged.current = null)}
+      onDropHere={() => {
+        if (dragged.current !== null && dragged.current !== row.id) onDrop(dragged.current, row.id);
+        dragged.current = null;
+      }}
       justAdded={row.id === lastAddedId}
       showSketch={sketchOpen(row.id)}
       collapsed={isFolded(row.id)}
@@ -80,11 +97,11 @@ export function FittingList({ rows, view, outcome, onKindChange, onValueChange, 
       </div>
       {/* one grid for the page: single cards and folded tiles share the 1-3 columns, a repeated kind is a full-width section with a grid of its own; open cards span the full width */}
       <div className={gridClass}>
-        {groupByKind(rows).map(([kind, items]) => {
+        {groupRuns(rows).map(({ kind, items }) => {
           if (items.length === 1) return card(items[0].row, items[0].index);
           const groupFolded = items.every((i) => isFolded(i.row.id));
           return (
-            <div key={kind} className="col-span-full space-y-3 rounded-lg border border-line p-3">
+            <div key={`${kind}-${items[0].row.id}`} className="col-span-full space-y-3 rounded-lg border border-line p-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h3 className="text-sm font-medium">
                   {kindTitle(kind, dict)} <span className="text-muted">× {items.length}</span>

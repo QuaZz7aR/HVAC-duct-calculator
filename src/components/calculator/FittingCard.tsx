@@ -16,6 +16,15 @@ import { TextField } from "./TextField";
 interface Props {
   row: FormRow;
   index: number;
+  /** the label shown before the kind: the user's position or the list number */
+  position: string;
+  first: boolean;
+  last: boolean;
+  onMove: (step: number) => void;
+  onDragStart: () => void;
+  /** the drag ended, dropped or cancelled */
+  onDragEnd: () => void;
+  onDropHere: () => void;
   justAdded: boolean;
   /** two-column mode: the open card spans half the grid (2 of 4 columns) on xl screens */
   half?: boolean;
@@ -33,21 +42,56 @@ interface Props {
 }
 
 /** One fitting: kind selector, the size fields that kind needs, quantity. */
-export function FittingCard({ row, index, justAdded, half, showSketch, collapsed, onToggleSketch, onToggleCollapsed, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove }: Props) {
+export function FittingCard({ row, index, position, first, last, onMove, onDragStart, onDragEnd, onDropHere, justAdded, half, showSketch, collapsed, onToggleSketch, onToggleCollapsed, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove }: Props) {
   const { dict } = useI18n();
+  // the card is a drop target; only the handle starts a drag, so text in the inputs can still be selected
+  const dropTarget = {
+    onDragOver: (e: React.DragEvent) => e.preventDefault(),
+    onDrop: (e: React.DragEvent) => {
+      e.preventDefault();
+      onDropHere();
+    },
+  };
+  const handle = (
+    <span
+      draggable
+      role="img"
+      aria-label={dict.order.drag}
+      title={dict.order.drag}
+      className="hidden shrink-0 cursor-grab select-none px-1 text-lg leading-none text-muted hover:text-foreground active:cursor-grabbing lg:inline"
+      onDragStart={(e) => {
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", String(row.id));
+        const card = document.getElementById(`fitting-${row.id}`);
+        if (card) e.dataTransfer.setDragImage(card, 20, 20);
+        onDragStart();
+      }}
+      onDragEnd={onDragEnd}
+    >
+      ⠿
+    </span>
+  );
+  const moveButtons = (
+    <>
+      <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1 disabled:cursor-default disabled:opacity-40`} disabled={first} onClick={() => onMove(-1)} aria-label={dict.order.up} title={dict.order.up}>↑</button>
+      <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1 disabled:cursor-default disabled:opacity-40`} disabled={last} onClick={() => onMove(1)} aria-label={dict.order.down} title={dict.order.down}>↓</button>
+    </>
+  );
   const fieldLabel = (f: (typeof kindFields)[FittingKind][number]) =>
     `${dict.fields[f.key]}${f.optional ? ` (${dict.optional}: ${defaultConfig.reducerLengthMm})` : ""}`;
   // the (авто) hint or the reset link sits after the label, so reserve room for the longer one on the suggested field
-  const labels = [...kindFields[row.kind].map((f) => fieldLabel(f) + (autoKey(row.kind) === f.key ? ` ${dict.autoValue.length > dict.resetAuto.length ? `(${dict.autoValue})` : dict.resetAuto}` : "")), ...(hasAllowance(row.kind) ? [dict.allowanceCount.field] : []), dict.quantity, dict.insulation.field];
+  const labels = [dict.order.position, ...kindFields[row.kind].map((f) => fieldLabel(f) + (autoKey(row.kind) === f.key ? ` ${dict.autoValue.length > dict.resetAuto.length ? `(${dict.autoValue})` : dict.resetAuto}` : "")), ...(hasAllowance(row.kind) ? [dict.allowanceCount.field] : []), dict.quantity, dict.insulation.field];
   if (collapsed) {
     // one compact tile: number, kind and the typed values; the whole tile expands the card
     const summary = [...kindFields[row.kind].map((f) => row.values[f.key] ?? ""), row.quantity].map((v) => v || "–").join(" · ");
     return (
-      <div id={`fitting-${row.id}`} className={`${cardClass} flex scroll-mt-16 items-center gap-2 !p-2 ${justAdded ? "flash-card" : ""}`}>
+      <div id={`fitting-${row.id}`} {...dropTarget} className={`${cardClass} flex scroll-mt-16 items-center gap-2 !p-2 ${justAdded ? "flash-card" : ""}`}>
+        {handle}
         <button type="button" className="min-w-0 flex-1 text-left" onClick={onToggleCollapsed} aria-expanded={false} title={`${dict.expandCard}: ${kindTitle(row.kind, dict)}`}>
-          <span className="block text-sm font-medium leading-tight">{outcome && !outcome.ok && <span className="mr-1 text-red-600 dark:text-red-400" aria-label={dict.cardHasErrors} title={dict.cardHasErrors}>⚠</span>}{index + 1}. {kindTitle(row.kind, dict)}</span>
+          <span className="block text-sm font-medium leading-tight">{outcome && !outcome.ok && <span className="mr-1 text-red-600 dark:text-red-400" aria-label={dict.cardHasErrors} title={dict.cardHasErrors}>⚠</span>}{position}. {kindTitle(row.kind, dict)}</span>
           <span className="block truncate font-mono text-xs text-muted">{summary}</span>
         </button>
+        {moveButtons}
         <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1`} onClick={onClone} aria-label={dict.cloneItem} title={dict.cloneItem}>
           ⧉
         </button>
@@ -58,8 +102,9 @@ export function FittingCard({ row, index, justAdded, half, showSketch, collapsed
     );
   }
   return (
-    <div id={`fitting-${row.id}`} className={`${cardClass} col-span-full ${half ? "xl:col-span-2" : ""} scroll-mt-16 ${justAdded ? "flash-card" : ""}`}>
+    <div id={`fitting-${row.id}`} {...dropTarget} className={`${cardClass} col-span-full ${half ? "xl:col-span-2" : ""} scroll-mt-16 ${justAdded ? "flash-card" : ""}`}>
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <span className="flex self-center">{handle}</span>
         <button
           type="button"
           className={`h-14 w-20 shrink-0 sm:h-16 sm:w-24 rounded-md border bg-background p-1 hover:border-accent ${showSketch ? "border-accent" : "border-line"}`}
@@ -71,9 +116,10 @@ export function FittingCard({ row, index, justAdded, half, showSketch, collapsed
           <FittingSketch kind={row.kind} view="iso" thumb />
         </button>
         <h3 className="min-w-0 flex-1 self-center text-base font-medium leading-snug">
-          <span className="text-muted">{index + 1}.</span> {kindTitle(row.kind, dict)}
+          <span className="text-muted">{position}.</span> {kindTitle(row.kind, dict)}
         </h3>
         <div className="flex max-w-full flex-wrap gap-2">
+          {moveButtons}
           <button type="button" className={buttonClass} onClick={onToggleCollapsed}>
             {dict.collapseCard}
           </button>
@@ -91,6 +137,14 @@ export function FittingCard({ row, index, justAdded, half, showSketch, collapsed
         className="grid grid-cols-2 gap-3 sm:[grid-template-columns:repeat(var(--cols),minmax(0,1fr))]"
         style={{ "--cols": fieldColumns(labels) } as React.CSSProperties}
       >
+        <TextField
+          label={dict.order.position}
+          info={dict.order.positionInfo}
+          inputMode="text"
+          value={row.position ?? ""}
+          placeholder={String(index + 1)}
+          onChange={(position) => onPatch({ position })}
+        />
         {kindFields[row.kind].map((f) => {
           const hint = autoKey(row.kind) === f.key ? (isAuto(row, f.key) && (row.values[f.key] ?? "") !== "" ? dict.autoValue : undefined) : undefined;
           const action = autoKey(row.kind) === f.key && !isAuto(row, f.key) ? { label: dict.resetAuto, onClick: () => onReset(f.key) } : undefined;
