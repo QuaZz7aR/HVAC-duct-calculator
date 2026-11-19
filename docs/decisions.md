@@ -73,6 +73,8 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0056](adr/0056-clone-keeps-the-card-view.md) | A clone opens folded or open, as its original | 2026-11-19 | Accepted |
 | [0057](adr/0057-section-highlight-after-results-jump.md) | A section is highlighted after a jump from its results title | 2026-11-19 | Accepted |
 | [0058](adr/0058-phone-cards-instead-of-tables.md) | On a phone the results, sheet list and insulation list are blocks, not tables | 2026-11-19 | Accepted |
+| [0059](adr/0059-phone-sketch-under-the-thumbnail.md) | On a phone the open sketch sits under the thumbnail | 2026-11-19 | Accepted |
+| [0060](adr/0060-fold-button-set-apart.md) | The card's «Згорнути» button comes first and is tinted | 2026-11-19 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.
