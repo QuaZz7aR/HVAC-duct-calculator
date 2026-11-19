@@ -3,7 +3,16 @@ export const highlightMs = 1500;
 
 /** Scrolls to a fitting card and outlines it for `highlightMs` once the scroll has stopped. */
 export function scrollToCard(id: number | string) {
-  const el = document.getElementById(`fitting-${id}`);
+  scrollAndHighlight(`fitting-${id}`);
+}
+
+/** The same for a whole section of the list (its frame and title, ADR 0057). */
+export function scrollToSection(firstRowId: number | string) {
+  scrollAndHighlight(`section-${firstRowId}`);
+}
+
+function scrollAndHighlight(elementId: string) {
+  const el = document.getElementById(elementId);
   if (!el) return;
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let done = false;

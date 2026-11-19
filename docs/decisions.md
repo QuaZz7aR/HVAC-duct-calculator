@@ -71,6 +71,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0054](adr/0054-highlight-card-after-results-jump.md) | The card is highlighted for 1.5 s after a jump from the results | 2026-11-19 | Accepted |
 | [0055](adr/0055-sections-in-the-results.md) | The results table shows the list sections with their sums | 2026-11-19 | Accepted |
 | [0056](adr/0056-clone-keeps-the-card-view.md) | A clone opens folded or open, as its original | 2026-11-19 | Accepted |
+| [0057](adr/0057-section-highlight-after-results-jump.md) | A section is highlighted after a jump from its results title | 2026-11-19 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.

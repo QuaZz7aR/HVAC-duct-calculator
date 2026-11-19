@@ -1,6 +1,6 @@
 import type { Calculation, RowOutcome } from "@/lib/form/calculate";
 import type { FormRow } from "@/lib/form/fields";
-import { scrollToCard } from "./highlightCard";
+import { scrollToCard, scrollToSection } from "./highlightCard";
 import { useI18n } from "@/components/i18n";
 import { positionLabel, positionSpan } from "@/lib/form/order";
 import { groupRuns } from "./FittingList";
@@ -78,7 +78,7 @@ function SectionRows({ kind, items, outcome }: { kind: FormRow["kind"]; items: {
     <>
       <tr className="border-t-2 border-line bg-accent-soft">
         <td colSpan={4} className="pt-3 pb-1 pr-3 font-medium">
-          <button type="button" className="text-left hover:text-accent hover:underline" title={dict.results.goToCard} onClick={() => document.getElementById(`section-${items[0].row.id}`)?.scrollIntoView({ block: "start", behavior: "smooth" })}>
+          <button type="button" className="text-left hover:text-accent hover:underline" title={dict.results.goToCard} onClick={() => scrollToSection(items[0].row.id)}>
             <span className="text-muted">{positionSpan(items.map((i) => positionLabel(i.row, i.index)))}.</span> {kindTitle(kind, dict)} <span className="text-muted">× {items.length}</span>
           </button>
         </td>
