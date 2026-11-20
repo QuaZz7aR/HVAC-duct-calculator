@@ -82,6 +82,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0065](adr/0065-tiles-read-down-the-columns.md) | Folded tiles read down the columns, not along the rows | 2026-11-20 | Accepted |
 | [0066](adr/0066-tiles-of-a-row-share-its-height.md) | Tiles of a row share its height (column-filled grid) | 2026-11-20 | Accepted |
 | [0067](adr/0067-sections-pair-up.md) | Half-width sections only in pairs; a lone section is full width | 2026-11-20 | Accepted |
+| [0068](adr/0068-glide-only-on-reorder.md) | Cards glide only on a reorder, not on add or remove | 2026-11-20 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.

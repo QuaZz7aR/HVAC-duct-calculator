@@ -89,7 +89,9 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
   useLayoutEffect(() => {
     const cards = [...document.querySelectorAll<HTMLElement>("#items [id^=fitting-]")];
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (lastOrder.current !== orderKey && !reduce) {
+    // only a pure reorder glides (same cards, new order); an added or removed card would shift every tile of a column-filled grid (ADR 0068)
+    const sameSet = (a: string, b: string) => a.split(",").sort().join() === b.split(",").sort().join();
+    if (lastOrder.current !== orderKey && sameSet(lastOrder.current, orderKey) && !reduce) {
       for (const el of cards) {
         const old = places.current.get(el.id);
         if (!old) continue;
@@ -105,6 +107,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
         });
       }
     }
+    if (lastOrder.current !== orderKey) places.current.clear();
     lastOrder.current = orderKey;
   });
   // the old places are taken just before an order change, so scrolling and folding in between do not count
