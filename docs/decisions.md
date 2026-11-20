@@ -93,6 +93,9 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0076](adr/0076-tile-buttons-two-rows.md) | Folded tile buttons in two rows below xl | 2026-11-20 | Superseded by 0077 |
 | [0077](adr/0077-tile-buttons-two-rows-everywhere.md) | Folded tile buttons in two rows at every width | 2026-11-20 | Accepted |
 | [0078](adr/0078-sticky-header-mid-width.md) | Sticky results header between sm and lg (table box scrolls) | 2026-11-20 | Accepted |
+| [0079](adr/0079-hood-imported-as-a-cap.md) | A hood (зонт) is imported as a cap, the name wins over the code | 2026-11-20 | Accepted |
+| [0080](adr/0080-card-buttons-two-rows-in-two-columns.md) | Open card buttons in two rows in the two-column layout | 2026-11-20 | Accepted |
+| [0081](adr/0081-sketches-closed-by-default.md) | Full sketches closed by default (thumbnail only) | 2026-11-20 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.

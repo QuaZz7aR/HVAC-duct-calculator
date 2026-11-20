@@ -142,12 +142,16 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
         <h3 className="min-w-0 flex-1 self-center text-base font-medium leading-snug">
           <span className="text-muted">{position}.</span> {kindTitle(row.kind, dict)}
         </h3>
-        <div className="flex max-w-full flex-wrap gap-2">
+        {/* two-column mode: fold and move in the top row, clone, kind and remove below (ADR 0080); otherwise one wrapping row */}
+        <div className={`flex max-w-full flex-wrap gap-2 ${half ? "xl:flex-col xl:items-end" : ""}`}>
+          <div className={half ? "contents xl:flex xl:gap-2" : "contents"}>
           <button type="button" className={foldButtonClass} onClick={onToggleCollapsed}>
             <svg aria-hidden="true" viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10l4-4 4 4" /></svg>
             {dict.collapseCard}
           </button>
           {moveButtons}
+          </div>
+          <div className={half ? "contents xl:flex xl:gap-2" : "contents"}>
           <button type="button" className={buttonClass} onClick={onClone}>
             {dict.cloneItem}
           </button>
@@ -155,6 +159,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
           <button type="button" className={dangerButtonClass} onClick={onRemove}>
             {dict.removeItem}
           </button>
+          </div>
         </div>
       </div>
       {/* phone: the open sketch sits right under the thumbnail (ADR 0059); from sm up it stays below the inputs */}

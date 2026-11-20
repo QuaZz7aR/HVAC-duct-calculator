@@ -49,7 +49,10 @@ const words: [RegExp, Family][] = [
 ];
 
 // parts this site does not compute (ADR 0061): a name with one of these is never matched by a word inside it («Адаптер ..., 2 врізки»)
-const notOurs = /утк|адаптер|короб|зонт|дифуз|диффуз|решітк|решетк|клапан|шумоглуш|offset|adapter|plenum/i;
+const notOurs = /утк|адаптер|короб|дифуз|диффуз|решітк|решетк|клапан|шумоглуш|offset|adapter|plenum/i;
+
+// a hood over kitchen equipment is a cap by its metal: lid A x B plus a rim (ADR 0079); the name wins over a code such as ПП
+const hood = /зонт|парасольк|(?<!\p{L})hood/iu;
 
 // Latin letters typed in place of their Cyrillic look-alikes (KB, ПO) in a code
 const lookAlike: Record<string, string> = { A: 'А', B: 'В', C: 'С', E: 'Е', H: 'Н', I: 'І', K: 'К', M: 'М', O: 'О', P: 'Р', T: 'Т', X: 'Х' };
@@ -123,6 +126,7 @@ const isFamily = (k: FittingKind | Family): k is Family => !/^(round|rect)/.test
  * the name is resolved by the sizes. Undefined when nothing is recognised: the row is shown for a manual choice.
  */
 export function recognizeKind(code: string | undefined, name: string | undefined, sizes: NameSize[]): FittingKind | undefined {
+  if (name && hood.test(name)) return byShape('cap', sizes);
   const fromCode = code ? codeOf(code) : undefined;
   if (fromCode && !isFamily(fromCode)) return fromCode;
   if (fromCode) return byShape(fromCode, sizes);
