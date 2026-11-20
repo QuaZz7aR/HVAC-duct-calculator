@@ -252,10 +252,10 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
       {/* one grid for the page: single cards and folded tiles share the 1-3 columns, a repeated kind is a full-width section with a grid of its own; open cards span the full width */}
       <div className={gridClass}>
         {runs.map(({ kind, items }, r) => {
-          // a half-width section only beside another one: sections pair up in list order, a section without a partner keeps the full width (ADR 0067)
+          // a half-width section only beside another one, both folded (an open section takes the full width, ADR 0069): sections pair up in list order, a section without a partner keeps the full width (ADR 0067)
           if (r === 0) {
             paired.clear();
-            const canHalf = (k: number) => (runs[k]?.items.length ?? 0) > 1 && (twoColumns || runs[k].items.every((i) => isFolded(i.row.id)));
+            const canHalf = (k: number) => (runs[k]?.items.length ?? 0) > 1 && runs[k].items.every((i) => isFolded(i.row.id));
             for (let k = 0; k < runs.length; k++) if (canHalf(k) && canHalf(k + 1)) { paired.add(k); paired.add(k + 1); k++; }
           }
           const lone = (k: number) => runs[k]?.items.length === 1 && isFolded(runs[k].items[0].row.id);
