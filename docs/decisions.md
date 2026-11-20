@@ -89,6 +89,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0072](adr/0072-section-frame-accent.md) | Section frame in the accent colour at 35 % | 2026-11-20 | Accepted |
 | [0073](adr/0073-import-size-conflicts.md) | Import warns when the name and the size columns disagree | 2026-11-20 | Accepted |
 | [0074](adr/0074-import-rows-without-sizes.md) | Imported rows without sizes are added with a warning | 2026-11-20 | Accepted |
+| [0075](adr/0075-sticky-results-header.md) | Results table header stays on screen while scrolling | 2026-11-20 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.
