@@ -151,8 +151,9 @@ export function ResultsTable({ rows, outcome, calc }: Props) {
       ) : (
         <>
         <PhoneResults rows={rows} outcome={outcome} />
-        {/* a scroll box would hold the sticky header inside itself, so from lg (where the table fits) the box does not clip */}
-        <div className="hidden overflow-x-auto sm:block lg:overflow-x-visible">
+        {/* below lg the table may need a sideways scroll, so the box scrolls both ways (capped height) and the header sticks inside it;
+            from lg the table fits, the box does not clip and the header sticks to the screen (ADRs 0075, 0078) */}
+        <div className="hidden max-h-[80vh] overflow-auto sm:block lg:max-h-none lg:overflow-visible">
           <table className="w-full text-sm">
             {/* the column titles stay at the top of the screen while the rows scroll under them (ADR 0075) */}
             <thead className={`sticky top-0 z-10 bg-panel text-left text-xs shadow-[0_1px_0_var(--color-line)] ${mutedClass}`}>
