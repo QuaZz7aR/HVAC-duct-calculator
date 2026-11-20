@@ -265,8 +265,12 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
             let end = r;
             while (lone(end + 1)) end++;
             return (
-              <div key={`tiles-${items[0].row.id}`} className={`col-span-full ${tileColumns}`} style={rowVars(end - r + 1)}>
-                {runs.slice(r, end + 1).map((x) => tile(card(x.items[0].row, x.items[0].index), x.items[0].row.id))}
+              // a dashed frame and a muted title set the single fittings apart from the sections (ADR 0070)
+              <div key={`tiles-${items[0].row.id}`} className="col-span-full space-y-3 rounded-lg border border-dashed border-line p-3">
+                <h3 className="text-sm font-medium text-muted">{dict.singlesTitle} <span>× {end - r + 1}</span></h3>
+                <div className={tileColumns} style={rowVars(end - r + 1)}>
+                  {runs.slice(r, end + 1).map((x) => tile(card(x.items[0].row, x.items[0].index), x.items[0].row.id))}
+                </div>
               </div>
             );
           }

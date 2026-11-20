@@ -26,6 +26,8 @@ export const en: Dictionary = {
     note: 'The seam allowance is added to the area of every fitting except elbows (they have their own cutting coefficients). The order margin does not change the calculated area: it only increases “to order” and the sheet count.',
   },
   itemsTitle: 'Fittings',
+  // the frame around a stretch of fittings outside any section (ADR 0070)
+  singlesTitle: 'Single fittings',
   clearAll: { button: 'Delete all', confirm: (n: number) => `Delete all fittings (${n})?`, yes: 'Yes, delete', no: 'Cancel' },
   addItem: 'Add fitting',
   defaultsNote: 'Typical default values. Change them to your size.',
