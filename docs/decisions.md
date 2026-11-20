@@ -78,6 +78,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0061](adr/0061-import-from-excel.md) | Import of a spec table from .xlsx / .csv: column mapping, kind recognition, every row shown | 2026-11-19 | Accepted |
 | [0062](adr/0062-delete-all-fittings.md) | «Видалити всі» over the list, confirmed by a second tap | 2026-11-19 | Accepted |
 | [0063](adr/0063-help-in-the-import-dialog.md) | «i» help in the import dialog and an import step in «Довідка» | 2026-11-20 | Accepted |
+| [0064](adr/0064-sections-in-two-columns.md) | Sections of a repeated kind in two columns from xl | 2026-11-20 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.

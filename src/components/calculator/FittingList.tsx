@@ -60,7 +60,11 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
   const { dict } = useI18n();
   const { sketchOpen, isFolded, setFoldedMany } = view;
   // two-column mode (desktop, xl+): four tile columns, an open card spans two of them
-  const gridClass = twoColumns ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 min-[1800px]:grid-cols-5";
+  // an even number of columns from xl, so two sections of a repeated kind stand side by side (ADR 0064)
+  const gridClass = twoColumns ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 min-[1800px]:grid-cols-6";
+  // a section takes half the page from xl, its tiles in a grid of half as many columns
+  const halfSection = twoColumns ? "xl:col-span-2" : "xl:col-span-2 min-[1800px]:col-span-3";
+  const halfGrid = twoColumns ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2" : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 min-[1800px]:grid-cols-3";
 
   // live preview while dragging (ADR 0049): the list is shown as if the card were already dropped on the card under the pointer
   const [drag, setDrag] = useState<{ ids: number[]; overId: number; prevId?: number; touch?: boolean } | null>(null);
@@ -237,6 +241,8 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
           const groupFolded = items.every((i) => isFolded(i.row.id));
           const ids = items.map((i) => i.row.id);
           const dragging = !!drag && ids.every((id) => drag.ids.includes(id));
+          // half width when its cards are tiles (or open cards are half width anyway); an open full card keeps the full width
+          const half = twoColumns || groupFolded;
           // a section moves as a whole past the neighbouring run (ADR 0052)
           const moveSection = (target: number | undefined) => {
             if (target === undefined) return;
@@ -247,7 +253,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
           const next = runs[r + 1]?.items.at(-1)?.row.id;
           return (
             // the dragged section keeps its key while the preview merges it with a neighbour, so its handle stays mounted
-            <div key={`${kind}-${drag && ids.includes(drag.ids[0]) ? drag.ids[0] : items[0].row.id}`} id={`section-${items[0].row.id}`} className={`col-span-full scroll-mt-16 space-y-3 rounded-lg border border-line p-3 ${dragging ? "border-2 border-dashed !border-accent bg-accent-soft opacity-60" : ""}`}>
+            <div key={`${kind}-${drag && ids.includes(drag.ids[0]) ? drag.ids[0] : items[0].row.id}`} id={`section-${items[0].row.id}`} className={`col-span-full ${half ? halfSection : ""} scroll-mt-16 space-y-3 rounded-lg border border-line p-3 ${dragging ? "border-2 border-dashed !border-accent bg-accent-soft opacity-60" : ""}`}>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span
                   draggable
@@ -282,7 +288,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
                   {groupFolded ? dict.expandGroup : dict.collapseGroup}
                 </button>
               </div>
-              <div className={gridClass}>{items.map(({ row, index }) => card(row, index))}</div>
+              <div className={half ? halfGrid : gridClass}>{items.map(({ row, index }) => card(row, index))}</div>
             </div>
           );
         })}
