@@ -203,6 +203,11 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
       {showSketch && <div className="hidden sm:block">{sketch}</div>}
       {outcome && !outcome.ok && <ErrorList issues={outcome.issues} />}
       {outcome?.ok && <WarningList warnings={outcome.result.warnings} />}
+      {row.sizeConflicts && (
+        <ul aria-label={dict.warnings.title} className="mt-2 space-y-0.5 text-sm text-amber-700 dark:text-amber-400">
+          {row.sizeConflicts.map((c) => <li key={c.field}>⚠ {dict.import.conflict(dict.fields[c.field], c.name, c.column)}</li>)}
+        </ul>
+      )}
     </div>
   );
 }

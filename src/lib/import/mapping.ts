@@ -2,7 +2,7 @@ import type { CalcConfig } from '../calc/config';
 import { mToMm } from '../calc/units';
 import { applyAutoDefaults, setFieldValue } from '../form/auto-defaults';
 import { defaultValues } from '../form/defaults';
-import { initialValues, kindFields, newRow, type FieldKey, type FittingKind, type FormRow } from '../form/fields';
+import { initialValues, kindFields, newRow, type FieldKey, type FittingKind, type FormRow, type SizeConflict } from '../form/fields';
 import { parseName, recognizeKind, type NameSize } from './recognize';
 import type { Cell, Table } from './xlsx';
 
@@ -185,6 +185,8 @@ export interface ImportRow {
   position?: string;
   /** The sizes as read, so a kind chosen by hand reads them again. */
   raw: RawSizes;
+  /** Fields whose size in the name differs from the size column (ADR 0073); the column wins. */
+  conflicts?: SizeConflict[];
 }
 
 interface RawSizes { cells: Partial<Record<SizeSlot, number>>; sizes: NameSize[]; extra: Partial<Record<SizeSlot, number>> }
@@ -288,7 +290,18 @@ export function withKind(row: ImportRow, kind: FittingKind | undefined): ImportR
   const { cells, sizes, extra } = row.raw;
   // the angle in a name is only an angle on an elbow («ППК ..., тип 4» is not 4°)
   const named = { ...(/Elbow$/.test(kind) ? extra : { L: extra.L }), ...nameSlots(kind, sizes) };
-  return { ...row, kind, status: 'ok', values: rowValues(kind, cells, named) };
+  return { ...row, kind, status: 'ok', values: rowValues(kind, cells, named), conflicts: sizeConflicts(kind, cells, named) };
+}
+
+/** Fields that both a size column and the name fill, with different values (a typo in one of them); the column value is used. */
+export function sizeConflicts(kind: FittingKind, cells: Partial<Record<SizeSlot, number>>, fromName: Partial<Record<SizeSlot, number>>): SizeConflict[] | undefined {
+  const out: SizeConflict[] = [];
+  for (const [slot, field] of Object.entries(slots[kind]) as [SizeSlot, FieldKey][]) {
+    const c = cells[slot];
+    const n = fromName[slot];
+    if (c !== undefined && n !== undefined && Math.abs(c - n) > 1e-6) out.push({ field, name: fmtMm(n), column: fmtMm(c) });
+  }
+  return out.length ? out : undefined;
 }
 
 /** Form rows of the recognised rows, in file order; missing fields take the kind's prefills, the elbow radius its suggestion. */
@@ -305,6 +318,7 @@ export function toFormRows(rows: ImportRow[], firstId: number, config: CalcConfi
       const v = r.values[f.key];
       if (v !== undefined) row = setFieldValue(row, f.key, v, config);
     }
+    if (r.conflicts) row = { ...row, sizeConflicts: r.conflicts };
     out.push(row);
   }
   return out;

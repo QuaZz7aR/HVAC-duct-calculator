@@ -342,6 +342,9 @@ export const en: Dictionary = {
     replace: 'Replace the current list',
     append: 'Add to the end of the list',
     submit: (n: number) => `Add ${n}`,
+    conflict: (field: string, name: string, column: string) =>
+      `${field}: ${name} in the fitting's name, ${column} in the table column. The column value is used, please check.`,
+    conflictShort: (n: number) => `sizes in the name and the columns differ (${n})`,
     another: 'Another file',
     errors: {
       'import.notXlsx': 'Could not read the file: it is not .xlsx. Save an old .xls file as .xlsx in Excel.',

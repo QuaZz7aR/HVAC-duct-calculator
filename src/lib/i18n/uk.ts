@@ -364,6 +364,10 @@ export const uk = {
     replace: 'Замінити поточний список',
     append: 'Додати в кінець списку',
     submit: (n: number) => `Додати ${n}`,
+    // a size in the name differs from its column (ADR 0073)
+    conflict: (field: string, name: string, column: string) =>
+      `${field}: у назві деталі ${name}, у колонці таблиці ${column}. Взято значення з колонки, перевірте.`,
+    conflictShort: (n: number) => `розміри в назві й у колонках різняться (${n})`,
     another: 'Інший файл',
     errors: {
       'import.notXlsx': 'Не вдалося прочитати файл: це не .xlsx. Старий формат .xls збережіть в Excel як .xlsx.',

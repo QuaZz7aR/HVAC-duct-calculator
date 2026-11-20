@@ -87,6 +87,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0070](adr/0070-single-fittings-frame.md) | Folded single fittings in a dashed «Окремі деталі» frame | 2026-11-20 | Accepted |
 | [0071](adr/0071-sections-full-width-again.md) | Sections take the full width again (reverts 0064, 0067, 0069) | 2026-11-20 | Accepted |
 | [0072](adr/0072-section-frame-accent.md) | Section frame in the accent colour at 35 % | 2026-11-20 | Accepted |
+| [0073](adr/0073-import-size-conflicts.md) | Import warns when the name and the size columns disagree | 2026-11-20 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.

@@ -76,7 +76,12 @@ export interface FormRow {
   position?: string;
   /** The values are the untouched defaults of the kind (see defaults.ts); the card says so until the user edits something. */
   preset?: boolean;
+  /** Imported sizes whose name and size column disagree (ADR 0073): the column value was taken; shown as a warning until the field is edited. */
+  sizeConflicts?: SizeConflict[];
 }
+
+/** One field whose size in the fitting's name differs from the value in its column of the imported file (both in mm or degrees). */
+export interface SizeConflict { field: FieldKey; name: string; column: string }
 
 export function initialValues(kind: FittingKind): FormRow['values'] {
   return Object.fromEntries(kindFields[kind].map((f) => [f.key, f.initial ?? '']));
