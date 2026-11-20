@@ -101,13 +101,16 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
             </span>
           )}
         </button>
-        {moveButtons}
-        <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1`} onClick={onClone} aria-label={dict.cloneItem} title={dict.cloneItem}>
-          ⧉
-        </button>
-        <button type="button" className={`${dangerButtonClass} shrink-0 !px-2 !py-1`} onClick={onRemove} aria-label={dict.removeItem} title={dict.removeItem}>
-          ×
-        </button>
+        {/* below xl the four buttons stand in two rows, so the tile keeps room for the name (ADR 0076) */}
+        <div className="grid shrink-0 grid-cols-2 gap-1 xl:flex xl:gap-2">
+          {moveButtons}
+          <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1`} onClick={onClone} aria-label={dict.cloneItem} title={dict.cloneItem}>
+            ⧉
+          </button>
+          <button type="button" className={`${dangerButtonClass} shrink-0 !px-2 !py-1`} onClick={onRemove} aria-label={dict.removeItem} title={dict.removeItem}>
+            ×
+          </button>
+        </div>
       </div>
     );
   }
