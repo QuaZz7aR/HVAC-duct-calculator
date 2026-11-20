@@ -94,14 +94,23 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
         <button type="button" className="min-w-0 flex-1 text-left" onClick={onToggleCollapsed} aria-expanded={false} title={`${dict.expandCard}: ${kindTitle(row.kind, dict)}`}>
           <span className="block text-sm font-medium leading-tight">{outcome && !outcome.ok && <span className="mr-1 text-red-600 dark:text-red-400" aria-label={dict.cardHasErrors} title={dict.cardHasErrors}>⚠</span>}{position}. {kindTitle(row.kind, dict)}</span>
           <span className="block truncate font-mono text-xs text-muted">{summary}</span>
+          {row.noSizes && <span className="block truncate text-xs text-amber-700 dark:text-amber-400" title={dict.import.noSizes}>⚠ {dict.import.noSizesShort}</span>}
+          {row.sizeConflicts && row.sizeConflicts.length > 0 && (
+            <span className="block truncate text-xs text-amber-700 dark:text-amber-400" title={row.sizeConflicts.map((c) => dict.import.conflict(dict.fields[c.field], c.name, c.column)).join("\n")}>
+              ⚠ {dict.import.conflictShort(row.sizeConflicts.length)}
+            </span>
+          )}
         </button>
-        {moveButtons}
-        <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1`} onClick={onClone} aria-label={dict.cloneItem} title={dict.cloneItem}>
-          ⧉
-        </button>
-        <button type="button" className={`${dangerButtonClass} shrink-0 !px-2 !py-1`} onClick={onRemove} aria-label={dict.removeItem} title={dict.removeItem}>
-          ×
-        </button>
+        {/* the four buttons stand in two rows, so the tile keeps room for the name (ADRs 0076, 0077) */}
+        <div className="grid shrink-0 grid-cols-2 gap-1">
+          {moveButtons}
+          <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1`} onClick={onClone} aria-label={dict.cloneItem} title={dict.cloneItem}>
+            ⧉
+          </button>
+          <button type="button" className={`${dangerButtonClass} shrink-0 !px-2 !py-1`} onClick={onRemove} aria-label={dict.removeItem} title={dict.removeItem}>
+            ×
+          </button>
+        </div>
       </div>
     );
   }
@@ -203,6 +212,12 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
       {showSketch && <div className="hidden sm:block">{sketch}</div>}
       {outcome && !outcome.ok && <ErrorList issues={outcome.issues} />}
       {outcome?.ok && <WarningList warnings={outcome.result.warnings} />}
+      {row.noSizes && <p className="mt-2 text-sm text-amber-700 dark:text-amber-400">⚠ {dict.import.noSizes}</p>}
+      {row.sizeConflicts && (
+        <ul aria-label={dict.warnings.title} className="mt-2 space-y-0.5 text-sm text-amber-700 dark:text-amber-400">
+          {row.sizeConflicts.map((c) => <li key={c.field}>⚠ {dict.import.conflict(dict.fields[c.field], c.name, c.column)}</li>)}
+        </ul>
+      )}
     </div>
   );
 }

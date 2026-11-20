@@ -60,7 +60,16 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
   const { dict } = useI18n();
   const { sketchOpen, isFolded, setFoldedMany } = view;
   // two-column mode (desktop, xl+): four tile columns, an open card spans two of them
-  const gridClass = twoColumns ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 min-[1800px]:grid-cols-5";
+  // tile columns per width; every section takes the full width (ADR 0071)
+  const gridClass = twoColumns ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 min-[1800px]:grid-cols-6";
+  // folded tiles read down the columns (ADR 0065): a grid filled column by column, with as many rows as the column count needs
+  // at each width (--r1, --r2...), so the tiles of a row share its height (ADR 0066)
+  const rowsAt = "[grid-template-rows:repeat(var(--r1),auto)] sm:[grid-template-rows:repeat(var(--r2),auto)] lg:[grid-template-rows:repeat(var(--r3),auto)]";
+  const tileColumns = twoColumns
+    ? `grid grid-flow-col gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ${rowsAt} xl:[grid-template-rows:repeat(var(--r4),auto)]`
+    : `grid grid-flow-col gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 min-[1800px]:grid-cols-6 ${rowsAt} xl:[grid-template-rows:repeat(var(--r4),auto)] min-[1800px]:[grid-template-rows:repeat(var(--r6),auto)]`;
+  const rowVars = (n: number) => Object.fromEntries([1, 2, 3, 4, 6].map((c) => [`--r${c}`, Math.ceil(n / c)])) as React.CSSProperties;
+  const tile = (node: React.ReactNode, key: number) => <div key={key} className="min-w-0 [&>*]:h-full">{node}</div>;
 
   // live preview while dragging (ADR 0049): the list is shown as if the card were already dropped on the card under the pointer
   const [drag, setDrag] = useState<{ ids: number[]; overId: number; prevId?: number; touch?: boolean } | null>(null);
@@ -73,7 +82,9 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
   useLayoutEffect(() => {
     const cards = [...document.querySelectorAll<HTMLElement>("#items [id^=fitting-]")];
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (lastOrder.current !== orderKey && !reduce) {
+    // only a pure reorder glides (same cards, new order); an added or removed card would shift every tile of a column-filled grid (ADR 0068)
+    const sameSet = (a: string, b: string) => a.split(",").sort().join() === b.split(",").sort().join();
+    if (lastOrder.current !== orderKey && sameSet(lastOrder.current, orderKey) && !reduce) {
       for (const el of cards) {
         const old = places.current.get(el.id);
         if (!old) continue;
@@ -89,6 +100,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
         });
       }
     }
+    if (lastOrder.current !== orderKey) places.current.clear();
     lastOrder.current = orderKey;
   });
   // the old places are taken just before an order change, so scrolling and folding in between do not count
@@ -233,6 +245,22 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
       {/* one grid for the page: single cards and folded tiles share the 1-3 columns, a repeated kind is a full-width section with a grid of its own; open cards span the full width */}
       <div className={gridClass}>
         {runs.map(({ kind, items }, r) => {
+          const lone = (k: number) => runs[k]?.items.length === 1 && isFolded(runs[k].items[0].row.id);
+          // a stretch of single folded tiles is one block whose tiles run down its columns; its first run renders it
+          if (lone(r)) {
+            if (lone(r - 1)) return null;
+            let end = r;
+            while (lone(end + 1)) end++;
+            return (
+              // a dashed frame and a muted title set the single fittings apart from the sections (ADR 0070)
+              <div key={`tiles-${items[0].row.id}`} className="col-span-full space-y-3 rounded-lg border border-dashed border-line p-3">
+                <h3 className="text-sm font-medium text-muted">{dict.singlesTitle} <span>× {end - r + 1}</span></h3>
+                <div className={tileColumns} style={rowVars(end - r + 1)}>
+                  {runs.slice(r, end + 1).map((x) => tile(card(x.items[0].row, x.items[0].index), x.items[0].row.id))}
+                </div>
+              </div>
+            );
+          }
           if (items.length === 1) return card(items[0].row, items[0].index);
           const groupFolded = items.every((i) => isFolded(i.row.id));
           const ids = items.map((i) => i.row.id);
@@ -247,7 +275,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
           const next = runs[r + 1]?.items.at(-1)?.row.id;
           return (
             // the dragged section keeps its key while the preview merges it with a neighbour, so its handle stays mounted
-            <div key={`${kind}-${drag && ids.includes(drag.ids[0]) ? drag.ids[0] : items[0].row.id}`} id={`section-${items[0].row.id}`} className={`col-span-full scroll-mt-16 space-y-3 rounded-lg border border-line p-3 ${dragging ? "border-2 border-dashed !border-accent bg-accent-soft opacity-60" : ""}`}>
+            <div key={`${kind}-${drag && ids.includes(drag.ids[0]) ? drag.ids[0] : items[0].row.id}`} id={`section-${items[0].row.id}`} className={`col-span-full scroll-mt-16 space-y-3 rounded-lg border border-accent/35 p-3 ${dragging ? "border-2 border-dashed !border-accent bg-accent-soft opacity-60" : ""}`}>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span
                   draggable
@@ -282,7 +310,11 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
                   {groupFolded ? dict.expandGroup : dict.collapseGroup}
                 </button>
               </div>
-              <div className={gridClass}>{items.map(({ row, index }) => card(row, index))}</div>
+              {groupFolded ? (
+                <div className={tileColumns} style={rowVars(items.length)}>{items.map(({ row, index }) => tile(card(row, index), row.id))}</div>
+              ) : (
+                <div className={gridClass}>{items.map(({ row, index }) => card(row, index))}</div>
+              )}
             </div>
           );
         })}

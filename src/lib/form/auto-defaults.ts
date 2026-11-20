@@ -39,6 +39,12 @@ export function applyAutoDefaults(row: FormRow, config: CalcConfig): FormRow {
  */
 export function setFieldValue(row: FormRow, key: FieldKey, value: string, config: CalcConfig): FormRow {
   let next: FormRow = { ...row, values: { ...row.values, [key]: value }, preset: false };
+  // an edited field settles an import conflict on it (ADR 0073)
+  if (next.noSizes) next = { ...next, noSizes: undefined };
+  if (row.sizeConflicts?.some((c) => c.field === key)) {
+    const rest = row.sizeConflicts.filter((c) => c.field !== key);
+    next = { ...next, sizeConflicts: rest.length ? rest : undefined };
+  }
   if (autoKey(row.kind) === key) {
     next = { ...next, manual: [...(row.manual ?? []).filter((k) => k !== key), key] };
   }

@@ -60,7 +60,7 @@ export function useCalculator() {
   const update = (id: number, patch: Partial<FormRow>) =>
     setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch, preset: false } : r)));
   const setKind = (id: number, kind: FittingKind) =>
-    setRows((rs) => rs.map((r) => (r.id === id ? { ...withKind(r, kind, defaultValues(kind), built.config), preset: true } : r)));
+    setRows((rs) => rs.map((r) => (r.id === id ? { ...withKind(r, kind, defaultValues(kind), built.config), preset: true, sizeConflicts: undefined, noSizes: undefined } : r)));
   // size-dependent fields (elbow radius) follow the size until the user types over them
   const setValue = (id: number, key: FieldKey, value: string) =>
     setRows((rs) => rs.map((r) => (r.id === id ? setFieldValue(r, key, value, built.config) : r)));

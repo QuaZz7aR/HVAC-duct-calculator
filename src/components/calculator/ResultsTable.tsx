@@ -151,9 +151,12 @@ export function ResultsTable({ rows, outcome, calc }: Props) {
       ) : (
         <>
         <PhoneResults rows={rows} outcome={outcome} />
-        <div className="hidden overflow-x-auto sm:block">
+        {/* below lg the table may need a sideways scroll, so the box scrolls both ways (capped height) and the header sticks inside it;
+            from lg the table fits, the box does not clip and the header sticks to the screen (ADRs 0075, 0078) */}
+        <div className="hidden max-h-[80vh] overflow-auto sm:block lg:max-h-none lg:overflow-visible">
           <table className="w-full text-sm">
-            <thead className={`text-left text-xs ${mutedClass}`}>
+            {/* the column titles stay at the top of the screen while the rows scroll under them (ADR 0075) */}
+            <thead className={`sticky top-0 z-10 bg-panel text-left text-xs shadow-[0_1px_0_var(--color-line)] ${mutedClass}`}>
               <tr>
                 <th className="py-1 pr-3">{dict.results.item}</th>
                 <th className="px-2 text-right">{dict.quantity}</th>

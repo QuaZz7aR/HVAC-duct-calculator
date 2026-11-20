@@ -77,6 +77,22 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0060](adr/0060-fold-button-set-apart.md) | The card's «Згорнути» button comes first and is tinted | 2026-11-19 | Accepted |
 | [0061](adr/0061-import-from-excel.md) | Import of a spec table from .xlsx / .csv: column mapping, kind recognition, every row shown | 2026-11-19 | Accepted |
 | [0062](adr/0062-delete-all-fittings.md) | «Видалити всі» over the list, confirmed by a second tap | 2026-11-19 | Accepted |
+| [0063](adr/0063-help-in-the-import-dialog.md) | «i» help in the import dialog and an import step in «Довідка» | 2026-11-20 | Accepted |
+| [0064](adr/0064-sections-in-two-columns.md) | Sections of a repeated kind in two columns from xl | 2026-11-20 | Superseded by 0071 |
+| [0065](adr/0065-tiles-read-down-the-columns.md) | Folded tiles read down the columns, not along the rows | 2026-11-20 | Accepted |
+| [0066](adr/0066-tiles-of-a-row-share-its-height.md) | Tiles of a row share its height (column-filled grid) | 2026-11-20 | Accepted |
+| [0067](adr/0067-sections-pair-up.md) | Half-width sections only in pairs; a lone section is full width | 2026-11-20 | Superseded by 0071 |
+| [0068](adr/0068-glide-only-on-reorder.md) | Cards glide only on a reorder, not on add or remove | 2026-11-20 | Accepted |
+| [0069](adr/0069-open-section-full-width.md) | An open section takes the full width; only folded sections pair up | 2026-11-20 | Superseded by 0071 |
+| [0070](adr/0070-single-fittings-frame.md) | Folded single fittings in a dashed «Окремі деталі» frame | 2026-11-20 | Accepted |
+| [0071](adr/0071-sections-full-width-again.md) | Sections take the full width again (reverts 0064, 0067, 0069) | 2026-11-20 | Accepted |
+| [0072](adr/0072-section-frame-accent.md) | Section frame in the accent colour at 35 % | 2026-11-20 | Accepted |
+| [0073](adr/0073-import-size-conflicts.md) | Import warns when the name and the size columns disagree | 2026-11-20 | Accepted |
+| [0074](adr/0074-import-rows-without-sizes.md) | Imported rows without sizes are added with a warning | 2026-11-20 | Accepted |
+| [0075](adr/0075-sticky-results-header.md) | Results table header stays on screen while scrolling | 2026-11-20 | Accepted |
+| [0076](adr/0076-tile-buttons-two-rows.md) | Folded tile buttons in two rows below xl | 2026-11-20 | Superseded by 0077 |
+| [0077](adr/0077-tile-buttons-two-rows-everywhere.md) | Folded tile buttons in two rows at every width | 2026-11-20 | Accepted |
+| [0078](adr/0078-sticky-header-mid-width.md) | Sticky results header between sm and lg (table box scrolls) | 2026-11-20 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.

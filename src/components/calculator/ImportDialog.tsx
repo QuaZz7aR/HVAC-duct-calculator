@@ -4,6 +4,7 @@ import { kindOrder, newRow, type FittingKind } from "@/lib/form/fields";
 import { columnKeys, guessMapping, importRows, withKind, type ColumnKey, type ImportRow, type Mapping } from "@/lib/import/mapping";
 import { ImportError, readCsv, readXlsx, type Table } from "@/lib/import/xlsx";
 import { sizeLabel } from "./format";
+import { Info } from "./Info";
 import { buttonClass, labelClass, primaryButtonClass, selectClass } from "./styles";
 
 type ErrorCode = ImportError["code"];
@@ -154,7 +155,7 @@ export function ImportButton({ onImport, className = "" }: { onImport: (rows: Im
             <h2 id={titleId} className="text-lg font-semibold">{t.title}</h2>
             <button type="button" className={`${buttonClass} !px-2 !py-1`} onClick={() => ref.current?.close()} aria-label={t.close} title={t.close}>×</button>
           </div>
-          <p className="text-sm text-muted">{t.intro}</p>
+          <p className="text-sm text-muted">{t.intro}<Info text={t.info.file} /></p>
           <div className="flex flex-wrap items-center gap-3">
             <label htmlFor={fileId} className={`${primaryButtonClass} cursor-pointer`}>{table ? t.another : t.choose}</label>
             <input
@@ -172,14 +173,17 @@ export function ImportButton({ onImport, className = "" }: { onImport: (rows: Im
           {table && mapping && (
             <>
               <details open className="space-y-3">
-                <summary className="cursor-pointer font-medium">{t.columnsTitle}</summary>
+                <summary className="cursor-pointer font-medium">{t.columnsTitle}<Info text={t.info.columns} /></summary>
                 <div className="mt-2 flex flex-wrap items-start justify-between gap-2">
                   <p className="text-sm text-muted">{t.columnsHint}</p>
-                  <button type="button" className={buttonClass} onClick={resetMapping}>{t.resetMapping}</button>
+                  <span className="flex items-center">
+                    <button type="button" className={buttonClass} onClick={resetMapping}>{t.resetMapping}</button>
+                    <Info text={t.info.resetMapping} />
+                  </span>
                 </div>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   <div>
-                    <label className={labelClass} htmlFor={`${fileId}-header`}>{t.headerRow}</label>
+                    <label className={labelClass} htmlFor={`${fileId}-header`}>{t.headerRow}<Info text={t.info.headerRow} /></label>
                     <select
                       id={`${fileId}-header`}
                       className={selectClass}
@@ -196,7 +200,11 @@ export function ImportButton({ onImport, className = "" }: { onImport: (rows: Im
                   </div>
                   {columnKeys.map((k) => (
                     <div key={k}>
-                      <label className={labelClass} htmlFor={`${fileId}-${k}`}>{t.columns[k]}</label>
+                      <label className={labelClass} htmlFor={`${fileId}-${k}`}>
+                        {t.columns[k]}
+                        {k === "A" && <Info text={t.info.sizes} />}
+                        {k === "system" && <Info text={t.info.position} />}
+                      </label>
                       <select id={`${fileId}-${k}`} className={selectClass} value={mapping.columns[k] ?? ""} onChange={(e) => setColumn(k, e.target.value)}>
                         <option value="">{t.none}</option>
                         {Array.from({ length: width }, (_, i) => <option key={i} value={i}>{columnText(i)}</option>)}
@@ -204,7 +212,7 @@ export function ImportButton({ onImport, className = "" }: { onImport: (rows: Im
                     </div>
                   ))}
                   <div>
-                    <label className={labelClass} htmlFor={`${fileId}-unit`}>{t.lengthUnit}</label>
+                    <label className={labelClass} htmlFor={`${fileId}-unit`}>{t.lengthUnit}<Info text={t.info.lengthUnit} /></label>
                     <select
                       id={`${fileId}-unit`}
                       className={selectClass}
@@ -220,7 +228,7 @@ export function ImportButton({ onImport, className = "" }: { onImport: (rows: Im
 
               <section className="space-y-2">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="font-medium">{t.preview}</h3>
+                  <h3 className="font-medium">{t.preview}<Info text={t.info.preview} /></h3>
                   <label className="flex items-center gap-2 text-sm">
                     <input type="checkbox" checked={showSkipped} onChange={(e) => setShowSkipped(e.target.checked)} />
                     {t.showSkipped}
@@ -235,7 +243,7 @@ export function ImportButton({ onImport, className = "" }: { onImport: (rows: Im
               </section>
 
               <fieldset className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
-                <legend className="mb-1 text-sm text-muted">{t.mode}</legend>
+                <legend className="mb-1 text-sm text-muted">{t.mode}<Info text={t.info.mode} /></legend>
                 <label className="flex items-center gap-2"><input type="radio" checked={replace} onChange={() => setReplace(true)} />{t.replace}</label>
                 <label className="flex items-center gap-2"><input type="radio" checked={!replace} onChange={() => setReplace(false)} />{t.append}</label>
               </fieldset>
@@ -269,6 +277,11 @@ function PreviewRow({ row, onKind }: { row: ImportRow; onKind: (kind: FittingKin
         <p className="text-xs text-muted">
           {row.status === "ok" ? [row.position, sizes, `n ${row.quantity}`].filter(Boolean).join(" · ") : t.status[row.status]}
         </p>
+        {row.status === "ok" && row.conflicts && (
+          <p className="text-xs text-amber-700 dark:text-amber-400" title={row.conflicts.map((c) => t.conflict(dict.fields[c.field], c.name, c.column)).join("\n")}>
+            ⚠ {t.conflictShort(row.conflicts.length)}
+          </p>
+        )}
       </div>
       {row.status !== "skip" && (
         <select
