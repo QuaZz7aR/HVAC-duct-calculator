@@ -12,3 +12,6 @@ An imported row may carry its sizes twice: in the name («Повітропров
 
 ## Consequences
 Not part of `calculate` or the results: it is a note on the imported data, not a calculation warning.
+
+## Addendum 2026-11-20
+A folded tile shows the conflicts too: one amber line «⚠ розміри в назві й у колонках різняться (N)» under the summary, the full texts in its tooltip (owner: imported cards are folded, the warning was invisible).
