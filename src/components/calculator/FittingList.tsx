@@ -74,6 +74,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
     ? `grid grid-flow-col gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 ${rowsAt} xl:[grid-template-rows:repeat(var(--r2),auto)]`
     : `grid grid-flow-col gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 min-[1800px]:grid-cols-3 ${rowsAt} xl:[grid-template-rows:repeat(var(--r2),auto)] min-[1800px]:[grid-template-rows:repeat(var(--r3),auto)]`;
   const rowVars = (n: number) => Object.fromEntries([1, 2, 3, 4, 6].map((c) => [`--r${c}`, Math.ceil(n / c)])) as React.CSSProperties;
+  const paired = new Set<number>();
   const tile = (node: React.ReactNode, key: number) => <div key={key} className="min-w-0 [&>*]:h-full">{node}</div>;
   const halfGrid = twoColumns ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2" : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 min-[1800px]:grid-cols-3";
 
@@ -248,6 +249,12 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
       {/* one grid for the page: single cards and folded tiles share the 1-3 columns, a repeated kind is a full-width section with a grid of its own; open cards span the full width */}
       <div className={gridClass}>
         {runs.map(({ kind, items }, r) => {
+          // a half-width section only beside another one: sections pair up in list order, a section without a partner keeps the full width (ADR 0067)
+          if (r === 0) {
+            paired.clear();
+            const canHalf = (k: number) => (runs[k]?.items.length ?? 0) > 1 && (twoColumns || runs[k].items.every((i) => isFolded(i.row.id)));
+            for (let k = 0; k < runs.length; k++) if (canHalf(k) && canHalf(k + 1)) { paired.add(k); paired.add(k + 1); k++; }
+          }
           const lone = (k: number) => runs[k]?.items.length === 1 && isFolded(runs[k].items[0].row.id);
           // a stretch of single folded tiles is one block whose tiles run down its columns; its first run renders it
           if (lone(r)) {
@@ -265,7 +272,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
           const ids = items.map((i) => i.row.id);
           const dragging = !!drag && ids.every((id) => drag.ids.includes(id));
           // half width when its cards are tiles (or open cards are half width anyway); an open full card keeps the full width
-          const half = twoColumns || groupFolded;
+          const half = paired.has(r);
           // a section moves as a whole past the neighbouring run (ADR 0052)
           const moveSection = (target: number | undefined) => {
             if (target === undefined) return;
