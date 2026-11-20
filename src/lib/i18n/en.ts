@@ -344,6 +344,8 @@ export const en: Dictionary = {
     submit: (n: number) => `Add ${n}`,
     conflict: (field: string, name: string, column: string) =>
       `${field}: ${name} in the fitting's name, ${column} in the table column. The column value is used, please check.`,
+    noSizes: 'the file gives no sizes: type them in, the fitting is not counted until then',
+    noSizesShort: 'no sizes in the file',
     conflictShort: (n: number) => `sizes in the name and the columns differ (${n})`,
     another: 'Another file',
     errors: {

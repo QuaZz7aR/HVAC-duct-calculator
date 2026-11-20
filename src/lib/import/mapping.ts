@@ -319,6 +319,8 @@ export function toFormRows(rows: ImportRow[], firstId: number, config: CalcConfi
       if (v !== undefined) row = setFieldValue(row, f.key, v, config);
     }
     if (r.conflicts) row = { ...row, sizeConflicts: r.conflicts };
+    // a row the file names but gives no size for is added with a warning, never filled silently
+    if (!kindFields[r.kind].some((f) => r.values[f.key] !== undefined)) row = { ...row, noSizes: true };
     out.push(row);
   }
   return out;

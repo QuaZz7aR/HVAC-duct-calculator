@@ -367,6 +367,8 @@ export const uk = {
     // a size in the name differs from its column (ADR 0073)
     conflict: (field: string, name: string, column: string) =>
       `${field}: у назві деталі ${name}, у колонці таблиці ${column}. Взято значення з колонки, перевірте.`,
+    noSizes: 'розмірів у файлі немає: введіть їх, до того деталь не рахується',
+    noSizesShort: 'розмірів у файлі немає',
     conflictShort: (n: number) => `розміри в назві й у колонках різняться (${n})`,
     another: 'Інший файл',
     errors: {
