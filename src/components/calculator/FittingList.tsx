@@ -64,6 +64,10 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
   const gridClass = twoColumns ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 min-[1800px]:grid-cols-6";
   // a section takes half the page from xl, its tiles in a grid of half as many columns
   const halfSection = twoColumns ? "xl:col-span-2" : "xl:col-span-2 min-[1800px]:col-span-3";
+  // folded tiles read down the columns (ADR 0065): CSS columns instead of grid rows
+  const tileColumns = twoColumns ? "columns-1 gap-3 sm:columns-2 lg:columns-3 xl:columns-4" : "columns-1 gap-3 sm:columns-2 lg:columns-3 xl:columns-4 min-[1800px]:columns-6";
+  const halfColumns = twoColumns ? "columns-1 gap-3 sm:columns-2 lg:columns-3 xl:columns-2" : "columns-1 gap-3 sm:columns-2 lg:columns-3 xl:columns-2 min-[1800px]:columns-3";
+  const tile = (node: React.ReactNode, key: number) => <div key={key} className="mb-3 break-inside-avoid">{node}</div>;
   const halfGrid = twoColumns ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2" : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 min-[1800px]:grid-cols-3";
 
   // live preview while dragging (ADR 0049): the list is shown as if the card were already dropped on the card under the pointer
@@ -237,6 +241,18 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
       {/* one grid for the page: single cards and folded tiles share the 1-3 columns, a repeated kind is a full-width section with a grid of its own; open cards span the full width */}
       <div className={gridClass}>
         {runs.map(({ kind, items }, r) => {
+          const lone = (k: number) => runs[k]?.items.length === 1 && isFolded(runs[k].items[0].row.id);
+          // a stretch of single folded tiles is one block whose tiles run down its columns; its first run renders it
+          if (lone(r)) {
+            if (lone(r - 1)) return null;
+            let end = r;
+            while (lone(end + 1)) end++;
+            return (
+              <div key={`tiles-${items[0].row.id}`} className={`col-span-full ${tileColumns}`}>
+                {runs.slice(r, end + 1).map((x) => tile(card(x.items[0].row, x.items[0].index), x.items[0].row.id))}
+              </div>
+            );
+          }
           if (items.length === 1) return card(items[0].row, items[0].index);
           const groupFolded = items.every((i) => isFolded(i.row.id));
           const ids = items.map((i) => i.row.id);
@@ -288,7 +304,11 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
                   {groupFolded ? dict.expandGroup : dict.collapseGroup}
                 </button>
               </div>
-              <div className={half ? halfGrid : gridClass}>{items.map(({ row, index }) => card(row, index))}</div>
+              {groupFolded ? (
+                <div className={half ? halfColumns : tileColumns}>{items.map(({ row, index }) => tile(card(row, index), row.id))}</div>
+              ) : (
+                <div className={half ? halfGrid : gridClass}>{items.map(({ row, index }) => card(row, index))}</div>
+              )}
             </div>
           );
         })}
