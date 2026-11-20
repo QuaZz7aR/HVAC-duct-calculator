@@ -1,6 +1,6 @@
 # 0067. Half-width sections only in pairs
 
-Status: Accepted (refined by 0069)
+Status: Superseded by 0071
 Date: 2026-11-20
 Source: owner (Nikita), 2026-11-20: "если между группами есть детали без групп то распределение плиток странное"
 

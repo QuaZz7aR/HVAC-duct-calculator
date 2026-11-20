@@ -1,6 +1,6 @@
 # 0064. Sections in two columns on desktop
 
-Status: Accepted
+Status: Superseded by 0071
 Date: 2026-11-20
 Source: owner (Nikita), 2026-11-20: "на десктопе сделаем так, что группы одинаковых деталей будут идти в две колонки"
 

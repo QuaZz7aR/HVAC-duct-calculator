@@ -78,13 +78,14 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0061](adr/0061-import-from-excel.md) | Import of a spec table from .xlsx / .csv: column mapping, kind recognition, every row shown | 2026-11-19 | Accepted |
 | [0062](adr/0062-delete-all-fittings.md) | «Видалити всі» over the list, confirmed by a second tap | 2026-11-19 | Accepted |
 | [0063](adr/0063-help-in-the-import-dialog.md) | «i» help in the import dialog and an import step in «Довідка» | 2026-11-20 | Accepted |
-| [0064](adr/0064-sections-in-two-columns.md) | Sections of a repeated kind in two columns from xl | 2026-11-20 | Accepted |
+| [0064](adr/0064-sections-in-two-columns.md) | Sections of a repeated kind in two columns from xl | 2026-11-20 | Superseded by 0071 |
 | [0065](adr/0065-tiles-read-down-the-columns.md) | Folded tiles read down the columns, not along the rows | 2026-11-20 | Accepted |
 | [0066](adr/0066-tiles-of-a-row-share-its-height.md) | Tiles of a row share its height (column-filled grid) | 2026-11-20 | Accepted |
-| [0067](adr/0067-sections-pair-up.md) | Half-width sections only in pairs; a lone section is full width | 2026-11-20 | Accepted |
+| [0067](adr/0067-sections-pair-up.md) | Half-width sections only in pairs; a lone section is full width | 2026-11-20 | Superseded by 0071 |
 | [0068](adr/0068-glide-only-on-reorder.md) | Cards glide only on a reorder, not on add or remove | 2026-11-20 | Accepted |
-| [0069](adr/0069-open-section-full-width.md) | An open section takes the full width; only folded sections pair up | 2026-11-20 | Accepted |
+| [0069](adr/0069-open-section-full-width.md) | An open section takes the full width; only folded sections pair up | 2026-11-20 | Superseded by 0071 |
 | [0070](adr/0070-single-fittings-frame.md) | Folded single fittings in a dashed «Окремі деталі» frame | 2026-11-20 | Accepted |
+| [0071](adr/0071-sections-full-width-again.md) | Sections take the full width again (reverts 0064, 0067, 0069) | 2026-11-20 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.

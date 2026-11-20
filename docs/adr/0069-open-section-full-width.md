@@ -1,6 +1,6 @@
 # 0069. An open section takes the full width
 
-Status: Accepted
+Status: Superseded by 0071
 Date: 2026-11-20
 Source: owner (Nikita), 2026-11-20: a folded section beside an open one wastes space; the open section should take the full width with two columns of cards
 
