@@ -64,10 +64,17 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
   const gridClass = twoColumns ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 min-[1800px]:grid-cols-6";
   // a section takes half the page from xl, its tiles in a grid of half as many columns
   const halfSection = twoColumns ? "xl:col-span-2" : "xl:col-span-2 min-[1800px]:col-span-3";
-  // folded tiles read down the columns (ADR 0065): CSS columns instead of grid rows
-  const tileColumns = twoColumns ? "columns-1 gap-3 sm:columns-2 lg:columns-3 xl:columns-4" : "columns-1 gap-3 sm:columns-2 lg:columns-3 xl:columns-4 min-[1800px]:columns-6";
-  const halfColumns = twoColumns ? "columns-1 gap-3 sm:columns-2 lg:columns-3 xl:columns-2" : "columns-1 gap-3 sm:columns-2 lg:columns-3 xl:columns-2 min-[1800px]:columns-3";
-  const tile = (node: React.ReactNode, key: number) => <div key={key} className="mb-3 break-inside-avoid">{node}</div>;
+  // folded tiles read down the columns (ADR 0065): a grid filled column by column, with as many rows as the column count needs
+  // at each width (--r1, --r2...), so the tiles of a row share its height (ADR 0066)
+  const rowsAt = "[grid-template-rows:repeat(var(--r1),auto)] sm:[grid-template-rows:repeat(var(--r2),auto)] lg:[grid-template-rows:repeat(var(--r3),auto)]";
+  const tileColumns = twoColumns
+    ? `grid grid-flow-col gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ${rowsAt} xl:[grid-template-rows:repeat(var(--r4),auto)]`
+    : `grid grid-flow-col gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 min-[1800px]:grid-cols-6 ${rowsAt} xl:[grid-template-rows:repeat(var(--r4),auto)] min-[1800px]:[grid-template-rows:repeat(var(--r6),auto)]`;
+  const halfColumns = twoColumns
+    ? `grid grid-flow-col gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 ${rowsAt} xl:[grid-template-rows:repeat(var(--r2),auto)]`
+    : `grid grid-flow-col gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 min-[1800px]:grid-cols-3 ${rowsAt} xl:[grid-template-rows:repeat(var(--r2),auto)] min-[1800px]:[grid-template-rows:repeat(var(--r3),auto)]`;
+  const rowVars = (n: number) => Object.fromEntries([1, 2, 3, 4, 6].map((c) => [`--r${c}`, Math.ceil(n / c)])) as React.CSSProperties;
+  const tile = (node: React.ReactNode, key: number) => <div key={key} className="min-w-0 [&>*]:h-full">{node}</div>;
   const halfGrid = twoColumns ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2" : "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 min-[1800px]:grid-cols-3";
 
   // live preview while dragging (ADR 0049): the list is shown as if the card were already dropped on the card under the pointer
@@ -248,7 +255,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
             let end = r;
             while (lone(end + 1)) end++;
             return (
-              <div key={`tiles-${items[0].row.id}`} className={`col-span-full ${tileColumns}`}>
+              <div key={`tiles-${items[0].row.id}`} className={`col-span-full ${tileColumns}`} style={rowVars(end - r + 1)}>
                 {runs.slice(r, end + 1).map((x) => tile(card(x.items[0].row, x.items[0].index), x.items[0].row.id))}
               </div>
             );
@@ -305,7 +312,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
                 </button>
               </div>
               {groupFolded ? (
-                <div className={half ? halfColumns : tileColumns}>{items.map(({ row, index }) => tile(card(row, index), row.id))}</div>
+                <div className={half ? halfColumns : tileColumns} style={rowVars(items.length)}>{items.map(({ row, index }) => tile(card(row, index), row.id))}</div>
               ) : (
                 <div className={half ? halfGrid : gridClass}>{items.map(({ row, index }) => card(row, index))}</div>
               )}
