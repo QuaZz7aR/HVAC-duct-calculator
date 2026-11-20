@@ -1,6 +1,6 @@
 # 0076. Folded tile buttons in two rows below xl
 
-Status: Accepted
+Status: Superseded by 0077
 Date: 2026-11-20
 Source: owner, 2026-11-20 (on a laptop width the four buttons squeezed the name to a word per line)
 
