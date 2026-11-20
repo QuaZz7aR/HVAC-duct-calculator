@@ -24,6 +24,13 @@ describe('recognizeKind', () => {
     expect(k('Тройник 500х300/Д200')).toBe('rectTeeRoundBranch');
     expect(k('Переход 400х200/300х200')).toBe('rectReducer');
   });
+  it('reads a hood (зонт) as a cap, even under the code ПП', () => {
+    const name = 'Зонт острівний 810х350х300н +  врізка д200';
+    const sizes = parseName(name).sizes;
+    expect(recognizeKind('ПП', name, sizes)).toBe('rectCap');
+    expect(recognizeKind(undefined, name, sizes)).toBe('rectCap');
+    expect(recognizeKind(undefined, 'Зонт Д400', [{ d: 400 }])).toBe('roundCap');
+  });
   it('does not guess parts it does not compute', () => {
     const k = (name: string) => recognizeKind(undefined, name, parseName(name).sizes);
     expect(k('Утка 200х400об, подъем на 120мм')).toBeUndefined();
