@@ -30,6 +30,7 @@ export const uk = {
   // number format of the page: locale for toLocaleString and the decimal mark in warning texts
   locale: 'uk-UA',
   decimal: ',',
+  mode: { label: 'Режим інтерфейсу', simple: 'Простий', advanced: 'Розширений', info: 'Простий режим показує розміри, кількість і площі металу. Розширений додає параметри розрахунку, припуски, утеплювач і ціну. Приховані значення зберігаються і враховуються.' },
   language: { short: 'Мова', label: 'Мова інтерфейсу', uk: 'УКР', en: 'EN' },
   appTitle: 'Калькулятор повітропроводів',
   appSubtitle:

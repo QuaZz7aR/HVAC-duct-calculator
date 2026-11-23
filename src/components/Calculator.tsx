@@ -2,6 +2,8 @@
 import { useState } from "react";
 
 import { I18nProvider, useI18n } from "@/components/i18n";
+import { ModeProvider } from "@/components/mode";
+import { ModeSwitch } from "./calculator/ModeSwitch";
 import { LangSwitch } from "./calculator/LangSwitch";
 import { HelpButton } from "./calculator/HelpDialog";
 import { ImportButton } from "./calculator/ImportDialog";
@@ -20,7 +22,9 @@ import { useCardView } from "./calculator/useCardView";
 export function Calculator() {
   return (
     <I18nProvider>
-      <CalculatorPage />
+      <ModeProvider>
+        <CalculatorPage />
+      </ModeProvider>
     </I18nProvider>
   );
 }
@@ -42,6 +46,7 @@ function CalculatorPage() {
             <p className={`mt-1 text-sm ${mutedClass}`}>{dict.appSubtitle}</p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-2 sm:justify-end">
+            <ModeSwitch />
             <ImportButton onImport={importRows} />
             <span className="contents lg:hidden">
               <HelpButton />
@@ -50,7 +55,9 @@ function CalculatorPage() {
           </div>
         </header>
 
+        <div className="adv-only">
         <SettingsPanel settings={settings} onChange={setSettings} issues={settingsIssues} />
+        </div>
         <FittingList
           rows={rows}
           view={view}
@@ -72,7 +79,9 @@ function CalculatorPage() {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <Totals calc={calc} pricing={costs} priceIssues={costs.issues} settings={settings} onSettings={setSettings} />
           <SheetList groups={calc.sheetList} prices={prices.metal} costs={costs.metal} onPrice={setMetalPrice} settings={settings} onSettings={setSettings} />
+          <div className="adv-only min-w-0">
           <InsulationList groups={calc.insulationList} prices={prices.insulation} costs={costs.insulation} onPrice={setInsulationPrice} />
+          </div>
         </div>
 
         <footer className="text-xs text-muted">{dict.footer}</footer>

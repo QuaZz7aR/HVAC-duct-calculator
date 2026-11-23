@@ -21,7 +21,7 @@ export function SheetList({ groups, prices, costs, onPrice, settings, onSettings
   return (
     <section className={`min-w-0 ${cardClass}`} aria-labelledby="sheets-title">
       <h2 id="sheets-title" className="mb-3 font-medium">{dict.sheetList.title}</h2>
-      <div className="mb-3 grid gap-3 sm:grid-cols-2">
+      <div className="adv-only mb-3 grid gap-3 sm:grid-cols-2">
         <ThicknessTableField settings={settings} onChange={onSettings} />
         <SheetField settings={settings} onChange={onSettings} />
       </div>
@@ -37,8 +37,8 @@ export function SheetList({ groups, prices, costs, onPrice, settings, onSettings
                 <div className="flex justify-between gap-2"><dt className={mutedClass}>{dict.sheetList.area}</dt><dd className="tabular-nums">{fmt(g.area)}</dd></div>
                 <div className="flex justify-between gap-2"><dt className={mutedClass}>{dict.sheetList.orderArea}<Info text={dict.help.columns.orderArea} /></dt><dd className="tabular-nums">{fmt(g.orderArea)}</dd></div>
                 <div className="flex justify-between gap-2"><dt className={mutedClass}>{dict.sheetList.sheets}<Info text={dict.help.columns.sheets} /></dt><dd className="tabular-nums">{g.sheets}</dd></div>
-                <div className="flex items-center justify-between gap-2"><dt className={mutedClass}>{dict.price.perM2}<Info text={dict.help.columns.price} /></dt><dd><PriceInput label={dict.price.metalLabel(fmt(g.thicknessMm, 2))} value={prices[key] ?? ""} onChange={(v) => onPrice(key, v)} /></dd></div>
-                <div className="flex justify-between gap-2"><dt className={mutedClass}>{dict.price.cost}</dt><dd className="tabular-nums font-medium">{cost === undefined ? dict.totals.noPrice : fmt(cost, 2)}</dd></div>
+                <div className="adv-only flex items-center justify-between gap-2"><dt className={mutedClass}>{dict.price.perM2}<Info text={dict.help.columns.price} /></dt><dd><PriceInput label={dict.price.metalLabel(fmt(g.thicknessMm, 2))} value={prices[key] ?? ""} onChange={(v) => onPrice(key, v)} /></dd></div>
+                <div className="adv-only flex justify-between gap-2"><dt className={mutedClass}>{dict.price.cost}</dt><dd className="tabular-nums font-medium">{cost === undefined ? dict.totals.noPrice : fmt(cost, 2)}</dd></div>
               </dl>
             </li>
           );
@@ -52,8 +52,8 @@ export function SheetList({ groups, prices, costs, onPrice, settings, onSettings
               <th className="text-right">{dict.sheetList.area}</th>
               <th className="text-right">{dict.sheetList.orderArea}<Info text={dict.help.columns.orderArea} /></th>
               <th className="text-right">{dict.sheetList.sheets}<Info text={dict.help.columns.sheets} /></th>
-              <th className="pl-2 text-right">{dict.price.perM2}<Info text={dict.help.columns.price} /></th>
-              <th className="pl-2 text-right">{dict.price.cost}</th>
+              <th className="adv-only pl-2 text-right">{dict.price.perM2}<Info text={dict.help.columns.price} /></th>
+              <th className="adv-only pl-2 text-right">{dict.price.cost}</th>
             </tr>
           </thead>
           <tbody>
@@ -66,17 +66,17 @@ export function SheetList({ groups, prices, costs, onPrice, settings, onSettings
                   <td className="text-right tabular-nums">{fmt(g.area)}</td>
                   <td className="text-right tabular-nums">{fmt(g.orderArea)}</td>
                   <td className="text-right tabular-nums">{g.sheets}</td>
-                  <td className="py-1 pl-2 text-right">
+                  <td className="adv-only py-1 pl-2 text-right">
                     <PriceInput label={dict.price.metalLabel(fmt(g.thicknessMm, 2))} value={prices[key] ?? ""} onChange={(v) => onPrice(key, v)} />
                   </td>
-                  <td className="pl-2 text-right tabular-nums">{cost === undefined ? dict.totals.noPrice : fmt(cost, 2)}</td>
+                  <td className="adv-only pl-2 text-right tabular-nums">{cost === undefined ? dict.totals.noPrice : fmt(cost, 2)}</td>
                 </tr>
               );
             })}
           </tbody>
         </table>
       </div>
-      <p className={`mt-2 text-xs ${mutedClass}`}>{dict.sheetList.note} {dict.sheetList.priceNote}</p>
+      <p className={`mt-2 text-xs ${mutedClass}`}>{dict.sheetList.note} <span className="adv-only">{dict.sheetList.priceNote}</span></p>
     </section>
   );
 }

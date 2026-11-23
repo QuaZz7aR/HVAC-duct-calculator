@@ -61,7 +61,7 @@ function ResultRow({ row, index, outcome, inSection = false }: { row: FormRow; i
       <td className={numCell}>{fmt(r.metalAreaTotal)}</td>
       <td className={numCell}>{fmt(r.metalConsumption)}</td>
       <td className={numCell}>{fmt(r.metalConsumptionTotal)}</td>
-      <td className="pl-2 text-right tabular-nums">{r.insulation ? fmt(r.insulation.areaTotal) : "—"}</td>
+      <td className="adv-only pl-2 text-right tabular-nums">{r.insulation ? fmt(r.insulation.areaTotal) : "—"}</td>
     </tr>
   );
 }
@@ -85,7 +85,7 @@ function SectionRows({ kind, items, outcome }: { kind: FormRow["kind"]; items: {
         <td className={cell}>{sum((r) => r.metalAreaTotal)}</td>
         <td />
         <td className={cell}>{sum((r) => r.metalConsumptionTotal)}</td>
-        <td className={`pl-2 pt-3 pb-1 text-right tabular-nums font-medium`}>{ok.some((r) => r.insulation) ? sum((r) => r.insulation?.areaTotal ?? 0) : "—"}</td>
+        <td className={`adv-only pl-2 pt-3 pb-1 text-right tabular-nums font-medium`}>{ok.some((r) => r.insulation) ? sum((r) => r.insulation?.areaTotal ?? 0) : "—"}</td>
       </tr>
       {rows}
     </>
@@ -128,7 +128,7 @@ function PhoneResults({ rows, outcome }: { rows: FormRow[]; outcome: Props["outc
                       {line(dict.results.metalAreaTotal, fmt(r.metalAreaTotal), true)}
                       {r.consumptionDiffers && line(dict.results.metalConsumption, fmt(r.metalConsumption))}
                       {r.consumptionDiffers && line(dict.results.metalConsumptionTotal, fmt(r.metalConsumptionTotal), true)}
-                      {r.insulation && line(dict.results.insulationTotal, fmt(r.insulation.areaTotal))}
+                      {r.insulation && <span className="adv-only contents">{line(dict.results.insulationTotal, fmt(r.insulation.areaTotal))}</span>}
                     </dl>
                   ) : <p className={mutedClass}>—</p>}
                 </div>
@@ -165,7 +165,7 @@ export function ResultsTable({ rows, outcome, calc }: Props) {
                 <th className="px-2 text-right">{dict.results.metalAreaTotal}</th>
                 <th className="px-2 text-right">{dict.results.metalConsumption}<Info text={dict.help.columns.metalConsumption} /></th>
                 <th className="px-2 text-right">{dict.results.metalConsumptionTotal}</th>
-                <th className="pl-2 text-right">{dict.results.insulationTotal}<Info text={dict.help.columns.insulation} /></th>
+                <th className="adv-only pl-2 text-right">{dict.results.insulationTotal}<Info text={dict.help.columns.insulation} /></th>
               </tr>
             </thead>
             <tbody>

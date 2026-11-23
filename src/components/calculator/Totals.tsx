@@ -27,7 +27,7 @@ export function Totals({ calc, pricing, priceIssues, settings, onSettings }: Pro
   return (
     <section className={cardClass} aria-labelledby="totals-title">
       <h2 id="totals-title" className="mb-3 font-medium">{dict.totals.title}</h2>
-      <div className="mb-3 grid gap-3 sm:grid-cols-2">
+      <div className="adv-only mb-3 grid gap-3 sm:grid-cols-2">
         <SeamField settings={settings} onChange={onSettings} />
         <MarginField settings={settings} onChange={onSettings} />
       </div>
@@ -35,13 +35,13 @@ export function Totals({ calc, pricing, priceIssues, settings, onSettings }: Pro
         <div className="flex justify-between"><dt>{dict.totals.metalArea}</dt><dd className="tabular-nums font-medium">{fmt(calc.totalMetalArea)}</dd></div>
         <div className="flex justify-between"><dt>{dict.totals.metalConsumption}</dt><dd className="tabular-nums font-medium">{fmt(calc.totalMetalConsumption)}</dd></div>
         <div className="flex justify-between"><dt>{dict.totals.metalAreaToOrder}</dt><dd className="tabular-nums font-medium">{fmt(calc.totalMetalAreaToOrder)}</dd></div>
-        <div className="flex justify-between"><dt>{dict.totals.insulationArea}</dt><dd className="tabular-nums font-medium">{fmt(calc.totalInsulationArea)}</dd></div>
-        <div className="flex justify-between border-t border-line pt-1"><dt>{dict.totals.metalCost}</dt><dd className="tabular-nums font-medium">{money(pricing.metalTotal, metalLines, dict.totals.noPrice, fmt)}</dd></div>
-        <div className="flex justify-between"><dt>{dict.totals.insulationCost}</dt><dd className="tabular-nums font-medium">{money(pricing.insulationTotal, insulationLines, dict.totals.noPrice, fmt)}</dd></div>
-        <div className="flex justify-between"><dt className="font-medium">{dict.totals.totalCost}</dt><dd className="tabular-nums font-semibold">{money(pricing.total, metalLines + insulationLines, dict.totals.noPrice, fmt)}</dd></div>
+        <div className="adv-only flex justify-between"><dt>{dict.totals.insulationArea}</dt><dd className="tabular-nums font-medium">{fmt(calc.totalInsulationArea)}</dd></div>
+        <div className="adv-only flex justify-between border-t border-line pt-1"><dt>{dict.totals.metalCost}</dt><dd className="tabular-nums font-medium">{money(pricing.metalTotal, metalLines, dict.totals.noPrice, fmt)}</dd></div>
+        <div className="adv-only flex justify-between"><dt>{dict.totals.insulationCost}</dt><dd className="tabular-nums font-medium">{money(pricing.insulationTotal, insulationLines, dict.totals.noPrice, fmt)}</dd></div>
+        <div className="adv-only flex justify-between"><dt className="font-medium">{dict.totals.totalCost}</dt><dd className="tabular-nums font-semibold">{money(pricing.total, metalLines + insulationLines, dict.totals.noPrice, fmt)}</dd></div>
       </dl>
       {pricing.total.unpriced > 0 && pricing.total.unpriced < metalLines + insulationLines && (
-        <p className={`mt-2 text-xs ${mutedClass}`}>{dict.totals.unpriced(pricing.total.unpriced)}</p>
+        <p className={`adv-only mt-2 text-xs ${mutedClass}`}>{dict.totals.unpriced(pricing.total.unpriced)}</p>
       )}
       <ErrorList issues={priceIssues} />
     </section>
