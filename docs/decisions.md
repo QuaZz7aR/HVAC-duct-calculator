@@ -103,6 +103,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0086](adr/0086-warning-marks-in-the-results.md) | Red / amber ⚠ before a problem row in the results | 2026-11-23 | Accepted |
 | [0087](adr/0087-add-menu-above-sections.md) | The add-fitting list paints above the sections (z-index on the sticky rail box) | 2026-11-23 | Accepted |
 | [0088](adr/0088-view-toggles-in-a-sticky-list-header.md) | View toggles move from the side rail to a sticky bar above the list (desktop) | 2026-11-23 | Accepted |
+| [0089](adr/0089-mode-and-import-in-the-side-rail.md) | Mode (chosen like the language) and import move to the side rail on desktop | 2026-11-23 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.

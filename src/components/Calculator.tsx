@@ -40,7 +40,7 @@ function CalculatorPage() {
 
   return (
     <div className="mx-auto w-full max-w-[120rem] flex-1 gap-6 px-4 py-8 xl:px-8 lg:grid lg:grid-cols-[8.5rem_minmax(0,1fr)]">
-      <KindRail count={countOf} onAdd={addRow} />
+      <KindRail count={countOf} onAdd={addRow} onImport={importRows} />
       <main className="min-w-0 space-y-6">
         {/* title, then one toolbar left under it (ADR 0083): mode on its own row on a phone, the other buttons in a second row */}
         <header className="space-y-3">
@@ -48,14 +48,13 @@ function CalculatorPage() {
             <h1 className="text-2xl font-semibold">{dict.appTitle}</h1>
             <p className={`mt-1 text-sm ${mutedClass}`}>{dict.appSubtitle}</p>
           </div>
-          <div className="flex flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+          {/* desktop: mode, import, help and language live in the rail (ADRs 0048, 0089); the phone keeps the toolbar */}
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 lg:hidden">
             <ModeSwitch />
             <div className="flex flex-wrap items-center gap-2">
               <ImportButton onImport={importRows} />
-              <span className="contents lg:hidden">
-                <HelpButton />
-                <LangSwitch />
-              </span>
+              <HelpButton />
+              <LangSwitch />
             </div>
           </div>
         </header>

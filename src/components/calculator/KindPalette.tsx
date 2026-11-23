@@ -5,6 +5,9 @@ import { useI18n } from "@/components/i18n";
 import { HelpButton } from "./HelpDialog";
 import { KindGlyph } from "./KindGlyph";
 import { LangRailButton } from "./LangSwitch";
+import { ImportButton } from "./ImportDialog";
+import { ModeRailButton } from "./ModeSwitch";
+import type { ImportRow } from "@/lib/import/mapping";
 import { scrollToTop } from "./scrollToTop";
 import { UpIcon } from "./ViewIcons";
 import { buttonClass, inputClass } from "./styles";
@@ -48,7 +51,7 @@ const railAction =
   "grid justify-items-center gap-1 rounded-md border border-transparent px-1 py-1.5 text-center text-xs leading-tight text-muted hover:border-line hover:text-foreground hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
 
 /** Desktop: a narrow single-column rail (icon over label) of the kind groups, help and language (the view toggles are in the list header, ADR 0088), always in view; a group opens a list of its kinds beside the rail. */
-export function KindRail({ count, onAdd }: Props) {
+export function KindRail({ count, onAdd, onImport }: Props & { onImport?: (rows: ImportRow[], replace: boolean) => number }) {
   const { dict } = useI18n();
   const [open, setOpen] = useState<KindGroupId | null>(null);
   // top of the open group's button inside the sticky box: the list opens level with it
@@ -93,6 +96,9 @@ export function KindRail({ count, onAdd }: Props) {
         </div>
         {/* help and language sit at the bottom of the rail on desktop, beside the work; the phone keeps them in the page header */}
         <div className={`${railBox} mt-auto pb-1`}>
+          {/* import and mode moved here from the page header on desktop (ADR 0089) */}
+          {onImport && <ImportButton rail onImport={onImport} />}
+          <ModeRailButton />
           <HelpButton rail />
           <LangRailButton />
         </div>

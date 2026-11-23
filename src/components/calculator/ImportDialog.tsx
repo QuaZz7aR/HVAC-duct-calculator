@@ -5,7 +5,7 @@ import { columnKeys, guessMapping, importRows, withKind, type ColumnKey, type Im
 import { ImportError, readCsv, readXlsx, type Table } from "@/lib/import/xlsx";
 import { sizeLabel } from "./format";
 import { Info } from "./Info";
-import { buttonClass, labelClass, primaryButtonClass, selectClass } from "./styles";
+import { buttonClass, railItemClass, labelClass, primaryButtonClass, selectClass } from "./styles";
 
 type ErrorCode = ImportError["code"];
 
@@ -59,7 +59,7 @@ async function readFile(file: File): Promise<Table> {
 }
 
 /** The «Імпорт з Excel» button and its dialog: file, column mapping, preview of every row, then the rows go to the list (ADR 0061). */
-export function ImportButton({ onImport, className = "" }: { onImport: (rows: ImportRow[], replace: boolean) => number; className?: string }) {
+export function ImportButton({ onImport, className = "", rail = false }: { onImport: (rows: ImportRow[], replace: boolean) => number; className?: string; rail?: boolean }) {
   const { dict } = useI18n();
   const t = dict.import;
   const ref = useRef<HTMLDialogElement>(null);
@@ -141,9 +141,19 @@ export function ImportButton({ onImport, className = "" }: { onImport: (rows: Im
 
   return (
     <>
-      <button type="button" className={`${buttonClass} shrink-0 ${className}`} onClick={() => ref.current?.showModal()} aria-haspopup="dialog">
-        {t.button}
-      </button>
+      {rail ? (
+        // desktop rail: an icon over a label, like the other rail items (ADR 0089)
+        <button type="button" className={railItemClass} onClick={() => ref.current?.showModal()} aria-haspopup="dialog">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-6 w-6 text-accent">
+            <path d="M6 3h8l4 4v14H6z" /><path d="M14 3v4h4" /><path d="M12 10v7M9 14l3 3 3-3" />
+          </svg>
+          {t.button}
+        </button>
+      ) : (
+        <button type="button" className={`${buttonClass} shrink-0 ${className}`} onClick={() => ref.current?.showModal()} aria-haspopup="dialog">
+          {t.button}
+        </button>
+      )}
       <dialog
         ref={ref}
         aria-labelledby={titleId}
