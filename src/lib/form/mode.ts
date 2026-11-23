@@ -2,8 +2,8 @@
 export const modes = ['simple', 'advanced'] as const;
 export type Mode = (typeof modes)[number];
 
-/** Until the user picks one the page stays as it was before the modes: advanced. */
-export const defaultMode: Mode = 'advanced';
+/** A first visit opens the simple mode (owner, 2026-11-23). */
+export const defaultMode: Mode = 'simple';
 
 /** A stored value back to a mode; anything unknown is the default. */
 export function toMode(value: string | null | undefined): Mode {

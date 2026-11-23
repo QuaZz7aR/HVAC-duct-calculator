@@ -291,9 +291,9 @@ export const en: Dictionary = {
       steps: [
         { title: 'Add fittings', text: 'Pick a fitting kind in the left panel (on a phone, the «+» button on the right). The page starts with an example of every kind: remove or change them.' },
         { title: 'Enter sizes', text: 'Sizes in millimetres, angles in degrees. The thumbnail in the card header opens a sketch with the size letters. The «i» button next to a field explains it.' },
-        { title: 'Check the calculation settings', text: 'At the top: thickness table, seam allowance, order margin and sheet size. They apply to every fitting.' },
+        { title: 'Check the calculation settings (advanced mode)', text: 'At the top: thickness table, seam allowance, order margin and sheet size. They apply to every fitting.' },
         { title: 'Read the results', text: 'The results table shows the area and thickness of each line. Below are the totals, the metal list by thickness (with the sheet count) and the insulation list.' },
-        { title: 'Set prices', text: 'In the metal and insulation lists, type a price per m² for each thickness and material. Metal is priced including the order margin.' },
+        { title: 'Set prices (advanced mode)', text: 'In the metal and insulation lists, type a price per m² for each thickness and material. Metal is priced including the order margin.' },
         { title: 'Or import a spec', text: 'The «Import from Excel» button reads .xlsx or .csv: the site finds the header row and the columns, recognises kinds by code or name and shows every row before adding it. Rows it does not know (offsets, adapters, boxes) are highlighted: pick a kind by hand or skip them.' },
       ],
       outro: 'Everything is computed in your browser; nothing is sent anywhere or kept after a page reload.',
