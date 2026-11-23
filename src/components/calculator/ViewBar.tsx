@@ -10,7 +10,7 @@ const action = `${buttonClass} inline-flex items-center gap-1.5`;
 export function ViewBar({ view, twoColumns = false, onColumns, children }: { view: CardView; twoColumns?: boolean; onColumns?: (two: boolean) => void; children?: ReactNode }) {
   const { dict } = useI18n();
   return (
-    <div role="group" aria-label={dict.palette.viewTitle} className="sticky top-0 z-20 -mx-1 hidden flex-wrap items-center gap-2 bg-background px-1 py-2 lg:flex">
+    <div role="group" aria-label={dict.palette.viewTitle} className="sticky top-2 z-20 hidden flex-wrap items-center gap-2 rounded-lg border border-accent/40 bg-panel px-3 py-3 shadow-lg shadow-black/25 lg:flex">
       <button type="button" onClick={() => view.setAllSketches(!view.allSketchesOpen)} className={action}>
         <SketchesIcon crossed={view.allSketchesOpen} className="h-4 w-6 text-accent" />
         {view.allSketchesOpen ? dict.hideAllSketches : dict.showAllSketches}
