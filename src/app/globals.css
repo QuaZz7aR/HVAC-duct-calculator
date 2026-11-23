@@ -50,7 +50,7 @@
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
-  --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-mono: var(--font-mono-ui), "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -71,7 +71,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-plex-sans), "IBM Plex Sans", system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-family: var(--font-sans-ui), "Inter", system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 }
 
 /* Selects: our own chevron instead of the native arrow, which shows a different control on hover. */

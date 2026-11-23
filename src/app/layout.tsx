@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { uk } from "@/lib/i18n/uk";
 import "./globals.css";
 
-const sans = IBM_Plex_Sans({ subsets: ["latin", "cyrillic"], weight: ["400", "500", "600"], variable: "--font-plex-sans", display: "swap" });
-const mono = IBM_Plex_Mono({ subsets: ["latin", "cyrillic"], weight: ["400", "500"], variable: "--font-plex-mono", display: "swap" });
+const sans = Inter({ subsets: ["latin", "cyrillic"], weight: ["400", "500", "600"], variable: "--font-sans-ui", display: "swap" });
+const mono = JetBrains_Mono({ subsets: ["latin", "cyrillic"], weight: ["400", "500"], variable: "--font-mono-ui", display: "swap" });
 
 export const metadata: Metadata = {
   title: uk.appTitle,
