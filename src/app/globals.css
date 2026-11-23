@@ -13,7 +13,7 @@
   --accent: #1d5fd1;
   --accent-soft: #e4edfb;
   /* frame of the single fittings, a second colour beside the accent of the sections (ADR 0091) */
-  --single: #b45309;
+  --single: #92400e;
   /* sticky view bar: darker than the page, so neither the cards nor the button hover blend with it (ADR 0088) */
   --bar: #d5dee8;
   color-scheme: light;
@@ -50,7 +50,7 @@
 /* single fittings: framed like a section, in their own colour (ADR 0091) */
 .singles-frame {
   border-color: color-mix(in srgb, var(--single) 35%, transparent);
-  background: color-mix(in srgb, var(--single) 6%, transparent);
+  background: color-mix(in srgb, var(--single) 12%, transparent);
   --section-end: color-mix(in srgb, var(--single) 70%, white);
 }
 :root[data-theme="dark"] .singles-frame {
@@ -78,7 +78,7 @@
     --muted: #9db0c1;
     --accent: #6ea2ff;
     --accent-soft: #1b2c47;
-    --single: #f59e0b;
+    --single: #d97706;
     --bar: #0a1016;
     color-scheme: dark; /* native controls (the select list) follow the theme */
     --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%239db0c1' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6l5 5 5-5'/%3E%3C/svg%3E");

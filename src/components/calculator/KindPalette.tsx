@@ -65,7 +65,7 @@ export function KindRail({ count, onAdd, onImport }: Props & { onImport?: (rows:
     <nav ref={ref} aria-label={dict.palette.title} className="hidden lg:block">
       {/* the list opens inside the sticky box, so it stays beside the rail wherever the page is scrolled; the box is a stacking context, so it carries z-30 itself or the positioned sections paint over the list (ADR 0087) */}
       <div ref={box} className="sticky top-4 z-30">
-      <div className="flex h-[calc(100vh-2rem)] flex-col gap-1.5 overflow-y-auto rounded-lg border border-line bg-panel p-1.5">
+      <div className="flex h-[calc(100vh-2rem)] flex-col gap-1.5 overflow-y-auto rounded-lg border border-line bg-bar p-1.5">
       <div className={railBox}>
         <p className="grid justify-items-center gap-0.5 border-b border-line px-0.5 pb-2 pt-1 text-center text-sm font-semibold leading-tight">
           <span aria-hidden="true" className="grid h-7 w-7 place-items-center rounded-full bg-accent text-xl leading-none text-background">+</span>
