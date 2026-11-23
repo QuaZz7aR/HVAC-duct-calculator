@@ -106,6 +106,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0089](adr/0089-mode-and-import-in-the-side-rail.md) | Mode (chosen like the language) and import move to the side rail on desktop | 2026-11-23 | Accepted |
 | [0090](adr/0090-inter-and-jetbrains-mono.md) | Fonts: Inter + JetBrains Mono instead of IBM Plex | 2026-11-23 | Accepted |
 | [0091](adr/0091-single-fittings-framed-like-sections.md) | Single fittings (open or folded) framed like sections in their own colour | 2026-11-23 | Accepted |
+| [0092](adr/0092-manual-theme-switch.md) | Manual theme switch (system / light / dark) on `<html data-theme>` | 2026-11-23 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.

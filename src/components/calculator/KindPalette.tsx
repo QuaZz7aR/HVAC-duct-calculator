@@ -7,6 +7,7 @@ import { KindGlyph } from "./KindGlyph";
 import { LangRailButton } from "./LangSwitch";
 import { ImportButton } from "./ImportDialog";
 import { ModeRailButton } from "./ModeSwitch";
+import { ThemeRailButton } from "./ThemeSwitch";
 import type { ImportRow } from "@/lib/import/mapping";
 import { scrollToTop } from "./scrollToTop";
 import { UpIcon } from "./ViewIcons";
@@ -99,6 +100,7 @@ export function KindRail({ count, onAdd, onImport }: Props & { onImport?: (rows:
           {/* import and mode moved here from the page header on desktop (ADR 0089) */}
           {onImport && <ImportButton rail onImport={onImport} />}
           <ModeRailButton />
+          <ThemeRailButton />
           <HelpButton rail />
           <LangRailButton />
         </div>

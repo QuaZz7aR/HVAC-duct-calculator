@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* `dark:` follows the resolved theme on <html data-theme>, not the media query (ADR 0092) */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 /* Blueprint-paper neutrals with one blue accent (the card design the owner chose, 2026-10-22). */
 :root {
   --background: #f3f5f7;
@@ -11,6 +14,8 @@
   --accent-soft: #e4edfb;
   /* frame of the single fittings, a second colour beside the accent of the sections (ADR 0091) */
   --single: #b45309;
+  /* sticky view bar: darker than the page, so neither the cards nor the button hover blend with it (ADR 0088) */
+  --bar: #d5dee8;
   color-scheme: light;
   --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%234a5b6a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6l5 5 5-5'/%3E%3C/svg%3E");
   --chevron-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%234a5b6a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11l5-5 5 5'/%3E%3C/svg%3E");
@@ -27,10 +32,8 @@
   /* softer than the accent: lighter on the light theme, darker on the dark one */
   --section-end: color-mix(in srgb, var(--accent) 70%, white);
 }
-@media (prefers-color-scheme: dark) {
-  .section-end {
-    --section-end: color-mix(in srgb, var(--accent) 65%, black);
-  }
+:root[data-theme="dark"] .section-end {
+  --section-end: color-mix(in srgb, var(--accent) 65%, black);
 }
 .section-end::after {
   content: "";
@@ -50,10 +53,8 @@
   background: color-mix(in srgb, var(--single) 6%, transparent);
   --section-end: color-mix(in srgb, var(--single) 70%, white);
 }
-@media (prefers-color-scheme: dark) {
-  .singles-frame {
-    --section-end: color-mix(in srgb, var(--single) 65%, black);
-  }
+:root[data-theme="dark"] .singles-frame {
+  --section-end: color-mix(in srgb, var(--single) 65%, black);
 }
 
 @theme inline {
@@ -64,11 +65,12 @@
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
+  --color-bar: var(--bar);
   --font-mono: var(--font-mono-ui), "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+/* dark palette: the page follows the system unless the user picked a theme (ADR 0092); data-theme is set before paint */
+:root[data-theme="dark"] {
     --background: #0f161d;
     --foreground: #e8eef4;
     --panel: #17212b;
@@ -77,10 +79,10 @@
     --accent: #6ea2ff;
     --accent-soft: #1b2c47;
     --single: #f59e0b;
+    --bar: #0a1016;
     color-scheme: dark; /* native controls (the select list) follow the theme */
     --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%239db0c1' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6l5 5 5-5'/%3E%3C/svg%3E");
     --chevron-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%239db0c1' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11l5-5 5 5'/%3E%3C/svg%3E");
-  }
 }
 
 body {

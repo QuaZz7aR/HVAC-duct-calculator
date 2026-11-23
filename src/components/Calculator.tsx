@@ -3,6 +3,8 @@ import { useState } from "react";
 
 import { I18nProvider, useI18n } from "@/components/i18n";
 import { ModeProvider, useMode } from "@/components/mode";
+import { ThemeProvider } from "@/components/theme";
+import { ThemeSwitch } from "./calculator/ThemeSwitch";
 import { ErrorList } from "./calculator/ErrorList";
 import { ModeSwitch } from "./calculator/ModeSwitch";
 import { LangSwitch } from "./calculator/LangSwitch";
@@ -23,9 +25,11 @@ import { useCardView } from "./calculator/useCardView";
 export function Calculator() {
   return (
     <I18nProvider>
+      <ThemeProvider>
       <ModeProvider>
         <CalculatorPage />
       </ModeProvider>
+      </ThemeProvider>
     </I18nProvider>
   );
 }
@@ -55,6 +59,7 @@ function CalculatorPage() {
               <ImportButton onImport={importRows} />
               <HelpButton />
               <LangSwitch />
+              <ThemeSwitch />
             </div>
           </div>
         </header>
