@@ -232,7 +232,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
         setDrag(null);
       }}
     >
-      <div className="flex flex-wrap items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
         <div>
           <h2 id="items-title" className="font-medium">{dict.itemsTitle}</h2>
           <p className="text-sm text-muted">

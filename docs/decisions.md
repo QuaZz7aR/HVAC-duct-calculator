@@ -97,6 +97,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0080](adr/0080-card-buttons-two-rows-in-two-columns.md) | Open card buttons in two rows in the two-column layout | 2026-11-20 | Accepted |
 | [0081](adr/0081-sketches-closed-by-default.md) | Full sketches closed by default (thumbnail only) | 2026-11-20 | Accepted |
 | [0082](adr/0082-simple-and-advanced-mode.md) | Simple and advanced interface modes (simple by default, hidden values still count) | 2026-11-23 | Accepted |
+| [0083](adr/0083-header-toolbar-under-the-title.md) | Header toolbar left under the title, «Видалити всі» beside the heading | 2026-11-23 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.
