@@ -6,9 +6,8 @@ import { HelpButton } from "./HelpDialog";
 import { KindGlyph } from "./KindGlyph";
 import { LangRailButton } from "./LangSwitch";
 import { scrollToTop } from "./scrollToTop";
-import { FoldIcon, SketchesIcon, UpIcon } from "./ViewIcons";
+import { UpIcon } from "./ViewIcons";
 import { buttonClass, inputClass } from "./styles";
-import type { CardView } from "./useCardView";
 import { useDismiss } from "./useDismiss";
 
 interface Props {
@@ -48,8 +47,8 @@ const railBox = "flex flex-col gap-1 border-t border-line pt-1.5 first:border-t-
 const railAction =
   "grid justify-items-center gap-1 rounded-md border border-transparent px-1 py-1.5 text-center text-xs leading-tight text-muted hover:border-line hover:text-foreground hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
 
-/** Desktop: a narrow single-column rail (icon over label) of the kind groups, view toggles, help and language, always in view; a group opens a list of its kinds beside the rail. */
-export function KindRail({ count, onAdd, view, hasRows, twoColumns = false, onColumns }: Props & { view: CardView; hasRows: boolean; twoColumns?: boolean; onColumns?: (two: boolean) => void }) {
+/** Desktop: a narrow single-column rail (icon over label) of the kind groups, help and language (the view toggles are in the list header, ADR 0088), always in view; a group opens a list of its kinds beside the rail. */
+export function KindRail({ count, onAdd }: Props) {
   const { dict } = useI18n();
   const [open, setOpen] = useState<KindGroupId | null>(null);
   // top of the open group's button inside the sticky box: the list opens level with it
@@ -86,23 +85,6 @@ export function KindRail({ count, onAdd, view, hasRows, twoColumns = false, onCo
         ))}
         </div>
       </div>
-        {hasRows && (
-          <div className={railBox}>
-            <p className="px-0.5 pt-0.5 text-center text-[0.65rem] uppercase tracking-wider text-muted">{dict.palette.viewTitle}</p>
-            <button type="button" onClick={() => view.setAllSketches(!view.allSketchesOpen)} className={railAction}>
-              <SketchesIcon crossed={view.allSketchesOpen} className="h-5 w-8 text-accent" />
-              {view.allSketchesOpen ? dict.hideAllSketches : dict.showAllSketches}
-            </button>
-            <button type="button" onClick={() => view.setAllFolded(!view.allFolded)} className={railAction}>
-              <FoldIcon folded={view.allFolded} className="h-5 w-8 text-accent" />
-              {view.allFolded ? dict.palette.expandCards : dict.palette.collapseCards}
-            </button>
-            <button type="button" onClick={() => onColumns?.(!twoColumns)} aria-pressed={twoColumns} className={`${railAction} ${onColumns ? "hidden xl:grid" : "hidden"}`}>
-              <ColumnsIcon two={!twoColumns} className="h-5 w-8 text-accent" />
-              {twoColumns ? dict.palette.oneColumn : dict.palette.twoColumns}
-            </button>
-          </div>
-        )}
         <div className={railBox}>
           <button type="button" onClick={scrollToTop} className={railAction}>
             <UpIcon className="h-5 w-8 text-accent" />
@@ -214,21 +196,5 @@ export function Sheet({ found, query, setQuery, count, onClose, onAdd }: { found
         <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={dict.palette.search} aria-label={dict.palette.search} className={inputClass} />
       </div>
     </>
-  );
-}
-
-/** Two (or one) column bars: the layout the button switches to. */
-function ColumnsIcon({ two, className }: { two: boolean; className?: string }) {
-  return (
-    <svg viewBox="0 0 32 20" fill="none" stroke="currentColor" strokeWidth="1.6" className={className} aria-hidden="true">
-      {two ? (
-        <>
-          <rect x="4" y="3" width="11" height="14" rx="1.5" />
-          <rect x="17" y="3" width="11" height="14" rx="1.5" />
-        </>
-      ) : (
-        <rect x="4" y="3" width="24" height="14" rx="1.5" />
-      )}
-    </svg>
   );
 }

@@ -102,6 +102,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0085](adr/0085-section-buttons-in-two-rows-on-a-phone.md) | Section buttons in two rows on a phone, short fold word | 2026-11-23 | Accepted |
 | [0086](adr/0086-warning-marks-in-the-results.md) | Red / amber ⚠ before a problem row in the results | 2026-11-23 | Accepted |
 | [0087](adr/0087-add-menu-above-sections.md) | The add-fitting list paints above the sections (z-index on the sticky rail box) | 2026-11-23 | Accepted |
+| [0088](adr/0088-view-toggles-in-a-sticky-list-header.md) | View toggles move from the side rail to a sticky «Деталі» header (desktop) | 2026-11-23 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.

@@ -27,3 +27,19 @@ export function UpIcon({ className }: { className?: string }) {
     </svg>
   );
 }
+
+/** Two (or one) column bars: the layout the button switches to. */
+export function ColumnsIcon({ two, className }: { two: boolean; className?: string }) {
+  return (
+    <svg viewBox="0 0 32 20" fill="none" stroke="currentColor" strokeWidth="1.6" className={className} aria-hidden="true">
+      {two ? (
+        <>
+          <rect x="4" y="3" width="11" height="14" rx="1.5" />
+          <rect x="17" y="3" width="11" height="14" rx="1.5" />
+        </>
+      ) : (
+        <rect x="4" y="3" width="24" height="14" rx="1.5" />
+      )}
+    </svg>
+  );
+}
