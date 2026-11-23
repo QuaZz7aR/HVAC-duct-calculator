@@ -20,9 +20,12 @@ const metres = (mm: number, locale: string) => (mm / 1000).toLocaleString(locale
 const numCell = "px-2 text-right tabular-nums";
 
 /** Position, kind and the sizes; a click scrolls to the card, so rows of one kind (a clone) can be told apart and found. */
-function RowName({ row, index }: { row: FormRow; index: number }) {
+/** The card's marks repeated in the results (ADR 0086): red when the row is not counted, amber when it has warnings. */
+function RowName({ row, index, outcome }: { row: FormRow; index: number; outcome: RowOutcome | undefined }) {
   const { dict } = useI18n();
   const sizes = sizeLabel(row, dict);
+  const error = !outcome?.ok || !!row.noSizes;
+  const warning = !error && ((outcome.result.warnings.length > 0) || !!row.sizeConflicts?.length);
   return (
     <button
       type="button"
@@ -30,6 +33,8 @@ function RowName({ row, index }: { row: FormRow; index: number }) {
       title={dict.results.goToCard}
       onClick={() => scrollToCard(row.id)}
     >
+      {error && <span className="mr-1 text-red-600 dark:text-red-400" role="img" aria-label={dict.cardHasErrors} title={dict.cardHasErrors}>⚠</span>}
+      {warning && <span className="mr-1 text-amber-700 dark:text-amber-400" role="img" aria-label={dict.cardHasWarnings} title={dict.cardHasWarnings}>⚠</span>}
       {positionLabel(row, index)}. {rowTitle(row, dict)}
       {sizes && <span className={`block font-mono text-xs ${mutedClass}`}>{sizes}</span>}
     </button>
@@ -42,7 +47,7 @@ function ResultRow({ row, index, outcome, inSection = false }: { row: FormRow; i
   if (!outcome?.ok) {
     return (
       <tr className={`border-t border-line text-muted hover:bg-accent-soft ${tint}`}>
-        <td className="py-1 pr-3"><RowName row={row} index={index} /></td>
+        <td className="py-1 pr-3"><RowName row={row} index={index} outcome={outcome} /></td>
         <td colSpan={7} className="px-2 text-right">—</td>
       </tr>
     );
@@ -52,7 +57,7 @@ function ResultRow({ row, index, outcome, inSection = false }: { row: FormRow; i
   return (
     <tr className={`border-t border-line hover:bg-accent-soft ${tint}`}>
       <td className="py-1 pr-3">
-        <RowName row={row} index={index} />
+        <RowName row={row} index={index} outcome={outcome} />
         {p && <span className={`block text-xs ${mutedClass}`}>{dict.results.pieces(String(p.full), metres(p.pieceMm, dict.locale), p.restMm > 0 ? metres(p.restMm, dict.locale) : null)}</span>}
       </td>
       <td className={numCell}>{r.quantity}</td>
@@ -61,7 +66,7 @@ function ResultRow({ row, index, outcome, inSection = false }: { row: FormRow; i
       <td className={numCell}>{fmt(r.metalAreaTotal)}</td>
       <td className={numCell}>{fmt(r.metalConsumption)}</td>
       <td className={numCell}>{fmt(r.metalConsumptionTotal)}</td>
-      <td className="pl-2 text-right tabular-nums">{r.insulation ? fmt(r.insulation.areaTotal) : "—"}</td>
+      <td className="adv-only pl-2 text-right tabular-nums">{r.insulation ? fmt(r.insulation.areaTotal) : "—"}</td>
     </tr>
   );
 }
@@ -85,7 +90,7 @@ function SectionRows({ kind, items, outcome }: { kind: FormRow["kind"]; items: {
         <td className={cell}>{sum((r) => r.metalAreaTotal)}</td>
         <td />
         <td className={cell}>{sum((r) => r.metalConsumptionTotal)}</td>
-        <td className={`pl-2 pt-3 pb-1 text-right tabular-nums font-medium`}>{ok.some((r) => r.insulation) ? sum((r) => r.insulation?.areaTotal ?? 0) : "—"}</td>
+        <td className={`adv-only pl-2 pt-3 pb-1 text-right tabular-nums font-medium`}>{ok.some((r) => r.insulation) ? sum((r) => r.insulation?.areaTotal ?? 0) : "—"}</td>
       </tr>
       {rows}
     </>
@@ -118,7 +123,7 @@ function PhoneResults({ rows, outcome }: { rows: FormRow[]; outcome: Props["outc
               const p = r?.pieces;
               return (
                 <div key={row.id} className="rounded-md border border-line bg-panel p-2 text-sm">
-                  <RowName row={row} index={index} />
+                  <RowName row={row} index={index} outcome={o} />
                   {p && <span className={`block text-xs ${mutedClass}`}>{dict.results.pieces(String(p.full), metres(p.pieceMm, dict.locale), p.restMm > 0 ? metres(p.restMm, dict.locale) : null)}</span>}
                   {r ? (
                     <dl className="mt-1 space-y-0.5">
@@ -128,7 +133,7 @@ function PhoneResults({ rows, outcome }: { rows: FormRow[]; outcome: Props["outc
                       {line(dict.results.metalAreaTotal, fmt(r.metalAreaTotal), true)}
                       {r.consumptionDiffers && line(dict.results.metalConsumption, fmt(r.metalConsumption))}
                       {r.consumptionDiffers && line(dict.results.metalConsumptionTotal, fmt(r.metalConsumptionTotal), true)}
-                      {r.insulation && line(dict.results.insulationTotal, fmt(r.insulation.areaTotal))}
+                      {r.insulation && <span className="adv-only contents">{line(dict.results.insulationTotal, fmt(r.insulation.areaTotal))}</span>}
                     </dl>
                   ) : <p className={mutedClass}>—</p>}
                 </div>
@@ -165,7 +170,7 @@ export function ResultsTable({ rows, outcome, calc }: Props) {
                 <th className="px-2 text-right">{dict.results.metalAreaTotal}</th>
                 <th className="px-2 text-right">{dict.results.metalConsumption}<Info text={dict.help.columns.metalConsumption} /></th>
                 <th className="px-2 text-right">{dict.results.metalConsumptionTotal}</th>
-                <th className="pl-2 text-right">{dict.results.insulationTotal}<Info text={dict.help.columns.insulation} /></th>
+                <th className="adv-only pl-2 text-right">{dict.results.insulationTotal}<Info text={dict.help.columns.insulation} /></th>
               </tr>
             </thead>
             <tbody>
@@ -180,7 +185,20 @@ export function ResultsTable({ rows, outcome, calc }: Props) {
       {calc.rows.some((o) => o.ok && o.result.consumptionDiffers) && (
         <p className={`mt-2 text-xs ${mutedClass}`}>{dict.results.consumptionNote}</p>
       )}
-      {calc.skipped > 0 && <p className="mt-2 text-sm text-amber-700 dark:text-amber-400">{dict.results.skipped(calc.skipped)}</p>}
+      {calc.skipped > 0 && (
+        <p className="mt-2 text-sm text-amber-700 dark:text-amber-400">
+          {dict.results.skipped(calc.skipped)}{" "}
+          {/* each skipped row by its short name, a click scrolls to its card (ADR 0086) */}
+          {rows.map((row, index) => ({ row, index })).filter(({ row }) => !outcome(row.id)?.ok).map(({ row, index }, i) => (
+            <span key={row.id}>
+              {i > 0 && ", "}
+              <button type="button" className="underline decoration-dotted underline-offset-2 hover:text-accent" title={dict.results.goToCard} onClick={() => scrollToCard(row.id)}>
+                {positionLabel(row, index)}. {dict.kinds[row.kind].designation}
+              </button>
+            </span>
+          ))}
+        </p>
+      )}
     </section>
   );
 }

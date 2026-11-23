@@ -96,6 +96,11 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0079](adr/0079-hood-imported-as-a-cap.md) | A hood (зонт) is imported as a cap, the name wins over the code | 2026-11-20 | Accepted |
 | [0080](adr/0080-card-buttons-two-rows-in-two-columns.md) | Open card buttons in two rows in the two-column layout | 2026-11-20 | Accepted |
 | [0081](adr/0081-sketches-closed-by-default.md) | Full sketches closed by default (thumbnail only) | 2026-11-20 | Accepted |
+| [0082](adr/0082-simple-and-advanced-mode.md) | Simple and advanced interface modes (simple by default, hidden values still count) | 2026-11-23 | Accepted |
+| [0083](adr/0083-header-toolbar-under-the-title.md) | Header toolbar left under the title, «Видалити всі» beside the heading | 2026-11-23 | Accepted |
+| [0084](adr/0084-section-end-and-group-separation.md) | Sections tinted with a gradient bottom edge, more space between groups | 2026-11-23 | Accepted |
+| [0085](adr/0085-section-buttons-in-two-rows-on-a-phone.md) | Section buttons in two rows on a phone, short fold word | 2026-11-23 | Accepted |
+| [0086](adr/0086-warning-marks-in-the-results.md) | Red / amber ⚠ before a problem row in the results | 2026-11-23 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.

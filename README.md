@@ -19,6 +19,7 @@ The interface is in Ukrainian by default, with an English version: the УКР / 
 - **Cost estimate.** Enter your own price per m² (UAH) for each sheet thickness and insulation material: cost per line and in total. Metal is priced on the area to order (the consumption with the margin). No prices are preset.
 - **Input warnings.** Unusual but valid input (aspect ratio of 3 and above, over 6.3, a side over 2000 mm, a large elbow radius) is flagged and never changed.
 - **Import from Excel.** Load a ready-made spec (.xlsx or .csv): the site finds the columns (type code or name, sizes, length, quantity, system and number), recognises the fitting kinds from the engineer's codes and from names such as «КО 90 Д150», shows every row and lets you pick a kind for the ones it does not know. The file is read in the browser and never uploaded.
+- **Simple and advanced mode.** The simple mode (default) shows only sizes, quantity and the metal figures; the advanced mode adds the calculation settings, allowances, insulation and prices. The choice is remembered in the browser; hidden values still count.
 - **Sketches.** Each fitting card shows a thumbnail of its isometric sketch; a click opens the full sketch with the dimension letters used in the form.
 
 | Fittings folded into tiles, with the results table | Totals, metal and insulation lists with prices |
