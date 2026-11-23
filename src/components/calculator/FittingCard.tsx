@@ -87,6 +87,8 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
   const fieldLabel = (f: (typeof kindFields)[FittingKind][number]) =>
     `${dict.fields[f.key]}${f.optional ? ` (${dict.optional}: ${defaultConfig.reducerLengthMm})` : ""}`;
   // the (авто) hint or the reset link sits after the label, so reserve room for the longer one on the suggested field
+  // a hidden field with an error stays visible in the simple mode, so it can be fixed (ADR 0082)
+  const hasIssue = (key: string) => !!outcome && !outcome.ok && outcome.issues.some((i) => i.path.includes(key));
   const labels = [dict.order.position, ...kindFields[row.kind].map((f) => fieldLabel(f) + (autoKey(row.kind) === f.key ? ` ${dict.autoValue.length > dict.resetAuto.length ? `(${dict.autoValue})` : dict.resetAuto}` : "")), ...(hasAllowance(row.kind) ? [dict.allowanceCount.field] : []), dict.quantity, dict.insulation.field];
   if (collapsed) {
     // one compact tile: number, kind and the typed values; the whole tile expands the card
@@ -184,7 +186,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
           const hint = autoKey(row.kind) === f.key ? (isAuto(row, f.key) && (row.values[f.key] ?? "") !== "" ? dict.autoValue : undefined) : undefined;
           const action = autoKey(row.kind) === f.key && !isAuto(row, f.key) ? { label: dict.resetAuto, onClick: () => onReset(f.key) } : undefined;
           return (
-            <div key={f.key} className={advancedFields.has(f.key) ? "contents adv-only" : "contents"}>
+            <div key={f.key} className={advancedFields.has(f.key) && !hasIssue(f.key) ? "contents adv-only" : "contents"}>
             <TextField
               label={fieldLabel(f)}
               value={row.values[f.key] ?? ""}
@@ -198,7 +200,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
           );
         })}
         {hasAllowance(row.kind) && (
-          <label className="adv-only flex flex-col justify-end">
+          <label className={`${hasIssue("allowanceCount") ? "" : "adv-only "}flex flex-col justify-end`}>
             <span className={labelClass}>{dict.allowanceCount.field}<Info text={dict.help.fields.allowanceCount} /></span>
             <select className={selectClass} value={row.allowanceCount || "2"} onChange={(e) => onPatch({ allowanceCount: e.target.value })}>
               {(["2", "1", "0"] as const).map((n) => (
@@ -208,7 +210,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
           </label>
         )}
         <TextField label={dict.quantity} info={dict.help.fields.quantity} inputMode="numeric" value={row.quantity} onChange={(quantity) => onPatch({ quantity })} />
-        <label className="adv-only col-span-2 flex flex-col justify-end sm:col-span-1">
+        <label className={`${hasIssue("insulation") ? "" : "adv-only "}col-span-2 flex flex-col justify-end sm:col-span-1`}>
           <span className={labelClass}>{dict.insulation.field}<Info text={dict.help.fields.insulation} /></span>
           <select className={selectClass} value={row.insulation ?? ""} onChange={(e) => onPatch({ insulation: e.target.value })}>
             <option value="" className="bg-panel text-foreground">{dict.insulation.none}</option>

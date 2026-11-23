@@ -2,7 +2,8 @@
 import { useState } from "react";
 
 import { I18nProvider, useI18n } from "@/components/i18n";
-import { ModeProvider } from "@/components/mode";
+import { ModeProvider, useMode } from "@/components/mode";
+import { ErrorList } from "./calculator/ErrorList";
 import { ModeSwitch } from "./calculator/ModeSwitch";
 import { LangSwitch } from "./calculator/LangSwitch";
 import { HelpButton } from "./calculator/HelpDialog";
@@ -33,6 +34,7 @@ function CalculatorPage() {
   const { dict } = useI18n();
   const { rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice } = useCalculator();
 
+  const { mode } = useMode();
   const view = useCardView(rows);
   const [twoColumns, setTwoColumns] = useState(false);
 
@@ -58,6 +60,8 @@ function CalculatorPage() {
         <div className="adv-only">
         <SettingsPanel settings={settings} onChange={setSettings} issues={settingsIssues} />
         </div>
+        {/* simple mode: the settings block is hidden, but a bad setting is still reported (ADR 0082) */}
+        {mode === "simple" && settingsIssues.length > 0 && <ErrorList issues={settingsIssues} />}
         <FittingList
           rows={rows}
           view={view}

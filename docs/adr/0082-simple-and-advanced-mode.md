@@ -14,4 +14,4 @@ The page shows every setting at once: thickness table, seam allowance, order mar
 - Hidden values are kept and still count (a chosen insulation, a margin of 25 %); switching never changes a number.
 
 ## Consequences
-The server renders the simple mode; a stored «advanced» appears after hydration. A new advanced-only control just needs the `adv-only` class.
+The server renders `<html data-mode="simple">` (no flash of the advanced parts on a first visit); a stored «advanced» appears after hydration. A bad setting is still reported under the header in the simple mode, and a hidden card field with an error stays visible so it can be fixed. A new advanced-only control just needs the `adv-only` class.
