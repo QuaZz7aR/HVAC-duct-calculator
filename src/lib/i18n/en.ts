@@ -174,7 +174,7 @@ export const en: Dictionary = {
     consumptionNote: '* Metal consumption: reducers are counted at least 300 mm long (minimum part length), tees and crosses without the branch cut-out. The order, sheets and price follow the consumption, insulation the actual area.',
     insulationTotal: 'Insulation, m²',
     empty: 'Add a fitting to see the calculation.',
-    skipped: (n: number) => `Items with errors not counted: ${n}.`,
+    skipped: (n: number) => `Items with errors not counted (${n}):`,
   },
   totals: {
     title: 'Total',

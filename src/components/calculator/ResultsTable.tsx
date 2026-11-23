@@ -185,7 +185,20 @@ export function ResultsTable({ rows, outcome, calc }: Props) {
       {calc.rows.some((o) => o.ok && o.result.consumptionDiffers) && (
         <p className={`mt-2 text-xs ${mutedClass}`}>{dict.results.consumptionNote}</p>
       )}
-      {calc.skipped > 0 && <p className="mt-2 text-sm text-amber-700 dark:text-amber-400">{dict.results.skipped(calc.skipped)}</p>}
+      {calc.skipped > 0 && (
+        <p className="mt-2 text-sm text-amber-700 dark:text-amber-400">
+          {dict.results.skipped(calc.skipped)}{" "}
+          {/* each skipped row by its short name, a click scrolls to its card (ADR 0086) */}
+          {rows.map((row, index) => ({ row, index })).filter(({ row }) => !outcome(row.id)?.ok).map(({ row, index }, i) => (
+            <span key={row.id}>
+              {i > 0 && ", "}
+              <button type="button" className="underline decoration-dotted underline-offset-2 hover:text-accent" title={dict.results.goToCard} onClick={() => scrollToCard(row.id)}>
+                {positionLabel(row, index)}. {dict.kinds[row.kind].designation}
+              </button>
+            </span>
+          ))}
+        </p>
+      )}
     </section>
   );
 }
