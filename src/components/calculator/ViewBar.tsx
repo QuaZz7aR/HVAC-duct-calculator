@@ -22,7 +22,7 @@ export function ViewBar({ view, twoColumns = false, onColumns, children }: { vie
   return (
     <>
     <div ref={sentinel} aria-hidden className="h-px" />
-    <div role="group" aria-label={dict.palette.viewTitle} className={`sticky top-0 z-20 hidden flex-wrap items-center gap-2 border-2 ${stuck ? "rounded-b-lg border-t-0" : "rounded-lg"} border-accent/60 bg-bar px-3 py-3 shadow-xl shadow-black/40 lg:flex`}>
+    <div role="group" aria-label={dict.palette.viewTitle} className={`sticky top-0 z-20 hidden flex-wrap items-center gap-2 border-2 ${stuck ? "rounded-b-lg border-t-0 pt-10" : "rounded-lg pt-3"} border-accent/60 bg-bar px-3 pb-3 shadow-xl shadow-black/40 lg:flex`}>
       <button type="button" onClick={() => view.setAllSketches(!view.allSketchesOpen)} className={action}>
         <SketchesIcon crossed={view.allSketchesOpen} className="h-4 w-6 text-accent" />
         {view.allSketchesOpen ? dict.hideAllSketches : dict.showAllSketches}
