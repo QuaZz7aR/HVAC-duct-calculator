@@ -12,3 +12,5 @@ From `lg` a bar with only the view toggles (`ViewBar`; the columns button from `
 
 ## Consequences
 The rail test now checks that the rail no longer has the toggles, and `ViewBar` is checked for them (an existing test changed, at the owner's request).
+
+Update (2026-11-23): the bar is a framed tile 68 px tall, level with the rail's «+ Додати деталь» block (top 16 px); the 16 px strip above it is painted in the page background, so cards scroll under it. Bar and rail fill `--bar` sits one step from the page background (#e1e7ee light, #0c1319 dark).
