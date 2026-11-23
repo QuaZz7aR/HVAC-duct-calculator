@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useI18n } from "@/components/i18n";
 import { ColumnsIcon, FoldIcon, SketchesIcon } from "./ViewIcons";
 import { buttonClass } from "./styles";
@@ -6,7 +7,7 @@ import type { CardView } from "./useCardView";
 const action = `${buttonClass} inline-flex items-center gap-1.5`;
 
 /** Desktop: the view toggles in a sticky bar above the list (ADR 0088); the phone keeps its round buttons. */
-export function ViewBar({ view, twoColumns = false, onColumns }: { view: CardView; twoColumns?: boolean; onColumns?: (two: boolean) => void }) {
+export function ViewBar({ view, twoColumns = false, onColumns, children }: { view: CardView; twoColumns?: boolean; onColumns?: (two: boolean) => void; children?: ReactNode }) {
   const { dict } = useI18n();
   return (
     <div role="group" aria-label={dict.palette.viewTitle} className="sticky top-0 z-20 -mx-1 hidden flex-wrap items-center gap-2 bg-background px-1 py-2 lg:flex">
@@ -24,6 +25,7 @@ export function ViewBar({ view, twoColumns = false, onColumns }: { view: CardVie
           {twoColumns ? dict.palette.oneColumn : dict.palette.twoColumns}
         </button>
       )}
+      {children}
     </div>
   );
 }

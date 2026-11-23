@@ -243,10 +243,11 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
             <span className="lg:hidden">{dict.palette.hintBar}</span>
           </p>
         </div>
-        {listRows.length > 0 && onClear && <ClearAll count={listRows.length} onClear={onClear} />}
+        {/* desktop: «Видалити всі» sits in the sticky view bar (ADR 0088) */}
+        {listRows.length > 0 && onClear && <div className="lg:hidden"><ClearAll count={listRows.length} onClear={onClear} /></div>}
       </div>
       {/* desktop: a bar of only the view toggles sticks to the top (ADR 0088); below the rail's z-30, so the add list still opens over it */}
-      {listRows.length > 0 && <ViewBar view={view} twoColumns={twoColumns} onColumns={onColumns} />}
+      {listRows.length > 0 && <ViewBar view={view} twoColumns={twoColumns} onColumns={onColumns}>{onClear && <ClearAll count={listRows.length} onClear={onClear} />}</ViewBar>}
       {/* one grid for the page: single cards and folded tiles share the 1-3 columns, a repeated kind is a full-width section with a grid of its own; open cards span the full width */}
       <div className={gridClass}>
         {runs.map(({ kind, items }, r) => {
