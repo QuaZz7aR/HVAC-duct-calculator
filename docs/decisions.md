@@ -84,7 +84,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0067](adr/0067-sections-pair-up.md) | Half-width sections only in pairs; a lone section is full width | 2026-11-20 | Superseded by 0071 |
 | [0068](adr/0068-glide-only-on-reorder.md) | Cards glide only on a reorder, not on add or remove | 2026-11-20 | Accepted |
 | [0069](adr/0069-open-section-full-width.md) | An open section takes the full width; only folded sections pair up | 2026-11-20 | Superseded by 0071 |
-| [0070](adr/0070-single-fittings-frame.md) | Folded single fittings in a dashed «Окремі деталі» frame | 2026-11-20 | Accepted |
+| [0070](adr/0070-single-fittings-frame.md) | Folded single fittings in a dashed «Окремі деталі» frame | 2026-11-20 | Superseded by 0091 (frame) |
 | [0071](adr/0071-sections-full-width-again.md) | Sections take the full width again (reverts 0064, 0067, 0069) | 2026-11-20 | Accepted |
 | [0072](adr/0072-section-frame-accent.md) | Section frame in the accent colour at 35 % | 2026-11-20 | Accepted |
 | [0073](adr/0073-import-size-conflicts.md) | Import warns when the name and the size columns disagree | 2026-11-20 | Accepted |
@@ -101,6 +101,12 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0084](adr/0084-section-end-and-group-separation.md) | Sections tinted with a gradient bottom edge, more space between groups | 2026-11-23 | Accepted |
 | [0085](adr/0085-section-buttons-in-two-rows-on-a-phone.md) | Section buttons in two rows on a phone, short fold word | 2026-11-23 | Accepted |
 | [0086](adr/0086-warning-marks-in-the-results.md) | Red / amber ⚠ before a problem row in the results | 2026-11-23 | Accepted |
+| [0087](adr/0087-add-menu-above-sections.md) | The add-fitting list paints above the sections (z-index on the sticky rail box) | 2026-11-23 | Accepted |
+| [0088](adr/0088-view-toggles-in-a-sticky-list-header.md) | View toggles move from the side rail to a sticky bar above the list (desktop) | 2026-11-23 | Accepted |
+| [0089](adr/0089-mode-and-import-in-the-side-rail.md) | Mode (chosen like the language) and import move to the side rail on desktop | 2026-11-23 | Accepted |
+| [0090](adr/0090-inter-and-jetbrains-mono.md) | Fonts: Inter + JetBrains Mono instead of IBM Plex | 2026-11-23 | Accepted |
+| [0091](adr/0091-single-fittings-framed-like-sections.md) | Single fittings (open or folded) framed like sections in their own colour | 2026-11-23 | Accepted |
+| [0092](adr/0092-manual-theme-switch.md) | Manual theme switch (system / light / dark) on `<html data-theme>` | 2026-11-23 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.

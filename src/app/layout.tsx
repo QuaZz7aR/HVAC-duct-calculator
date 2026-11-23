@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { uk } from "@/lib/i18n/uk";
+import { themeScript } from "@/lib/form/theme";
 import "./globals.css";
 
-const sans = IBM_Plex_Sans({ subsets: ["latin", "cyrillic"], weight: ["400", "500", "600"], variable: "--font-plex-sans", display: "swap" });
-const mono = IBM_Plex_Mono({ subsets: ["latin", "cyrillic"], weight: ["400", "500"], variable: "--font-plex-mono", display: "swap" });
+const sans = Inter({ subsets: ["latin", "cyrillic"], weight: ["400", "500", "600"], variable: "--font-sans-ui", display: "swap" });
+const mono = JetBrains_Mono({ subsets: ["latin", "cyrillic"], weight: ["400", "500"], variable: "--font-mono-ui", display: "swap" });
 
 export const metadata: Metadata = {
   title: uk.appTitle,
@@ -14,7 +15,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="uk" data-mode="simple" className={`${sans.variable} ${mono.variable} h-full antialiased`}>
+    <html lang="uk" data-mode="simple" className={`${sans.variable} ${mono.variable} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        {/* sets data-theme before paint (ADR 0092) */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="min-h-full flex flex-col">
         {children}
         <Analytics />

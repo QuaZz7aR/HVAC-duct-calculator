@@ -6,6 +6,7 @@ import { KindGlyph } from "../KindGlyph";
 import { KindMenu } from "../KindMenu";
 import { PhoneActions } from "../PhoneActions";
 import { KindRail } from "../KindPalette";
+import { ViewBar } from "../ViewBar";
 import type { CardView } from "../useCardView";
 
 const view: CardView = {
@@ -19,12 +20,15 @@ describe("kind palette", () => {
   });
 
   it("shows a rail button per group and quick buttons with the all-kinds entry", () => {
-    const rail = renderToStaticMarkup(<KindRail count={() => 0} onAdd={() => {}} view={view} hasRows />);
+    const rail = renderToStaticMarkup(<KindRail count={() => 0} onAdd={() => {}} />);
     for (const name of Object.values(dict.kindGroups)) expect(rail).toContain(name);
-    expect(rail).toContain(dict.hideAllSketches);
-    expect(rail).toContain(dict.palette.collapseCards);
     expect(rail).toContain(dict.palette.toTop);
-    expect(renderToStaticMarkup(<KindRail count={() => 0} onAdd={() => {}} view={view} hasRows={false} />)).not.toContain(dict.hideAllSketches);
+    // the view toggles moved from the rail to the sticky list header (ADR 0088)
+    expect(rail).not.toContain(dict.hideAllSketches);
+    const bar = renderToStaticMarkup(<ViewBar view={view} onColumns={() => {}} />);
+    expect(bar).toContain(dict.hideAllSketches);
+    expect(bar).toContain(dict.palette.collapseCards);
+    expect(bar).toContain(dict.palette.twoColumns);
     const closed = renderToStaticMarkup(<PhoneActions view={view} hasRows count={() => 0} onAdd={() => {}} />);
     expect(closed).toContain(dict.palette.addButton);
     expect(closed).toContain('aria-expanded="false"');

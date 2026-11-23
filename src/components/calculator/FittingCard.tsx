@@ -94,7 +94,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
     // one compact tile: number, kind and the typed values; the whole tile expands the card
     const summary = [...kindFields[row.kind].map((f) => row.values[f.key] ?? ""), row.quantity].map((v) => v || "–").join(" · ");
     return (
-      <div id={`fitting-${row.id}`} {...dropTarget} className={`${cardClass} flex scroll-mt-16 items-center gap-2 !p-2 ${justAdded ? "flash-card" : ""} ${dragging ? "!border-2 !border-dashed !border-accent bg-accent-soft opacity-60 pointer-events-none" : ""}`}>
+      <div id={`fitting-${row.id}`} {...dropTarget} className={`${cardClass} flex scroll-mt-16 lg:scroll-mt-24 items-center gap-2 !p-2 ${justAdded ? "flash-card" : ""} ${dragging ? "!border-2 !border-dashed !border-accent bg-accent-soft opacity-60 pointer-events-none" : ""}`}>
         {handle}
         <button type="button" className="min-w-0 flex-1 text-left" onClick={onToggleCollapsed} aria-expanded={false} title={`${dict.expandCard}: ${kindTitle(row.kind, dict)}`}>
           <span className="block text-sm font-medium leading-tight">{outcome && !outcome.ok && <span className="mr-1 text-red-600 dark:text-red-400" aria-label={dict.cardHasErrors} title={dict.cardHasErrors}>⚠</span>}{position}. {kindTitle(row.kind, dict)}</span>
@@ -131,7 +131,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
         </figure>
   );
   return (
-    <div id={`fitting-${row.id}`} {...dropTarget} className={`${cardClass} col-span-full ${half ? "xl:col-span-2" : ""} scroll-mt-16 ${justAdded ? "flash-card" : ""} ${dragging ? "!border-2 !border-dashed !border-accent bg-accent-soft opacity-60 pointer-events-none" : ""}`}>
+    <div id={`fitting-${row.id}`} {...dropTarget} className={`${cardClass} col-span-full ${half ? "xl:col-span-2" : ""} scroll-mt-16 lg:scroll-mt-24 ${justAdded ? "flash-card" : ""} ${dragging ? "!border-2 !border-dashed !border-accent bg-accent-soft opacity-60 pointer-events-none" : ""}`}>
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <span className="flex self-center">{handle}</span>
         <button

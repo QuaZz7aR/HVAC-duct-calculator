@@ -7,10 +7,13 @@ import { FittingCard } from "./FittingCard";
 import { kindTitle } from "./format";
 import { buttonClass, dangerButtonClass } from "./styles";
 import type { CardView } from "./useCardView";
+import { ViewBar } from "./ViewBar";
 
 interface Props {
   rows: FormRow[];
   view: CardView;
+  /** switches the two-column mode (the button shows from xl) */
+  onColumns?: (two: boolean) => void;
   /** two-column mode (desktop, xl+) */
   twoColumns?: boolean;
   /** the row added last: the list scrolls to it and marks it */
@@ -56,7 +59,7 @@ function ClearAll({ count, onClear }: { count: number; onClear: () => void }) {
   );
 }
 
-export function FittingList({ rows: listRows, view, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove, onClear, onMove, onDrop, lastAddedId, twoColumns = false }: Props) {
+export function FittingList({ rows: listRows, view, outcome, onKindChange, onValueChange, onReset, onPatch, onClone, onRemove, onClear, onMove, onDrop, lastAddedId, twoColumns = false, onColumns }: Props) {
   const { dict } = useI18n();
   const { sketchOpen, isFolded, setFoldedMany } = view;
   // two-column mode (desktop, xl+): four tile columns, an open card spans two of them
@@ -240,28 +243,35 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
             <span className="lg:hidden">{dict.palette.hintBar}</span>
           </p>
         </div>
-        {listRows.length > 0 && onClear && <ClearAll count={listRows.length} onClear={onClear} />}
+        {/* desktop: «Видалити всі» sits in the sticky view bar (ADR 0088) */}
+        {listRows.length > 0 && onClear && <div className="lg:hidden"><ClearAll count={listRows.length} onClear={onClear} /></div>}
       </div>
+      {/* desktop: a bar of only the view toggles sticks to the top (ADR 0088); below the rail's z-30, so the add list still opens over it */}
+      {listRows.length > 0 && <ViewBar view={view} twoColumns={twoColumns} onColumns={onColumns}>{onClear && <ClearAll count={listRows.length} onClear={onClear} />}</ViewBar>}
       {/* one grid for the page: single cards and folded tiles share the 1-3 columns, a repeated kind is a full-width section with a grid of its own; open cards span the full width */}
       <div className={gridClass}>
         {runs.map(({ kind, items }, r) => {
-          const lone = (k: number) => runs[k]?.items.length === 1 && isFolded(runs[k].items[0].row.id);
-          // a stretch of single folded tiles is one block whose tiles run down its columns; its first run renders it
-          if (lone(r)) {
-            if (lone(r - 1)) return null;
+          // a stretch of single fittings in the same view (all folded or all open) is one framed block, rendered by its first run;
+          // folded tiles run down its columns, open cards fill its grid (ADRs 0070, 0091)
+          const single = (k: number) => runs[k]?.items.length === 1;
+          if (single(r)) {
+            const folded = isFolded(items[0].row.id);
+            const same = (k: number) => single(k) && isFolded(runs[k].items[0].row.id) === folded;
+            if (same(r - 1)) return null;
             let end = r;
-            while (lone(end + 1)) end++;
+            while (same(end + 1)) end++;
+            const stretch = runs.slice(r, end + 1).map((x) => x.items[0]);
             return (
-              // a dashed frame and a muted title set the single fittings apart from the sections (ADR 0070)
-              <div key={`tiles-${items[0].row.id}`} className="col-span-full my-2 space-y-3 rounded-lg border border-dashed border-line p-3">
-                <h3 className="text-sm font-medium text-muted">{dict.singlesTitle} <span>× {end - r + 1}</span></h3>
-                <div className={tileColumns} style={rowVars(end - r + 1)}>
-                  {runs.slice(r, end + 1).map((x) => tile(card(x.items[0].row, x.items[0].index), x.items[0].row.id))}
-                </div>
+              <div key={`singles-${items[0].row.id}`} className="section-end singles-frame col-span-full my-2 space-y-3 rounded-lg border p-3 pb-4">
+                <h3 className="text-sm font-medium text-muted">{dict.singlesTitle} <span>× {stretch.length}</span></h3>
+                {folded ? (
+                  <div className={tileColumns} style={rowVars(stretch.length)}>{stretch.map((x) => tile(card(x.row, x.index), x.row.id))}</div>
+                ) : (
+                  <div className={gridClass}>{stretch.map((x) => card(x.row, x.index))}</div>
+                )}
               </div>
             );
           }
-          if (items.length === 1) return card(items[0].row, items[0].index);
           const groupFolded = items.every((i) => isFolded(i.row.id));
           const ids = items.map((i) => i.row.id);
           const dragging = !!drag && ids.every((id) => drag.ids.includes(id));
@@ -275,7 +285,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
           const next = runs[r + 1]?.items.at(-1)?.row.id;
           return (
             // the dragged section keeps its key while the preview merges it with a neighbour, so its handle stays mounted
-            <div key={`${kind}-${drag && ids.includes(drag.ids[0]) ? drag.ids[0] : items[0].row.id}`} id={`section-${items[0].row.id}`} className={`section-end col-span-full my-2 scroll-mt-16 space-y-3 rounded-lg border border-accent/35 bg-accent-soft/25 p-3 pb-4 ${dragging ? "border-2 border-dashed !border-accent bg-accent-soft opacity-60" : ""}`}>
+            <div key={`${kind}-${drag && ids.includes(drag.ids[0]) ? drag.ids[0] : items[0].row.id}`} id={`section-${items[0].row.id}`} className={`section-end col-span-full my-2 scroll-mt-16 lg:scroll-mt-24 space-y-3 rounded-lg border border-accent/35 bg-accent-soft/25 p-3 pb-4 ${dragging ? "border-2 border-dashed !border-accent bg-accent-soft opacity-60" : ""}`}>
               <div className="flex items-center justify-between gap-2">
                 <span
                   draggable
