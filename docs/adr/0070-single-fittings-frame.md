@@ -1,6 +1,6 @@
 # 0070. A frame around single fittings
 
-Status: Accepted
+Status: Accepted (the dashed frame superseded by 0091)
 Date: 2026-11-20
 Source: owner (Nikita), 2026-11-20: "как-то выделить детали без групп, чтобы было легче их определить"
 
