@@ -20,9 +20,12 @@ const metres = (mm: number, locale: string) => (mm / 1000).toLocaleString(locale
 const numCell = "px-2 text-right tabular-nums";
 
 /** Position, kind and the sizes; a click scrolls to the card, so rows of one kind (a clone) can be told apart and found. */
-function RowName({ row, index }: { row: FormRow; index: number }) {
+/** The card's marks repeated in the results (ADR 0086): red when the row is not counted, amber when it has warnings. */
+function RowName({ row, index, outcome }: { row: FormRow; index: number; outcome: RowOutcome | undefined }) {
   const { dict } = useI18n();
   const sizes = sizeLabel(row, dict);
+  const error = !outcome?.ok || !!row.noSizes;
+  const warning = !error && ((outcome.result.warnings.length > 0) || !!row.sizeConflicts?.length);
   return (
     <button
       type="button"
@@ -30,6 +33,8 @@ function RowName({ row, index }: { row: FormRow; index: number }) {
       title={dict.results.goToCard}
       onClick={() => scrollToCard(row.id)}
     >
+      {error && <span className="mr-1 text-red-600 dark:text-red-400" role="img" aria-label={dict.cardHasErrors} title={dict.cardHasErrors}>⚠</span>}
+      {warning && <span className="mr-1 text-amber-700 dark:text-amber-400" role="img" aria-label={dict.cardHasWarnings} title={dict.cardHasWarnings}>⚠</span>}
       {positionLabel(row, index)}. {rowTitle(row, dict)}
       {sizes && <span className={`block font-mono text-xs ${mutedClass}`}>{sizes}</span>}
     </button>
@@ -42,7 +47,7 @@ function ResultRow({ row, index, outcome, inSection = false }: { row: FormRow; i
   if (!outcome?.ok) {
     return (
       <tr className={`border-t border-line text-muted hover:bg-accent-soft ${tint}`}>
-        <td className="py-1 pr-3"><RowName row={row} index={index} /></td>
+        <td className="py-1 pr-3"><RowName row={row} index={index} outcome={outcome} /></td>
         <td colSpan={7} className="px-2 text-right">—</td>
       </tr>
     );
@@ -52,7 +57,7 @@ function ResultRow({ row, index, outcome, inSection = false }: { row: FormRow; i
   return (
     <tr className={`border-t border-line hover:bg-accent-soft ${tint}`}>
       <td className="py-1 pr-3">
-        <RowName row={row} index={index} />
+        <RowName row={row} index={index} outcome={outcome} />
         {p && <span className={`block text-xs ${mutedClass}`}>{dict.results.pieces(String(p.full), metres(p.pieceMm, dict.locale), p.restMm > 0 ? metres(p.restMm, dict.locale) : null)}</span>}
       </td>
       <td className={numCell}>{r.quantity}</td>
@@ -118,7 +123,7 @@ function PhoneResults({ rows, outcome }: { rows: FormRow[]; outcome: Props["outc
               const p = r?.pieces;
               return (
                 <div key={row.id} className="rounded-md border border-line bg-panel p-2 text-sm">
-                  <RowName row={row} index={index} />
+                  <RowName row={row} index={index} outcome={o} />
                   {p && <span className={`block text-xs ${mutedClass}`}>{dict.results.pieces(String(p.full), metres(p.pieceMm, dict.locale), p.restMm > 0 ? metres(p.restMm, dict.locale) : null)}</span>}
                   {r ? (
                     <dl className="mt-1 space-y-0.5">

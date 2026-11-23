@@ -74,6 +74,7 @@ export const en: Dictionary = {
     sectionDown: 'Move the section down',
   },
   collapseCard: 'Fold',
+  cardHasWarnings: 'This fitting has warnings',
   cardHasErrors: 'This fitting has errors',
   expandCard: 'Expand',
   collapseAll: 'Fold all',

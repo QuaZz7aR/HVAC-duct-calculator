@@ -93,6 +93,7 @@ export const uk = {
     sectionDown: 'Розділ нижче',
   },
   collapseCard: 'Згорнути',
+  cardHasWarnings: 'У деталі є попередження',
   cardHasErrors: 'У деталі є помилки',
   expandCard: 'Розгорнути',
   collapseAll: 'Згорнути всі',
