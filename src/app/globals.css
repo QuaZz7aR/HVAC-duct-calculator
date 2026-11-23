@@ -50,7 +50,6 @@
 /* single fittings: framed like a section, in their own colour (ADR 0091) */
 .singles-frame {
   border-color: color-mix(in srgb, var(--single) 35%, transparent);
-  background: color-mix(in srgb, var(--single) 12%, transparent);
   --section-end: color-mix(in srgb, var(--single) 70%, white);
 }
 :root[data-theme="dark"] .singles-frame {
