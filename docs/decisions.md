@@ -99,6 +99,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0082](adr/0082-simple-and-advanced-mode.md) | Simple and advanced interface modes (simple by default, hidden values still count) | 2026-11-23 | Accepted |
 | [0083](adr/0083-header-toolbar-under-the-title.md) | Header toolbar left under the title, «Видалити всі» beside the heading | 2026-11-23 | Accepted |
 | [0084](adr/0084-section-end-and-group-separation.md) | Sections tinted with a gradient bottom edge, more space between groups | 2026-11-23 | Accepted |
+| [0085](adr/0085-section-buttons-in-two-rows-on-a-phone.md) | Section buttons in two rows on a phone, short fold word | 2026-11-23 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.

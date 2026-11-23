@@ -276,7 +276,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
           return (
             // the dragged section keeps its key while the preview merges it with a neighbour, so its handle stays mounted
             <div key={`${kind}-${drag && ids.includes(drag.ids[0]) ? drag.ids[0] : items[0].row.id}`} id={`section-${items[0].row.id}`} className={`section-end col-span-full my-2 scroll-mt-16 space-y-3 rounded-lg border border-accent/35 bg-accent-soft/25 p-3 pb-4 ${dragging ? "border-2 border-dashed !border-accent bg-accent-soft opacity-60" : ""}`}>
-              <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center justify-between gap-2">
                 <span
                   draggable
                   role="img"
@@ -300,15 +300,23 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
                 <h3 className="min-w-0 flex-1 text-sm font-medium">
                   <span className="text-muted">{positionSpan(items.map((i) => positionLabel(i.row, i.index)))}.</span> {kindTitle(kind, dict)} <span className="text-muted">× {items.length}</span>
                 </h3>
+                {/* phone: move buttons on top, fold below, so the title keeps the width (as the tiles, ADR 0085) */}
+                <div className="flex shrink-0 flex-col items-end gap-1.5 sm:flex-row sm:items-center sm:gap-2">
+                <div className="flex gap-2">
                 <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1 disabled:cursor-default disabled:opacity-40`} disabled={prev === undefined} onClick={() => moveSection(prev)} aria-label={dict.order.sectionUp} title={dict.order.sectionUp}>↑</button>
                 <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1 disabled:cursor-default disabled:opacity-40`} disabled={next === undefined} onClick={() => moveSection(next)} aria-label={dict.order.sectionDown} title={dict.order.sectionDown}>↓</button>
+                </div>
                 <button
                   type="button"
                   className={buttonClass}
+                  aria-label={groupFolded ? dict.expandGroup : dict.collapseGroup}
                   onClick={() => setFoldedMany(items.map((i) => i.row.id), !groupFolded)}
                 >
-                  {groupFolded ? dict.expandGroup : dict.collapseGroup}
+                  {/* phone: the short word, the section is clear from the frame */}
+                  <span className="sm:hidden">{groupFolded ? dict.expandCard : dict.collapseCard}</span>
+                  <span className="hidden sm:inline">{groupFolded ? dict.expandGroup : dict.collapseGroup}</span>
                 </button>
+                </div>
               </div>
               {groupFolded ? (
                 <div className={tileColumns} style={rowVars(items.length)}>{items.map(({ row, index }) => tile(card(row, index), row.id))}</div>
