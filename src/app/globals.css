@@ -19,6 +19,22 @@
   display: none !important;
 }
 
+/* a section's end: its bottom edge is a gradient, faint at the corners, full accent in the middle (ADR 0084) */
+.section-end {
+  position: relative;
+}
+.section-end::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 4px;
+  border-radius: 0 0 0.5rem 0.5rem;
+  background: linear-gradient(to right, transparent, var(--color-accent), transparent);
+  pointer-events: none;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

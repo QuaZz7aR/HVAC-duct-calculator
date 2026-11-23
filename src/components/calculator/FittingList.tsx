@@ -253,7 +253,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
             while (lone(end + 1)) end++;
             return (
               // a dashed frame and a muted title set the single fittings apart from the sections (ADR 0070)
-              <div key={`tiles-${items[0].row.id}`} className="col-span-full space-y-3 rounded-lg border border-dashed border-line p-3">
+              <div key={`tiles-${items[0].row.id}`} className="col-span-full my-2 space-y-3 rounded-lg border border-dashed border-line p-3">
                 <h3 className="text-sm font-medium text-muted">{dict.singlesTitle} <span>× {end - r + 1}</span></h3>
                 <div className={tileColumns} style={rowVars(end - r + 1)}>
                   {runs.slice(r, end + 1).map((x) => tile(card(x.items[0].row, x.items[0].index), x.items[0].row.id))}
@@ -275,7 +275,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
           const next = runs[r + 1]?.items.at(-1)?.row.id;
           return (
             // the dragged section keeps its key while the preview merges it with a neighbour, so its handle stays mounted
-            <div key={`${kind}-${drag && ids.includes(drag.ids[0]) ? drag.ids[0] : items[0].row.id}`} id={`section-${items[0].row.id}`} className={`col-span-full scroll-mt-16 space-y-3 rounded-lg border border-accent/35 p-3 ${dragging ? "border-2 border-dashed !border-accent bg-accent-soft opacity-60" : ""}`}>
+            <div key={`${kind}-${drag && ids.includes(drag.ids[0]) ? drag.ids[0] : items[0].row.id}`} id={`section-${items[0].row.id}`} className={`section-end col-span-full my-2 scroll-mt-16 space-y-3 rounded-lg border border-accent/35 bg-accent-soft/25 p-3 pb-4 ${dragging ? "border-2 border-dashed !border-accent bg-accent-soft opacity-60" : ""}`}>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span
                   draggable
