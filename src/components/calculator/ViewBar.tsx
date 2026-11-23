@@ -5,11 +5,11 @@ import type { CardView } from "./useCardView";
 
 const action = `${buttonClass} inline-flex items-center gap-1.5`;
 
-/** Desktop: the view toggles in the sticky list header (ADR 0088); the phone keeps its round buttons. */
+/** Desktop: the view toggles in a sticky bar above the list (ADR 0088); the phone keeps its round buttons. */
 export function ViewBar({ view, twoColumns = false, onColumns }: { view: CardView; twoColumns?: boolean; onColumns?: (two: boolean) => void }) {
   const { dict } = useI18n();
   return (
-    <div role="group" aria-label={dict.palette.viewTitle} className="ml-auto hidden flex-wrap items-center gap-2 lg:flex">
+    <div role="group" aria-label={dict.palette.viewTitle} className="sticky top-0 z-20 -mx-1 hidden flex-wrap items-center gap-2 bg-background px-1 py-2 lg:flex">
       <button type="button" onClick={() => view.setAllSketches(!view.allSketchesOpen)} className={action}>
         <SketchesIcon crossed={view.allSketchesOpen} className="h-4 w-6 text-accent" />
         {view.allSketchesOpen ? dict.hideAllSketches : dict.showAllSketches}

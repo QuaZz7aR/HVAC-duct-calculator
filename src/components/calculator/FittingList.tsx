@@ -235,8 +235,7 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
         setDrag(null);
       }}
     >
-      {/* the list header sticks to the top on desktop and carries the view toggles (ADR 0088); below the rail's z-30, so the add list still opens over it */}
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 lg:sticky lg:top-0 lg:z-20 lg:-mx-1 lg:bg-background lg:px-1 lg:py-2">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
         <div>
           <h2 id="items-title" className="font-medium">{dict.itemsTitle}</h2>
           <p className="text-sm text-muted">
@@ -245,8 +244,9 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
           </p>
         </div>
         {listRows.length > 0 && onClear && <ClearAll count={listRows.length} onClear={onClear} />}
-        {listRows.length > 0 && <ViewBar view={view} twoColumns={twoColumns} onColumns={onColumns} />}
       </div>
+      {/* desktop: a bar of only the view toggles sticks to the top (ADR 0088); below the rail's z-30, so the add list still opens over it */}
+      {listRows.length > 0 && <ViewBar view={view} twoColumns={twoColumns} onColumns={onColumns} />}
       {/* one grid for the page: single cards and folded tiles share the 1-3 columns, a repeated kind is a full-width section with a grid of its own; open cards span the full width */}
       <div className={gridClass}>
         {runs.map(({ kind, items }, r) => {
