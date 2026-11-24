@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { defaultConfig } from "@/lib/calc/config";
 import { calculate, type RowOutcome } from "@/lib/form/calculate";
 import { emptyPrices, pricing, type PriceText } from "@/lib/form/price";
@@ -10,6 +10,7 @@ import { moveBlock, moveBy, numberBySystems } from "@/lib/form/order";
 import { defaultValues, presetRow } from "@/lib/form/defaults";
 import { type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
 import { toFormRows, type ImportRow } from "@/lib/import/mapping";
+import { parseProject, projectKey, serializeProject } from "@/lib/form/project-store";
 
 /**
  * The page shows areas only; pressure losses are hidden for now (docs/decisions.md). The core still needs a flow and
@@ -23,6 +24,16 @@ const hiddenLossInputs = {
     pressurePa: String(defaultConfig.air.airPressurePa),
   },
 };
+
+const noSubscribe = () => () => {};
+
+function readProject() {
+  try {
+    return parseProject(localStorage.getItem(projectKey));
+  } catch {
+    return undefined; // storage blocked: the page works, nothing is kept
+  }
+}
 
 /** Form state (rows, settings) and the derived calculation; the components only render and call the actions. */
 export function useCalculator() {
@@ -50,6 +61,33 @@ export function useCalculator() {
   const setMetalPrice = (key: string, value: string) => setPrices((p) => ({ ...p, metal: { ...p.metal, [key]: value } }));
   const setInsulationPrice = (code: string, value: string) =>
     setPrices((p) => ({ ...p, insulation: { ...p.insulation, [code]: value } }));
+
+  // the project lives in this browser (ADR 0101): the server and the first client render show the sample rows; right after
+  // hydration the saved project, if any, replaces them, then every change is written back
+  const hydrated = useSyncExternalStore(noSubscribe, () => true, () => false);
+  const [loaded, setLoaded] = useState(false);
+  if (hydrated && !loaded) {
+    setLoaded(true);
+    const saved = readProject();
+    if (saved) {
+      setRows(saved.rows);
+      setSettings(saved.settings);
+      setPrices(saved.prices);
+    }
+  }
+  useEffect(() => {
+    // ids stay unique after a load or an import
+    nextId.current = Math.max(nextId.current, ...rows.map((r) => r.id + 1));
+    if (!loaded) return;
+    const t = setTimeout(() => {
+      try {
+        localStorage.setItem(projectKey, serializeProject({ rows, settings, prices }));
+      } catch {
+        // storage blocked or full: the page keeps working without saving
+      }
+    }, 300);
+    return () => clearTimeout(t);
+  }, [loaded, rows, settings, prices]);
 
   const outcomes = useMemo(
     () => new Map<number, RowOutcome>(calc.rows.map((r) => [r.ok ? r.result.id : r.id, r])),

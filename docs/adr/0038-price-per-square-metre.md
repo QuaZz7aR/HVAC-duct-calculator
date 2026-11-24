@@ -12,7 +12,7 @@ After metal and insulation areas the next step is a cost estimate. There is no s
 - Metal cost = area to order (order margin included, [0024](0024-order-margin-and-sheet-count.md)) x price: the margin is the metal actually bought. Insulation cost = its computed area x price: the order margin is for metal only and the insulation list has no margin.
 - Totals show metal cost, insulation cost and the sum. Unpriced lines are counted and reported ("без ціни: N поз."), never treated as free; a cost with no priced line shows a dash.
 - A bad price (not a number, negative, absurdly large) is reported under the totals and the line stays unpriced; the areas are never affected.
-- Prices are kept by thickness and material code, so a line that leaves the list and comes back keeps its price. Not persisted across reloads (no persistence in v1).
+- Prices are kept by thickness and material code, so a line that leaves the list and comes back keeps its price. Not persisted across reloads (no persistence in v1); superseded by [0101](0101-project-saved-in-the-browser.md): prices are saved with the project.
 - Core: `calc/price.ts` (`lineCost`, `costTotal`), form layer `form/price.ts` (`pricing`), outside `calculate`.
 
 ## Consequences

@@ -115,6 +115,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0098](adr/0098-icon-only-card-buttons.md) | Icon-only fold, clone and remove buttons in cards and sections (text in `title` / `aria-label`) | 2026-11-24 | Accepted |
 | [0099](adr/0099-pdf-clipped-cells-and-unicode-cmaps.md) | PDF import: UTF-16 CMap fonts without ToUnicode, clipped wrapped cells as one cell, Excel errors ignored in the column guess | 2026-11-24 | Accepted (cell-joining rule `TODO(confirm)`) |
 | [0100](adr/0100-pdf-wrapped-rows-between-row-borders.md) | PDF import: text lines between two row borders with one full line are one row; «⚠ склеєно з N рядків» in the preview and on the card | 2026-11-24 | Accepted (joining rule `TODO(confirm)`) |
+| [0101](adr/0101-project-saved-in-the-browser.md) | The project (rows, order, positions, settings, prices) is saved in `localStorage`, versioned, broken data skipped; sample rows only when nothing is saved | 2026-11-24 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.
@@ -158,7 +159,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 - A user-defined (custom) thickness table, which the engineer mentioned as a possible later step.
 - Fire-resistant ducts (thickness at least 0.8 mm, ДБН п. 7.11.5) are not a mode.
 - Fix the Excel template (M9/M10/M12/M27-M30 on both sheets) and tell the engineer; a copy is ready.
-- UI: Russian/English dictionaries, no list persistence, no per-system grouping.
+- UI: Russian/English dictionaries, list saved in this browser only ([0101](adr/0101-project-saved-in-the-browser.md); named projects and sync deferred), no per-system grouping.
 - Offsets, adapters: out of v1, see `CLAUDE.md`.
 - Insulation: order margin, roll size and count, foil / glue lines, insulation of dampers and silencers (not in the calculator).
 - Taps: subtracting the cut-out from the main duct (an option or a separate credit line) is not modelled; the main duct's thickness differs from the tap's, so it needs its own design.
