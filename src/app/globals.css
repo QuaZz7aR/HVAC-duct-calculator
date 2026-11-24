@@ -3,19 +3,19 @@
 /* `dark:` follows the resolved theme on <html data-theme>, not the media query (ADR 0092) */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
-/* Blueprint-paper neutrals with one blue accent (the card design the owner chose, 2026-10-22). */
+/* Blueprint-paper neutrals with one blue accent (2026-10-22); toned down to a grey-blue with no pure white (ADR 0093). */
 :root {
-  --background: #f3f5f7;
+  --background: #e1e9f1;
   --foreground: #14202b;
-  --panel: #ffffff;
-  --line: #cfd8e0;
+  --panel: #f0f4f8;
+  --line: #bccbda;
   --muted: #4a5b6a;
   --accent: #1d5fd1;
-  --accent-soft: #e4edfb;
+  --accent-soft: #dce7f8;
   /* frame of the single fittings, a second colour beside the accent of the sections (ADR 0091) */
   --single: #92400e;
   /* sticky view bar: darker than the page, so neither the cards nor the button hover blend with it (ADR 0088) */
-  --bar: #e1e7ee;
+  --bar: #cfdae6;
   color-scheme: light;
   --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%234a5b6a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6l5 5 5-5'/%3E%3C/svg%3E");
   --chevron-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%234a5b6a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11l5-5 5 5'/%3E%3C/svg%3E");
