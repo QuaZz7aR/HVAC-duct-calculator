@@ -113,6 +113,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0096](adr/0096-import-from-pdf.md) | Import from PDF: own text reader, columns from table borders or text ranges | 2026-11-24 | Accepted (thresholds `TODO(confirm)`) |
 | [0097](adr/0097-video-clips-in-the-help.md) | Short MP4 clip per help step, loaded only when the dialog opens | 2026-11-24 | Accepted |
 | [0098](adr/0098-icon-only-card-buttons.md) | Icon-only fold, clone and remove buttons in cards and sections (text in `title` / `aria-label`) | 2026-11-24 | Accepted |
+| [0099](adr/0099-pdf-clipped-cells-and-unicode-cmaps.md) | PDF import: UTF-16 CMap fonts without ToUnicode, clipped wrapped cells as one cell, Excel errors ignored in the column guess | 2026-11-24 | Accepted (cell-joining rule `TODO(confirm)`) |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.
@@ -142,6 +143,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `calc/config.ts` warnings | `elbowInnerRadiusFactor` 2 is preliminary; the aspect ratio threshold 3 comes from the engineer's "2.5-3". |
 | `form/order.ts` `numberBySystems` | Agent's overnight choices, to review: separator «-», default scope «лише порожні», no undo after «Пронумерувати» ([0095](adr/0095-numbering-by-systems.md)). |
 | `import/pdf.ts` layout | Word gap 0.2 font size, border must cross a third of the body lines, header lines within 2.2 font sizes: tuned on LibreOffice and Chrome PDFs of our samples only ([0096](adr/0096-import-from-pdf.md)). |
+| `import/pdf.ts` clipped cells | A clip box up to 20 font sizes high and wide is one cell; a wrapped fragment of 1-2 letters or digits joins without a space: tuned on one GridCraft PDF ([0099](adr/0099-pdf-clipped-cells-and-unicode-cmaps.md)). |
 | `public/help/*.mp4` | Clip format and count are the agent's choice (MP4, one per step, uk + en) ([0097](adr/0097-video-clips-in-the-help.md)). |
 
 ## Deferred
