@@ -39,13 +39,14 @@ function CalculatorPage() {
   const { dict } = useI18n();
   const { rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, numberRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice } = useCalculator();
 
+  const exportProps = { rows, outcome, calc, pricing: costs, settings };
   const { mode } = useMode();
   const view = useCardView(rows);
   const [twoColumns, setTwoColumns] = useState(false);
 
   return (
     <div className="print-block mx-auto w-full max-w-[120rem] flex-1 gap-6 px-4 py-8 print:p-0 xl:px-8 lg:grid lg:grid-cols-[8.5rem_minmax(0,1fr)]">
-      <div className="print-hide contents"><KindRail count={countOf} onAdd={addRow} onImport={importRows} /></div>
+      <div className="print-hide contents"><KindRail count={countOf} onAdd={addRow} onImport={importRows} exportItems={<ExportBar variant="rail" {...exportProps} />} /></div>
       <main className="min-w-0 space-y-6">
         {/* title, then one toolbar left under it (ADR 0083): mode on its own row on a phone, the other buttons in a second row */}
         <header className="space-y-3">
@@ -58,6 +59,7 @@ function CalculatorPage() {
             <ModeSwitch />
             <div className="flex flex-wrap items-center gap-2">
               <ImportButton onImport={importRows} />
+              <ExportBar variant="toolbar" {...exportProps} />
               <HelpButton />
               <LangSwitch />
               <ThemeSwitch />
@@ -90,7 +92,7 @@ function CalculatorPage() {
           onDrop={dropRows}
         />
         </div>
-        <ExportBar rows={rows} outcome={outcome} calc={calc} pricing={costs} settings={settings} />
+        <ExportBar {...exportProps} />
         <ResultsTable rows={rows} outcome={outcome} calc={calc} />
 
         <div className="print-block grid grid-cols-1 gap-6 md:grid-cols-2">

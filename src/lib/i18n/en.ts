@@ -42,6 +42,7 @@ export const en: Dictionary = {
     cancel: 'Cancel',
   },
   export: {
+    short: 'Export',
     xlsx: 'Download Excel',
     print: 'Print / PDF',
     xlsxInfo: 'An .xlsx file with the results by item, the totals, the metal list by thickness and the insulation list. Made in the browser, nothing is sent anywhere.',
