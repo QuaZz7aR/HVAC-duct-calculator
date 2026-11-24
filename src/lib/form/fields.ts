@@ -80,6 +80,8 @@ export interface FormRow {
   sizeConflicts?: SizeConflict[];
   /** imported from a file row that gave no value for any field; cleared on the first edit or kind change (ADR 0074) */
   noSizes?: boolean;
+  /** imported from a PDF row whose text was joined from this many wrapped lines (ADR 0100); cleared on the first edit or kind change */
+  joinedLines?: number;
 }
 
 /** One field whose size in the fitting's name differs from the value in its column of the imported file (both in mm or degrees). */
