@@ -7,6 +7,7 @@ import { groupRuns } from "./FittingList";
 import { kindTitle, rowTitle, sizeLabel } from "./format";
 import { Info } from "./Info";
 import { cardClass, mutedClass } from "./styles";
+import { subs } from "./subscripts";
 
 interface Props {
   rows: FormRow[];
@@ -36,7 +37,7 @@ function RowName({ row, index, outcome }: { row: FormRow; index: number; outcome
       {error && <span className="mr-1 text-red-600 dark:text-red-400" role="img" aria-label={dict.cardHasErrors} title={dict.cardHasErrors}>⚠</span>}
       {warning && <span className="mr-1 text-amber-700 dark:text-amber-400" role="img" aria-label={dict.cardHasWarnings} title={dict.cardHasWarnings}>⚠</span>}
       {positionLabel(row, index)}. {rowTitle(row, dict)}
-      {sizes && <span className={`block font-mono text-xs ${mutedClass}`}>{sizes}</span>}
+      {sizes && <span className={`block font-mono text-xs ${mutedClass}`}>{subs(sizes)}</span>}
     </button>
   );
 }

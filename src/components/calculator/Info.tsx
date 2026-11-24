@@ -1,6 +1,7 @@
 import { useId, useRef, useState, type CSSProperties } from "react";
 import { useI18n } from "@/components/i18n";
 import { useDismiss } from "./useDismiss";
+import { subs } from "./subscripts";
 
 const popoverWidth = 288; // px, 18rem; narrower on a phone
 
@@ -54,7 +55,7 @@ export function Info({ text }: { text: string }) {
           onClick={(e) => e.preventDefault()}
           className="fixed z-50 block whitespace-normal rounded-md border border-line bg-panel p-3 text-left text-sm font-normal normal-case leading-snug tracking-normal text-foreground shadow-lg"
         >
-          {text}
+          {subs(text)}
         </span>
       )}
     </span>
