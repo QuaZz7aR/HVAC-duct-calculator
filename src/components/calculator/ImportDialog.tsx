@@ -3,6 +3,7 @@ import { useI18n } from "@/components/i18n";
 import { kindOrder, newRow, type FittingKind } from "@/lib/form/fields";
 import { columnKeys, guessMapping, importRows, withKind, type ColumnKey, type ImportRow, type Mapping } from "@/lib/import/mapping";
 import { ImportError, readCsv, readXlsx, type Table } from "@/lib/import/xlsx";
+import { readPdf } from "@/lib/import/pdf";
 import { sizeLabel } from "./format";
 import { Info } from "./Info";
 import { buttonClass, railItemClass, labelClass, primaryButtonClass, selectClass } from "./styles";
@@ -56,10 +57,11 @@ async function readFile(file: File): Promise<Table> {
   const name = file.name.toLowerCase();
   if (name.endsWith(".csv") || name.endsWith(".tsv") || name.endsWith(".txt")) return readCsv(await file.text());
   if (name.endsWith(".xlsx") || name.endsWith(".xlsm")) return readXlsx(new Uint8Array(await file.arrayBuffer()));
+  if (name.endsWith(".pdf")) return readPdf(new Uint8Array(await file.arrayBuffer()));
   throw new ImportError("import.unknownType");
 }
 
-/** The «Імпорт з Excel» button and its dialog: file, column mapping, preview of every row, then the rows go to the list (ADR 0061). */
+/** The «Імпорт з Excel / PDF» button and its dialog: file, column mapping, preview of every row, then the rows go to the list (ADR 0061). */
 export function ImportButton({ onImport, className = "", rail = false }: { onImport: (rows: ImportRow[], replace: boolean) => number; className?: string; rail?: boolean }) {
   const { dict } = useI18n();
   const t = dict.import;
@@ -172,7 +174,7 @@ export function ImportButton({ onImport, className = "", rail = false }: { onImp
             <input
               id={fileId}
               type="file"
-              accept=".xlsx,.xlsm,.csv,.tsv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv"
+              accept=".xlsx,.xlsm,.csv,.tsv,.txt,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv"
               className="sr-only"
               onChange={(e) => { void onFile(e.target.files?.[0]); e.target.value = ""; }}
             />
