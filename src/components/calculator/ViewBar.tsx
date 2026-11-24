@@ -15,7 +15,7 @@ export function ViewBar({ view, twoColumns = false, onColumns, children }: { vie
   const { dict } = useI18n();
   return (
     <div className="sticky top-0 z-20 -mt-4 hidden bg-background pt-4 lg:block">
-      <div role="group" aria-label={dict.palette.viewTitle} className="flex h-[68px] flex-wrap items-center gap-2 rounded-lg border-2 border-accent/60 bg-bar px-3 shadow-xl shadow-black/40">
+      <div role="group" aria-label={dict.palette.viewTitle} className="flex min-h-[68px] flex-wrap items-center gap-2 rounded-lg py-2 border-2 border-accent/60 bg-bar px-3 shadow-xl shadow-black/40">
         <button type="button" onClick={() => view.setAllSketches(!view.allSketchesOpen)} className={action}>
           <SketchesIcon crossed={view.allSketchesOpen} className="h-4 w-6 text-accent" />
           {view.allSketchesOpen ? dict.hideAllSketches : dict.showAllSketches}
