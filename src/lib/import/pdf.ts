@@ -767,7 +767,8 @@ function joinWrapped(lines: Piece[][], rows: Seg[][], hrules: HRule[], rules: Ru
     // the anchor line first: its baseline is the row's
     out.lines.push([...lines[i + a], ...lines.slice(i, j).filter((_, k) => k !== a).flat()]);
     out.rows.push(segs);
-    out.count.push(j - i);
+    // the lines of the cell that wraps the most: the number column in a line of its own is not a wrapped line
+    out.count.push(Math.max(...parts.map((p) => new Set(p.texts.map((t) => t.at)).size)));
     i = j;
   }
   return out;
