@@ -365,14 +365,23 @@ async function loadFont(doc: Doc, ref: Value | undefined): Promise<Font> {
       else if (isName(v)) { const ch = glyphName(v.name); if (ch !== undefined) diffs.set(code, ch); code++; }
     }
   }
-  const fallback = (c: number) => diffs.get(c) ?? (type0 ? '' : winAnsi[c] ?? (c >= 32 ? String.fromCharCode(c) : ''));
+  // a predefined Unicode CMap (UniGB-UTF16-H, UniJIS-UCS2-H, ...): the 2-byte codes are UTF-16 themselves, no ToUnicode needed
+  const unicodeCMap = type0 && isName(f.Encoding) && /^Uni\w+-(UTF16|UCS2)-[HV]$/.test(f.Encoding.name);
+  const fallback = (c: number) =>
+    diffs.get(c) ?? (unicodeCMap ? String.fromCharCode(c) : type0 ? '' : winAnsi[c] ?? (c >= 32 ? String.fromCharCode(c) : ''));
   return { bytes, toUnicode, width, fallback };
 }
 
 // ---------- content streams ----------
 
 /** A run of text on a page, in page space: start x, baseline y, end x, font size. */
-export interface Piece { page: number; x: number; y: number; end: number; size: number; text: string; /** false for rotated text (a vertical header) */ upright?: boolean }
+export interface Piece {
+  page: number; x: number; y: number; end: number; size: number; text: string;
+  /** false for rotated text (a vertical header) */
+  upright?: boolean;
+  /** the clipping rectangle the text was drawn in, [x0, y0, x1, y1]: a cell box when a generator clips each cell */
+  clip?: [number, number, number, number];
+}
 
 /** A vertical line of a table border on a page, in page space. */
 export interface Rule { page: number; x: number; y0: number; y1: number }
@@ -397,6 +406,11 @@ async function runContent(doc: Doc, content: string, resources: Dict, page: numb
   let tm: Matrix = [1, 0, 0, 1, 0, 0];
   let tlm: Matrix = [1, 0, 0, 1, 0, 0];
   let font: Font | undefined;
+  // clipping: the last rectangle of the path, a pending W, the current clip box (saved and restored with q / Q)
+  let rect: [number, number, number, number] | undefined;
+  let pendingClip = false;
+  let clip: [number, number, number, number] | undefined;
+  const savedClip: (typeof clip)[] = [];
   let size = 1, leading = 0, charSpace = 0, wordSpace = 0, scale = 1, rise = 0;
   const nums = (n: number) => stack.slice(-n).map(Number);
   // path construction: vertical segments and the sides of rectangles are the table's column borders
@@ -424,7 +438,7 @@ async function runContent(doc: Doc, content: string, resources: Dict, page: numb
     const end = mul([1, 0, 0, 1, advance, 0], mul(tm, ctm))[4];
     const fs = Math.hypot(trm[2], trm[3]) || size;
     const upright = trm[0] > 0 && Math.abs(trm[1]) < 1e-6 * Math.abs(trm[0]) + 1e-9;
-    if (text.length) out.pieces.push({ page, x, y, end: Math.max(end, x), size: fs, text, upright });
+    if (text.length) out.pieces.push({ page, x, y, end: Math.max(end, x), size: fs, text, upright, ...(clip ? { clip } : {}) });
     tm = mul([1, 0, 0, 1, advance, 0], tm);
   };
 
@@ -446,11 +460,19 @@ async function runContent(doc: Doc, content: string, resources: Dict, page: numb
         // a thin filled rectangle is a drawn line; a cell rectangle gives its two sides
         if (Math.abs(b[0] - a[0]) < 2) vertical([(a[0] + b[0]) / 2, a[1]], [(a[0] + b[0]) / 2, b[1]]);
         else { vertical(a, [a[0], b[1]]); vertical([b[0], a[1]], b); }
+        rect = [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1])];
         cur = a;
         break;
       }
-      case 'q': saved.push(ctm); break;
-      case 'Q': ctm = saved.pop() ?? ctm; break;
+      case 'q': saved.push(ctm); savedClip.push(clip); break;
+      case 'Q': ctm = saved.pop() ?? ctm; clip = savedClip.length ? savedClip.pop() : clip; break;
+      case 'W': case 'W*': pendingClip = true; break;
+      case 'n': case 'f': case 'F': case 'f*': case 'S': case 's': case 'B': case 'B*': case 'b': case 'b*':
+        // a path that is only a rectangle and ends a W is the new clip box; any other path ends the rectangle
+        if (pendingClip) clip = rect;
+        pendingClip = false;
+        rect = undefined;
+        break;
       case 'cm': ctm = mul(nums(6) as Matrix, ctm); break;
       case 'BT': tm = tlm = [1, 0, 0, 1, 0, 0]; break;
       case 'Tf': {
@@ -552,6 +574,46 @@ export async function readPdfPieces(bytes: Uint8Array): Promise<Out> {
 // ---------- layout ----------
 
 /**
+ * Some generators (an Excel table saved as a PDF) wrap a cell's text over several lines and clip each cell to its box.
+ * The lines of one clip box are one cell: they become one piece spanning the box, at its middle height, so the cells of a table row,
+ * drawn at different heights, fall on one line. Lines join top to bottom with a space; a fragment of one or two letters
+ * or digits right after a letter or digit («ПВ1» / «П») joins without one, a word broken at the cell edge. A box taller
+ * higher or wider than twenty font sizes (a page, a table or a row clip) is not a cell.
+ */
+function cellPieces(pieces: Piece[]): Piece[] {
+  const out: Piece[] = [];
+  const cells = new Map<string, Piece[]>();
+  for (const p of pieces) {
+    if (!p.clip || p.clip[3] - p.clip[1] > p.size * 20 || p.clip[2] - p.clip[0] > p.size * 20) { out.push(p); continue; }
+    const key = `${p.page}:${p.clip.map((v) => v.toFixed(1)).join(',')}`;
+    const list = cells.get(key);
+    if (list) list.push(p);
+    else cells.set(key, [p]);
+  }
+  for (const list of cells.values()) {
+    const lines: Piece[][] = [];
+    for (const p of [...list].sort((a, b) => b.y - a.y || a.x - b.x)) {
+      const line = lines[lines.length - 1];
+      if (line && Math.abs(line[0].y - p.y) <= Math.max(line[0].size, p.size) * 0.5) line.push(p);
+      else lines.push([p]);
+    }
+    let text = '';
+    for (const line of lines) {
+      const t = line.sort((a, b) => a.x - b.x).map((p) => p.text).join('').replace(/\s+/g, ' ').trim();
+      if (!t) continue;
+      text += !text ? t : /[\p{L}\d]$/u.test(text) && /^[\p{L}\d]{1,2}$/u.test(t) ? t : ` ${t}`;
+    }
+    const clip = list[0].clip!;
+    out.push({
+      // the box, not the text, is the cell's extent: a font without real widths would stretch the text over the next cells
+      page: list[0].page, x: clip[0] + 0.5, end: clip[2] - 0.5,
+      y: (clip[1] + clip[3]) / 2, size: Math.max(...list.map((p) => p.size)), text, upright: true, clip,
+    });
+  }
+  return out;
+}
+
+/**
  * Text pieces -> a table. Lines: pieces whose baselines are within half a font size, top to bottom, page after page.
  * Words: neighbouring pieces closer than a fifth of the font size join into one cell text. Columns: the x ranges of the
  * cells of lines with three or more cells (the table body), merged where they overlap; every cell goes to the column it
@@ -559,7 +621,7 @@ export async function readPdfPieces(bytes: Uint8Array): Promise<Out> {
  */
 export function layoutTable(pieces: Piece[], rules: Rule[] = []): Table {
   // rotated text (a vertical column header) is left out: it would come apart into one letter per line
-  const sorted = pieces.filter((p) => p.text.trim() && p.upright !== false).sort((a, b) => a.page - b.page || b.y - a.y || a.x - b.x);
+  const sorted = cellPieces(pieces.filter((p) => p.text.trim() && p.upright !== false)).sort((a, b) => a.page - b.page || b.y - a.y || a.x - b.x);
   const lines: Piece[][] = [];
   for (const p of sorted) {
     const line = lines[lines.length - 1];
@@ -567,19 +629,20 @@ export function layoutTable(pieces: Piece[], rules: Rule[] = []): Table {
     if (ref && ref.page === p.page && Math.abs(ref.y - p.y) <= Math.max(ref.size, p.size) * 0.5) line.push(p);
     else lines.push([p]);
   }
-  type Seg = { x: number; end: number; text: string };
+  type Seg = { x: number; end: number; text: string; clip?: Piece['clip'] };
   const cellsOf = (line: Piece[]): Seg[] => {
     const ps = [...line].sort((a, b) => a.x - b.x);
     const segs: Seg[] = [];
     for (const p of ps) {
       const last = segs[segs.length - 1];
       const gap = last ? p.x - last.end : Infinity;
-      if (last && gap < p.size * 0.2) {
+      // two cell boxes side by side stay two cells however close they are
+      if (last && gap < p.size * 0.2 && !(p.clip && last.clip && last.clip !== p.clip)) {
         last.text += (gap > p.size * 0.12 && !last.text.endsWith(' ') && !p.text.startsWith(' ') ? ' ' : '') + p.text;
         last.end = Math.max(last.end, p.end);
-      } else segs.push({ x: p.x, end: Math.max(p.end, p.x + p.size * 0.3), text: p.text });
+      } else segs.push({ x: p.x, end: Math.max(p.end, p.x + p.size * 0.3), text: p.text, clip: p.clip });
     }
-    return segs.map((s) => ({ ...s, text: s.text.replace(/\s+/g, ' ').trim() })).filter((s) => s.text);
+    return segs.map((s) => ({ x: s.x, end: s.end, text: s.text.replace(/\s+/g, ' ').trim() })).filter((s) => s.text);
   };
   const rows = lines.map(cellsOf);
   const body = rows.flatMap((segs, i) => (segs.length >= 3 ? [{ page: lines[i][0].page, y: lines[i][0].y }] : []));

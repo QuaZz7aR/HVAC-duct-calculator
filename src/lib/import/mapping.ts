@@ -49,6 +49,9 @@ const slots: Record<FittingKind, Partial<Record<SizeSlot, FieldKey>>> = {
 
 const text = (c: Cell | undefined): string => (c === null || c === undefined ? '' : String(c).trim());
 
+/** An Excel error value as the file shows it: #VALUE!, #DIV/0!, #N/A, #REF!, #NAME?, #NUM!, #NULL!, or ### (too narrow). */
+const excelError = (c: Cell | undefined) => /^#(VALUE!|DIV\/0!|N\/A|REF!|NAME\?|NUM!|NULL!|#+)$/i.test(text(c).replace(/\s+/g, ''));
+
 /** A number from a cell («0,55», 150, «-» = none). */
 export function cellNumber(c: Cell | undefined): number | undefined {
   if (typeof c === 'number') return Number.isFinite(c) ? c : undefined;
@@ -84,7 +87,9 @@ function headerKey(c: Cell | undefined): ColumnKey | undefined {
   const t = text(c);
   if (!t) return undefined;
   if (letterKeys[t]) return letterKeys[t];
-  return headerRules.find(([, re]) => re.test(t))?.[0];
+  // a header wrapped in a narrow PDF cell may come with a space inside a word («Шири на»): try it without the spaces too
+  const squeezed = t.replace(/\s+/g, '');
+  return headerRules.find(([, re]) => re.test(t))?.[0] ?? headerRules.find(([, re]) => re.test(squeezed))?.[0];
 }
 
 /** The row that names most columns among the first rows; -1 when none names two. */
@@ -118,7 +123,8 @@ export function guessMapping(table: Table): Mapping {
   }
   const data = table.slice(header + 1, header + 201);
   const share = (col: number, test: (c: Cell | undefined) => boolean) => {
-    const filled = data.filter((r) => text(r[col]) !== '');
+    // an Excel error («#VALUE!», also wrapped as «#VALU E!» in a PDF cell) says nothing about the column
+    const filled = data.filter((r) => text(r[col]) !== '' && !excelError(r[col]));
     return filled.length ? filled.filter((r) => test(r[col])).length / filled.length : 0;
   };
   const free = () => [...Array(width).keys()].filter((i) => !taken.has(i));

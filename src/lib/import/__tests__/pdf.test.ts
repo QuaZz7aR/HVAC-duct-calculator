@@ -81,6 +81,63 @@ describe('readPdf', () => {
   });
 });
 
+/**
+ * An Excel sheet saved as a PDF by a generator like the acquaintances' (Чугуїв): Cyrillic in a Type0 font with the
+ * predefined UniGB-UTF16-H CMap and no ToUnicode, each cell clipped to its box and wrapped over several lines (a header
+ * broken inside words, «ПВ1» / «П», «#VALU» / «E!»), cells of one row drawn at different heights, borders as lines.
+ */
+function clippedPdf() {
+  const xs = [50, 80, 130, 160, 210, 250, 290, 330];
+  const cells: [number, number, string[]][] = [];
+  // header: one box 60 pt high; body rows: 30 pt
+  const header = [['№', 'сист'], ['Найм', 'енув', 'ання'], ['Код'], ['Шири', 'на, А,', 'мм'], ['Вис', 'ота,', 'B, мм'], ['Довж', 'ина, м'], ['Кіль', 'кість']];
+  header.forEach((lines, i) => cells.push([i, 0, lines]));
+  const body = [
+    [['ПВ1', 'П'], ['550х350'], ['ПВ'], ['550'], ['300'], ['1'], ['1']],
+    [['ПВ1', 'П'], ['Відвід'], ['ПО'], ['300'], ['500'], ['#VALU', 'E!'], ['2']],
+  ];
+  body.forEach((r, j) => r.forEach((lines, i) => cells.push([i, j + 1, lines])));
+  let content = '';
+  for (const [i, j, lines] of cells) {
+    const top = j === 0 ? 760 : 700 - (j - 1) * 30;
+    const h = j === 0 ? 60 : 30;
+    const x = xs[i], w = xs[i + 1] - xs[i];
+    content += `q ${x} ${top - h} ${w} ${h} re W n\n`;
+    // the lines centred in the box, 11 pt apart
+    lines.forEach((t, k) => {
+      const y = top - h / 2 + ((lines.length - 1) / 2 - k) * 11 - 3;
+      content += `BT 1 0 0 1 ${x + 2} ${y} Tm /F1 9 Tf ${hex(t)} Tj ET\n`;
+    });
+    content += 'Q\n';
+    for (const bx of [x, x + w]) content += `${bx} ${top} m ${bx} ${top - h} l S\n`;
+  }
+  const data = Buffer.from(content, 'latin1');
+  return pdf([
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>',
+    stream('', data),
+    '<< /Type /Font /Subtype /Type0 /BaseFont /STSong-Light /Encoding /UniGB-UTF16-H /DescendantFonts [6 0 R] >>',
+    '<< /Type /Font /Subtype /CIDFontType0 /BaseFont /STSong-Light /CIDSystemInfo << /Registry (Adobe) /Ordering (GB1) /Supplement 4 >> /DW 1000 >>',
+  ]);
+}
+
+describe('readPdf: an Excel sheet printed with clipped, wrapped cells', () => {
+  it('decodes a UTF-16 CMap font without ToUnicode and keeps each clipped cell whole', async () => {
+    const t = await readPdf(clippedPdf());
+    expect(t[1]).toEqual(['ПВ1П', '550х350', 'ПВ', '550', '300', '1', '1']);
+    expect(t[2]).toEqual(['ПВ1П', 'Відвід', 'ПО', '300', '500', '#VALU E!', '2']);
+    const m = guessMapping(t);
+    expect(m.columns).toMatchObject({ A: 3, B: 4, L: 5, quantity: 6, code: 2 });
+    expect(m.lengthUnit).toBe('m');
+    const rows = importRows(t, m).filter((r) => r.status === 'ok');
+    expect(rows.map((r) => [r.kind, r.values.width, r.values.height, r.quantity])).toEqual([
+      ['rectStraight', '550', '300', '1'],
+      ['rectElbow', '300', '500', '2'],
+    ]);
+  });
+});
+
 describe('PDF helpers', () => {
   it('parses ToUnicode bfchar and both bfrange forms', () => {
     const { map, bytes } = parseCMap('1 begincodespacerange <00> <FF> endcodespacerange 1 beginbfchar <01> <0414> endbfchar 2 beginbfrange <10> <12> <0430> <20> <21> [<0031> <0032>] endbfrange');
