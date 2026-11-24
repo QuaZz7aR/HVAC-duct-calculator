@@ -36,7 +36,7 @@ export function Calculator() {
 
 function CalculatorPage() {
   const { dict } = useI18n();
-  const { rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice } = useCalculator();
+  const { rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, numberRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice } = useCalculator();
 
   const { mode } = useMode();
   const view = useCardView(rows);
@@ -83,6 +83,7 @@ function CalculatorPage() {
           onClone={cloneRow}
           onRemove={removeRow}
           onClear={clearRows}
+          onNumber={numberRows}
           onMove={moveRow}
           onDrop={dropRows}
         />

@@ -109,6 +109,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0092](adr/0092-manual-theme-switch.md) | Manual theme switch (system / light / dark) on `<html data-theme>` | 2026-11-23 | Accepted |
 | [0093](adr/0093-softer-light-theme.md) | Softer light theme: grey-blue page and cards, no pure white | 2026-11-23 | Accepted |
 | [0094](adr/0094-subscript-size-indices.md) | Size indices d₁, a₂ as `<sub>` in HTML, system sans in the SVG sketch | 2026-11-24 | Accepted |
+| [0095](adr/0095-numbering-by-systems.md) | «Нумерація»: positions «система-№», empty only or all again, preview first | 2026-11-24 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.
@@ -136,6 +137,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `calc/config.ts` elbowRadius | 1.0 D (round centre line) and 0.5 W (rect inner) are common practice, not a norm; form suggestion only. |
 | `calc/config.ts` insulation, `calc/insulation.ts` | The six materials are the Excel's list (practice, not a norm). Insulation of elbows takes the metal cutting coefficient (as the Excel); caps take the end plate only; crosses by geometry, not the Excel's metal x 1.2. Beta, owner 2026-11-03; questions in the 2026-10-23 letter ([0037](adr/0037-insulation-area-beta.md)). |
 | `calc/config.ts` warnings | `elbowInnerRadiusFactor` 2 is preliminary; the aspect ratio threshold 3 comes from the engineer's "2.5-3". |
+| `form/order.ts` `numberBySystems` | Agent's overnight choices, to review: separator «-», default scope «лише порожні», no undo after «Пронумерувати» ([0095](adr/0095-numbering-by-systems.md)). |
 
 ## Deferred
 - `npm audit`: 5 high findings, one chain (`braces` <- `micromatch` <- `fast-glob` <- `@next/eslint-plugin-next` <- `eslint-config-next`), dev tooling only, nothing ships to the browser or the server. No non-breaking fix exists: `npm audit fix --force` would downgrade `eslint-config-next` to 14.2.35 (Next 16 here). Wait for a `eslint-config-next` release that updates `fast-glob`/`micromatch`; do not run `npm audit fix`.
