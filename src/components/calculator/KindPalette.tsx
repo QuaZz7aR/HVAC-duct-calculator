@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { FittingKind } from "@/lib/form/fields";
 import { kindGroups, searchKinds, type KindGroupId } from "@/lib/form/kind-groups";
 import { useI18n } from "@/components/i18n";
@@ -52,7 +52,7 @@ const railAction =
   "grid justify-items-center gap-1 rounded-md border border-transparent px-1 py-1.5 text-center text-xs leading-tight text-muted hover:border-line hover:text-foreground hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
 
 /** Desktop: a narrow single-column rail (icon over label) of the kind groups, help and language (the view toggles are in the list header, ADR 0088), always in view; a group opens a list of its kinds beside the rail. */
-export function KindRail({ count, onAdd, onImport }: Props & { onImport?: (rows: ImportRow[], replace: boolean) => number }) {
+export function KindRail({ count, onAdd, onImport, exportItems }: Props & { onImport?: (rows: ImportRow[], replace: boolean) => number; exportItems?: ReactNode }) {
   const { dict } = useI18n();
   const [open, setOpen] = useState<KindGroupId | null>(null);
   // top of the open group's button inside the sticky box: the list opens level with it
@@ -99,6 +99,7 @@ export function KindRail({ count, onAdd, onImport }: Props & { onImport?: (rows:
         <div className={`${railBox} mt-auto pb-1`}>
           {/* import and mode moved here from the page header on desktop (ADR 0089) */}
           {onImport && <ImportButton rail onImport={onImport} />}
+          {exportItems}
           <ModeRailButton />
           <ThemeRailButton />
           <HelpButton rail />

@@ -109,6 +109,8 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0092](adr/0092-manual-theme-switch.md) | Manual theme switch (system / light / dark) on `<html data-theme>` | 2026-11-23 | Accepted |
 | [0093](adr/0093-softer-light-theme.md) | Softer light theme: grey-blue page and cards, no pure white | 2026-11-23 | Accepted |
 | [0094](adr/0094-subscript-size-indices.md) | Size indices d₁, a₂ as `<sub>` in HTML, system sans in the SVG sketch | 2026-11-24 | Accepted |
+| [0102](adr/0102-export-to-excel-and-print.md) | Export: own .xlsx writer (specification, metal, insulation sheets) and print / PDF via print styles | 2026-11-24 | Accepted |
+| [0103](adr/0103-export-beside-the-import.md) | Export also in the rail («Експорт» list after the import) and the phone header toolbar | 2026-11-24 | Accepted |
 | [0095](adr/0095-numbering-by-systems.md) | «Нумерація»: positions «система-№», empty only or all again, preview first | 2026-11-24 | Accepted |
 | [0096](adr/0096-import-from-pdf.md) | Import from PDF: own text reader, columns from table borders or text ranges | 2026-11-24 | Accepted (thresholds `TODO(confirm)`) |
 | [0097](adr/0097-video-clips-in-the-help.md) | Short MP4 clip per help step, loaded only when the dialog opens | 2026-11-24 | Accepted |
@@ -155,7 +157,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 - Share the equivalent-diameter helper between `aero.ts` (m) and `waste-factor.ts` (mm).
 - Import ([0061](adr/0061-import-from-excel.md), [0096](adr/0096-import-from-pdf.md)): scanned PDF (needs OCR), encrypted PDF, sheets other than the first, old .xls, insulation / thickness columns.
 - Sheet count has no nesting or offcut model (a plain ceil of area over sheet area); a cutting plan would need part shapes.
-- Next features (engineer's order, 2026-10-16): insulation (beta done, [0037](adr/0037-insulation-area-beta.md)), price (done as UAH per m² per thickness and material, [0038](adr/0038-price-per-square-metre.md); a price per fitting or per sheet, labour and a price list are deferred), then aerodynamics as a separate mode. XLSX export waits for the engineer's reference files.
+- Next features (engineer's order, 2026-10-16): insulation (beta done, [0037](adr/0037-insulation-area-beta.md)), price (done as UAH per m² per thickness and material, [0038](adr/0038-price-per-square-metre.md); a price per fitting or per sheet, labour and a price list are deferred), then aerodynamics as a separate mode. XLSX export is in with our own layout ([0102](adr/0102-export-to-excel-and-print.md)); matching the engineer's layout waits for his reference files; project / customer name fields in the export are deferred.
 - A user-defined (custom) thickness table, which the engineer mentioned as a possible later step.
 - Fire-resistant ducts (thickness at least 0.8 mm, ДБН п. 7.11.5) are not a mode.
 - Fix the Excel template (M9/M10/M12/M27-M30 on both sheets) and tell the engineer; a copy is ready.

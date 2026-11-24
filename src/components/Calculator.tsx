@@ -9,6 +9,7 @@ import { ErrorList } from "./calculator/ErrorList";
 import { ModeSwitch } from "./calculator/ModeSwitch";
 import { LangSwitch } from "./calculator/LangSwitch";
 import { HelpButton } from "./calculator/HelpDialog";
+import { ExportBar } from "./calculator/ExportBar";
 import { ImportButton } from "./calculator/ImportDialog";
 import { FittingList } from "./calculator/FittingList";
 import { SettingsPanel } from "./calculator/SettingsPanel";
@@ -38,13 +39,14 @@ function CalculatorPage() {
   const { dict } = useI18n();
   const { rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, numberRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice } = useCalculator();
 
+  const exportProps = { rows, outcome, calc, pricing: costs, settings };
   const { mode } = useMode();
   const view = useCardView(rows);
   const [twoColumns, setTwoColumns] = useState(false);
 
   return (
-    <div className="mx-auto w-full max-w-[120rem] flex-1 gap-6 px-4 py-8 xl:px-8 lg:grid lg:grid-cols-[8.5rem_minmax(0,1fr)]">
-      <KindRail count={countOf} onAdd={addRow} onImport={importRows} />
+    <div className="print-block mx-auto w-full max-w-[120rem] flex-1 gap-6 px-4 py-8 print:p-0 xl:px-8 lg:grid lg:grid-cols-[8.5rem_minmax(0,1fr)]">
+      <div className="print-hide contents"><KindRail count={countOf} onAdd={addRow} onImport={importRows} exportItems={<ExportBar variant="rail" {...exportProps} />} /></div>
       <main className="min-w-0 space-y-6">
         {/* title, then one toolbar left under it (ADR 0083): mode on its own row on a phone, the other buttons in a second row */}
         <header className="space-y-3">
@@ -53,10 +55,11 @@ function CalculatorPage() {
             <p className={`mt-1 text-sm ${mutedClass}`}>{dict.appSubtitle}</p>
           </div>
           {/* desktop: mode, import, help and language live in the rail (ADRs 0048, 0089); the phone keeps the toolbar */}
-          <div className="flex flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 lg:hidden">
+          <div className="print-hide flex flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 lg:hidden">
             <ModeSwitch />
             <div className="flex flex-wrap items-center gap-2">
               <ImportButton onImport={importRows} />
+              <ExportBar variant="toolbar" {...exportProps} />
               <HelpButton />
               <LangSwitch />
               <ThemeSwitch />
@@ -64,11 +67,12 @@ function CalculatorPage() {
           </div>
         </header>
 
-        <div className="adv-only">
+        <div className="adv-only print-hide">
         <SettingsPanel settings={settings} onChange={setSettings} issues={settingsIssues} />
         </div>
         {/* simple mode: the settings block is hidden, but a bad setting is still reported (ADR 0082) */}
         {mode === "simple" && settingsIssues.length > 0 && <ErrorList issues={settingsIssues} />}
+        <div className="print-hide">
         <FittingList
           rows={rows}
           view={view}
@@ -87,9 +91,11 @@ function CalculatorPage() {
           onMove={moveRow}
           onDrop={dropRows}
         />
+        </div>
+        <ExportBar {...exportProps} />
         <ResultsTable rows={rows} outcome={outcome} calc={calc} />
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="print-block grid grid-cols-1 gap-6 md:grid-cols-2">
           <Totals calc={calc} pricing={costs} priceIssues={costs.issues} settings={settings} onSettings={setSettings} />
           <SheetList groups={calc.sheetList} prices={prices.metal} costs={costs.metal} onPrice={setMetalPrice} settings={settings} onSettings={setSettings} />
           <div className="adv-only min-w-0">
@@ -99,7 +105,7 @@ function CalculatorPage() {
 
         <footer className="text-xs text-muted">{dict.footer}</footer>
       </main>
-      <PhoneActions view={view} hasRows={rows.length > 0} count={countOf} onAdd={addRow} />
+      <div className="print-hide contents"><PhoneActions view={view} hasRows={rows.length > 0} count={countOf} onAdd={addRow} /></div>
     </div>
   );
 }

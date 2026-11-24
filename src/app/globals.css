@@ -161,3 +161,49 @@ select:disabled {
 .highlight-fade {
   transition: box-shadow 0.6s ease-out, background-color 0.6s ease-out;
 }
+
+/* print / PDF (ADR 0102): only the results, totals and lists, light colours on any theme, no scroll boxes */
+@media print {
+  html,
+  body {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+  .print-hide {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-block {
+    display: block !important;
+  }
+  :root,
+  :root[data-theme="dark"] {
+    --background: #ffffff;
+    --foreground: #000000;
+    --panel: #ffffff;
+    --line: #999999;
+    --muted: #333333;
+    --accent: #1d5fd1;
+    --accent-soft: #eef2f7;
+    --bar: #ffffff;
+    color-scheme: light;
+  }
+  .print-full,
+  .print-full * {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  .print-full thead,
+  .print-full th {
+    position: static !important;
+  }
+  tr,
+  .print-avoid {
+    break-inside: avoid;
+  }
+}
+.print-only {
+  display: none;
+}
