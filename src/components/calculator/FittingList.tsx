@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ChevronIcon } from "./ViewIcons";
 import type { RowOutcome } from "@/lib/form/calculate";
 import type { FieldKey, FittingKind, FormRow } from "@/lib/form/fields";
 import { useI18n } from "@/components/i18n";
@@ -313,21 +314,20 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
                 <h3 className="min-w-0 flex-1 text-sm font-medium">
                   <span className="text-muted">{positionSpan(items.map((i) => positionLabel(i.row, i.index)))}.</span> {kindTitle(kind, dict)} <span className="text-muted">× {items.length}</span>
                 </h3>
-                {/* phone: move buttons on top, fold below, so the title keeps the width (as the tiles, ADR 0085) */}
-                <div className="flex shrink-0 flex-col items-end gap-1.5 sm:flex-row sm:items-center sm:gap-2">
+                {/* icon buttons fit one row on a phone too; the fold button matches the arrows height and stands a little apart (ADR 0098) */}
+                <div className="flex shrink-0 items-stretch gap-4">
                 <div className="flex gap-2">
                 <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1 disabled:cursor-default disabled:opacity-40`} disabled={prev === undefined} onClick={() => moveSection(prev)} aria-label={dict.order.sectionUp} title={dict.order.sectionUp}>↑</button>
                 <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1 disabled:cursor-default disabled:opacity-40`} disabled={next === undefined} onClick={() => moveSection(next)} aria-label={dict.order.sectionDown} title={dict.order.sectionDown}>↓</button>
                 </div>
                 <button
                   type="button"
-                  className={buttonClass}
+                  className={`${buttonClass} !px-2 !py-1`}
                   aria-label={groupFolded ? dict.expandGroup : dict.collapseGroup}
+                  title={groupFolded ? dict.expandGroup : dict.collapseGroup}
                   onClick={() => setFoldedMany(items.map((i) => i.row.id), !groupFolded)}
                 >
-                  {/* phone: the short word, the section is clear from the frame */}
-                  <span className="sm:hidden">{groupFolded ? dict.expandCard : dict.collapseCard}</span>
-                  <span className="hidden sm:inline">{groupFolded ? dict.expandGroup : dict.collapseGroup}</span>
+                  <ChevronIcon down={groupFolded} />
                 </button>
                 </div>
               </div>
