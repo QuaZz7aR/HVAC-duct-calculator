@@ -111,6 +111,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0094](adr/0094-subscript-size-indices.md) | Size indices d₁, a₂ as `<sub>` in HTML, system sans in the SVG sketch | 2026-11-24 | Accepted |
 | [0095](adr/0095-numbering-by-systems.md) | «Нумерація»: positions «система-№», empty only or all again, preview first | 2026-11-24 | Accepted |
 | [0096](adr/0096-import-from-pdf.md) | Import from PDF: own text reader, columns from table borders or text ranges | 2026-11-24 | Accepted (thresholds `TODO(confirm)`) |
+| [0097](adr/0097-video-clips-in-the-help.md) | Short MP4 clip per help step, loaded only when the dialog opens | 2026-11-24 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.
@@ -140,12 +141,12 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `calc/config.ts` warnings | `elbowInnerRadiusFactor` 2 is preliminary; the aspect ratio threshold 3 comes from the engineer's "2.5-3". |
 | `form/order.ts` `numberBySystems` | Agent's overnight choices, to review: separator «-», default scope «лише порожні», no undo after «Пронумерувати» ([0095](adr/0095-numbering-by-systems.md)). |
 | `import/pdf.ts` layout | Word gap 0.2 font size, border must cross a third of the body lines, header lines within 2.2 font sizes: tuned on LibreOffice and Chrome PDFs of our samples only ([0096](adr/0096-import-from-pdf.md)). |
+| `public/help/*.mp4` | Clip format and count are the agent's choice (MP4, one per step, uk + en) ([0097](adr/0097-video-clips-in-the-help.md)). |
 
 ## Deferred
 - `npm audit`: 5 high findings, one chain (`braces` <- `micromatch` <- `fast-glob` <- `@next/eslint-plugin-next` <- `eslint-config-next`), dev tooling only, nothing ships to the browser or the server. No non-breaking fix exists: `npm audit fix --force` would downgrade `eslint-config-next` to 14.2.35 (Next 16 here). Wait for a `eslint-config-next` release that updates `fast-glob`/`micromatch`; do not run `npm audit fix`.
 - eslint 9 -> 10: blocked upstream. `eslint-config-next` 16.3.8 itself allows `eslint >=9`, but the plugins it bundles (`eslint-plugin-react` 7.37.5, `eslint-plugin-import` 2.32.0, `eslint-plugin-jsx-a11y` 6.10.2, all at their latest releases) declare peers only up to `^9`. Retry when those publish eslint 10 support; do not force it with overrides.
 - Share the equivalent-diameter helper between `aero.ts` (m) and `waste-factor.ts` (mm).
-- Help: GIFs or video guides (ADR 0046 has text only).
 - Import ([0061](adr/0061-import-from-excel.md), [0096](adr/0096-import-from-pdf.md)): scanned PDF (needs OCR), encrypted PDF, sheets other than the first, old .xls, insulation / thickness columns.
 - Sheet count has no nesting or offcut model (a plain ceil of area over sheet area); a cutting plan would need part shapes.
 - Next features (engineer's order, 2026-10-16): insulation (beta done, [0037](adr/0037-insulation-area-beta.md)), price (done as UAH per m² per thickness and material, [0038](adr/0038-price-per-square-metre.md); a price per fitting or per sheet, labour and a price list are deferred), then aerodynamics as a separate mode. XLSX export waits for the engineer's reference files.
