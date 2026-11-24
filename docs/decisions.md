@@ -99,7 +99,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0082](adr/0082-simple-and-advanced-mode.md) | Simple and advanced interface modes (simple by default, hidden values still count) | 2026-11-23 | Accepted |
 | [0083](adr/0083-header-toolbar-under-the-title.md) | Header toolbar left under the title, «Видалити всі» beside the heading | 2026-11-23 | Accepted |
 | [0084](adr/0084-section-end-and-group-separation.md) | Sections tinted with a gradient bottom edge, more space between groups | 2026-11-23 | Accepted |
-| [0085](adr/0085-section-buttons-in-two-rows-on-a-phone.md) | Section buttons in two rows on a phone, short fold word | 2026-11-23 | Accepted |
+| [0085](adr/0085-section-buttons-in-two-rows-on-a-phone.md) | Section buttons in two rows on a phone, short fold word | 2026-11-23 | Superseded by 0098 |
 | [0086](adr/0086-warning-marks-in-the-results.md) | Red / amber ⚠ before a problem row in the results | 2026-11-23 | Accepted |
 | [0087](adr/0087-add-menu-above-sections.md) | The add-fitting list paints above the sections (z-index on the sticky rail box) | 2026-11-23 | Accepted |
 | [0088](adr/0088-view-toggles-in-a-sticky-list-header.md) | View toggles move from the side rail to a sticky bar above the list (desktop) | 2026-11-23 | Accepted |
@@ -112,6 +112,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0095](adr/0095-numbering-by-systems.md) | «Нумерація»: positions «система-№», empty only or all again, preview first | 2026-11-24 | Accepted |
 | [0096](adr/0096-import-from-pdf.md) | Import from PDF: own text reader, columns from table borders or text ranges | 2026-11-24 | Accepted (thresholds `TODO(confirm)`) |
 | [0097](adr/0097-video-clips-in-the-help.md) | Short MP4 clip per help step, loaded only when the dialog opens | 2026-11-24 | Accepted |
+| [0098](adr/0098-icon-only-card-buttons.md) | Icon-only fold, clone and remove buttons in cards and sections (text in `title` / `aria-label`) | 2026-11-24 | Accepted |
 
 ## Known deviations from the Excel
 Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-reference-not-the-truth.md)). The first two are rect elbows.

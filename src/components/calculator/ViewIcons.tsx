@@ -43,3 +43,33 @@ export function ColumnsIcon({ two, className }: { two: boolean; className?: stri
     </svg>
   );
 }
+
+const card = { viewBox: "0 0 16 16", fill: "none", stroke: "currentColor", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true } as const;
+
+/** Chevron up (fold) or down (unfold): the card buttons (ADR 0098). */
+export function ChevronIcon({ down, className = "h-4 w-4" }: { down?: boolean; className?: string }) {
+  return (
+    <svg {...card} strokeWidth={2} className={className}>
+      <path d={down ? "M4 6l4 4 4-4" : "M4 10l4-4 4 4"} />
+    </svg>
+  );
+}
+
+/** Two overlapping sheets: clone. */
+export function CloneIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg {...card} strokeWidth={1.6} className={className}>
+      <rect x="5.5" y="5.5" width="8" height="8" rx="1.5" />
+      <path d="M10.5 3.5v-.5a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h.5" />
+    </svg>
+  );
+}
+
+/** Rubbish bin: remove. */
+export function TrashIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg {...card} strokeWidth={1.6} className={className}>
+      <path d="M2.5 4.5h11M6 4.5V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1.5M4 4.5l.7 8.6a1 1 0 0 0 1 .9h4.6a1 1 0 0 0 1-.9l.7-8.6M6.7 7v4.5M9.3 7v4.5" />
+    </svg>
+  );
+}

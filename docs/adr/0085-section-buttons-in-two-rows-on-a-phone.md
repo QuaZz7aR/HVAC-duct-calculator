@@ -1,6 +1,6 @@
 # 0085. Section buttons in two rows on a phone
 
-Status: Accepted
+Status: Superseded by 0098
 Date: 2026-11-23
 Source: owner, 2026-11-23 ("для разделов на мобилке ... кнопки в две строки, чтобы было больше места для названия раздела")
 

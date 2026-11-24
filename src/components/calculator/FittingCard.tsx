@@ -1,4 +1,5 @@
 import { defaultConfig } from "@/lib/calc/config";
+import { ChevronIcon, CloneIcon, TrashIcon } from "./ViewIcons";
 import { autoKey, isAuto } from "@/lib/form/auto-defaults";
 import { fieldColumns, isLongLabel } from "@/lib/form/layout";
 import { hasAllowance, kindFields, type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
@@ -111,10 +112,10 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
         <div className="grid shrink-0 grid-cols-2 gap-1">
           {moveButtons}
           <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1`} onClick={onClone} aria-label={dict.cloneItem} title={dict.cloneItem}>
-            ⧉
+            <CloneIcon />
           </button>
           <button type="button" className={`${dangerButtonClass} shrink-0 !px-2 !py-1`} onClick={onRemove} aria-label={dict.removeItem} title={dict.removeItem}>
-            ×
+            <TrashIcon />
           </button>
         </div>
       </div>
@@ -151,19 +152,18 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
         {/* two-column mode: fold and move in the top row, clone, kind and remove below (ADR 0080); otherwise one wrapping row */}
         <div className={`flex max-w-full flex-wrap gap-2 ${half ? "xl:flex-col xl:items-end" : ""}`}>
           <div className={half ? "contents xl:flex xl:gap-2" : "contents"}>
-          <button type="button" className={foldButtonClass} onClick={onToggleCollapsed}>
-            <svg aria-hidden="true" viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10l4-4 4 4" /></svg>
-            {dict.collapseCard}
+          <button type="button" className={`${foldButtonClass} !px-2.5`} onClick={onToggleCollapsed} aria-label={dict.collapseCard} title={dict.collapseCard}>
+            <ChevronIcon />
           </button>
           {moveButtons}
           </div>
           <div className={half ? "contents xl:flex xl:gap-2" : "contents"}>
-          <button type="button" className={buttonClass} onClick={onClone}>
-            {dict.cloneItem}
+          <button type="button" className={`${buttonClass} !px-2.5`} onClick={onClone} aria-label={dict.cloneItem} title={dict.cloneItem}>
+            <CloneIcon />
           </button>
           <KindMenu kind={row.kind} onChange={onKindChange} />
-          <button type="button" className={dangerButtonClass} onClick={onRemove}>
-            {dict.removeItem}
+          <button type="button" className={`${dangerButtonClass} !px-2.5`} onClick={onRemove} aria-label={dict.removeItem} title={dict.removeItem}>
+            <TrashIcon />
           </button>
           </div>
         </div>
