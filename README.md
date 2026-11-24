@@ -21,6 +21,7 @@ The interface is in Ukrainian by default, with an English version: the УКР / 
 - **Import from Excel or PDF.** Load a ready-made spec (.xlsx, .csv or a PDF with text, not a scan): the site finds the columns (type code or name, sizes, length, quantity, system and number), recognises the fitting kinds from the engineer's codes and from names such as «КО 90 Д150», shows every row and lets you pick a kind for the ones it does not know. The file is read in the browser and never uploaded.
 - **Numbering by systems.** One button gives the positions «system-number» (ПВ1-1, ПВ1-2): to the empty ones only or to all again, with a preview first.
 - **Help with video.** «Довідка» walks through six steps, each with a short clip of the real interface.
+- **Export.** Download the results as an Excel file (specification with totals, metal list by thickness, insulation list) or print them / save as PDF.
 - **Saved in your browser.** The list, its order and positions, the settings and the prices are kept in this browser between visits (nothing is sent anywhere); «Delete all» starts over.
 - **Simple and advanced mode.** The simple mode (default) shows only sizes, quantity and the metal figures; the advanced mode adds the calculation settings, allowances, insulation and prices. The choice is remembered in the browser; hidden values still count.
 - **Sketches.** Each fitting card shows a thumbnail of its isometric sketch; a click opens the full sketch with the dimension letters used in the form.
