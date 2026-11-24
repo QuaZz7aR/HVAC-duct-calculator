@@ -314,8 +314,8 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
                 <h3 className="min-w-0 flex-1 text-sm font-medium">
                   <span className="text-muted">{positionSpan(items.map((i) => positionLabel(i.row, i.index)))}.</span> {kindTitle(kind, dict)} <span className="text-muted">× {items.length}</span>
                 </h3>
-                {/* icon buttons fit one row on a phone too (ADR 0098, replaces the two rows of ADR 0085) */}
-                <div className="flex shrink-0 items-center gap-2">
+                {/* icon buttons fit one row on a phone too; the fold button matches the arrows height and stands a little apart (ADR 0098) */}
+                <div className="flex shrink-0 items-stretch gap-4">
                 <div className="flex gap-2">
                 <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1 disabled:cursor-default disabled:opacity-40`} disabled={prev === undefined} onClick={() => moveSection(prev)} aria-label={dict.order.sectionUp} title={dict.order.sectionUp}>↑</button>
                 <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1 disabled:cursor-default disabled:opacity-40`} disabled={next === undefined} onClick={() => moveSection(next)} aria-label={dict.order.sectionDown} title={dict.order.sectionDown}>↓</button>
