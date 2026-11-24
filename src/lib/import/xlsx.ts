@@ -8,6 +8,9 @@
 export type Cell = string | number | null;
 export type Table = Cell[][];
 
+/** Rows a PDF reader joined from several text lines (a wrapped cell, ADR 0100): row -> the number of lines. */
+export const rowLines = new WeakMap<Cell[], number>();
+
 export type ImportErrorCode = 'import.notXlsx' | 'import.noSheet' | 'import.empty' | 'import.unknownType' | 'import.notPdf' | 'import.pdfNoText';
 
 /** Thrown with a stable code; the UI turns it into text. */

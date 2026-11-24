@@ -6,7 +6,7 @@
  * pieces are laid out into lines (by y) and columns (x ranges shared by the table lines), which gives the same `Table` as
  * the .xlsx reader, so the column mapping and the preview are the same.
  */
-import { ImportError, type Cell, type Table } from './xlsx';
+import { ImportError, rowLines, type Cell, type Table } from './xlsx';
 
 // ---------- objects ----------
 
@@ -386,7 +386,10 @@ export interface Piece {
 /** A vertical line of a table border on a page, in page space. */
 export interface Rule { page: number; x: number; y0: number; y1: number }
 
-interface Out { pieces: Piece[]; rules: Rule[] }
+/** A horizontal line of a table border on a page, in page space: the row borders (ADR 0100). */
+export interface HRule { page: number; y: number; x0: number; x1: number }
+
+interface Out { pieces: Piece[]; rules: Rule[]; hrules: HRule[] }
 
 type Matrix = [number, number, number, number, number, number];
 const mul = (a: Matrix, b: Matrix): Matrix => [
@@ -418,6 +421,9 @@ async function runContent(doc: Doc, content: string, resources: Dict, page: numb
   const pt = (x: number, y: number): [number, number] => [x * ctm[0] + y * ctm[2] + ctm[4], x * ctm[1] + y * ctm[3] + ctm[5]];
   const vertical = (a: [number, number], b: [number, number]) => {
     if (Math.abs(a[0] - b[0]) < 0.8 && Math.abs(a[1] - b[1]) > 4) out.rules.push({ page, x: (a[0] + b[0]) / 2, y0: Math.min(a[1], b[1]), y1: Math.max(a[1], b[1]) });
+  };
+  const horizontal = (a: [number, number], b: [number, number]) => {
+    if (Math.abs(a[1] - b[1]) < 0.8 && Math.abs(a[0] - b[0]) > 4) out.hrules.push({ page, y: (a[1] + b[1]) / 2, x0: Math.min(a[0], b[0]), x1: Math.max(a[0], b[0]) });
   };
 
   const show = (str: string) => {
@@ -453,13 +459,15 @@ async function runContent(doc: Doc, content: string, resources: Dict, page: numb
     const op = tok.op;
     switch (op) {
       case 'm': { const [x, y] = nums(2); cur = pt(x, y); break; }
-      case 'l': { const [x, y] = nums(2); const p = pt(x, y); vertical(cur, p); cur = p; break; }
+      case 'l': { const [x, y] = nums(2); const p = pt(x, y); vertical(cur, p); horizontal(cur, p); cur = p; break; }
       case 're': {
         const [x, y, w, h] = nums(4);
         const a = pt(x, y), b = pt(x + w, y + h);
         // a thin filled rectangle is a drawn line; a cell rectangle gives its two sides
         if (Math.abs(b[0] - a[0]) < 2) vertical([(a[0] + b[0]) / 2, a[1]], [(a[0] + b[0]) / 2, b[1]]);
         else { vertical(a, [a[0], b[1]]); vertical([b[0], a[1]], b); }
+        if (Math.abs(b[1] - a[1]) < 2) horizontal([a[0], (a[1] + b[1]) / 2], [b[0], (a[1] + b[1]) / 2]);
+        else { horizontal(a, [b[0], a[1]]); horizontal([a[0], b[1]], b); }
         rect = [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1])];
         cur = a;
         break;
@@ -555,7 +563,7 @@ function pages(doc: Doc): { page: Dict; resources: Dict }[] {
 export async function readPdfPieces(bytes: Uint8Array): Promise<Out> {
   if (!binary(bytes.subarray(0, 1024)).includes('%PDF')) throw new ImportError('import.notPdf');
   const doc = await parseObjects(bytes);
-  const out: Out = { pieces: [], rules: [] };
+  const out: Out = { pieces: [], rules: [], hrules: [] };
   let n = 0;
   for (const { page, resources } of pages(doc)) {
     const c = doc.get(page.Contents);
@@ -619,7 +627,7 @@ function cellPieces(pieces: Piece[]): Piece[] {
  * cells of lines with three or more cells (the table body), merged where they overlap; every cell goes to the column it
  * overlaps most (or the nearest one), two cells in one column join with a space.
  */
-export function layoutTable(pieces: Piece[], rules: Rule[] = []): Table {
+export function layoutTable(pieces: Piece[], rules: Rule[] = [], hrules: HRule[] = []): Table {
   // rotated text (a vertical column header) is left out: it would come apart into one letter per line
   const sorted = cellPieces(pieces.filter((p) => p.text.trim() && p.upright !== false)).sort((a, b) => a.page - b.page || b.y - a.y || a.x - b.x);
   const lines: Piece[][] = [];
@@ -644,7 +652,10 @@ export function layoutTable(pieces: Piece[], rules: Rule[] = []): Table {
     }
     return segs.map((s) => ({ x: s.x, end: s.end, text: s.text.replace(/\s+/g, ' ').trim() })).filter((s) => s.text);
   };
-  const rows = lines.map(cellsOf);
+  let rows = lines.map(cellsOf);
+  const joined = joinWrapped(lines, rows, hrules, rules);
+  rows = joined.rows;
+  lines.splice(0, lines.length, ...joined.lines);
   const body = rows.flatMap((segs, i) => (segs.length >= 3 ? [{ page: lines[i][0].page, y: lines[i][0].y }] : []));
   const borders = borderColumns(rules, sorted, body);
   let cols: { x: number; end: number }[] = [...borders];
@@ -684,9 +695,96 @@ export function layoutTable(pieces: Piece[], rules: Rule[] = []): Table {
     while (row.length && row[row.length - 1] === null) row.pop();
     return row;
   });
+  joined.count.forEach((n, i) => { if (n > 1) rowLines.set(table[i], n); });
   mergeHeader(table, lines);
   while (table.length && table[table.length - 1].every((c) => c === null)) table.pop();
   return table;
+}
+
+interface Seg { x: number; end: number; text: string }
+
+/**
+ * A cell's text wrapped over several lines without a clip box (ADR 0100): the lines between two drawn row borders are one
+ * table row when exactly one of them is a full line (three or more cells: the number, the quantity) and the others have
+ * at most two cells, each within two font sizes of the next. The other lines' cells join the anchor's cell they overlap
+ * (top to bottom, with a space), or stand as cells of their own. Without row borders nothing is joined: a table with an
+ * outer frame only must not become one row.
+ */
+function joinWrapped(lines: Piece[][], rows: Seg[][], hrules: HRule[], rules: Rule[]): { lines: Piece[][]; rows: Seg[][]; count: number[] } {
+  const keep = { lines, rows, count: rows.map(() => 1) };
+  if (!hrules.length) return keep;
+  const band = (line: Piece[]): string | undefined => {
+    const p = line[0];
+    const xs = [Math.min(...line.map((q) => q.x)), Math.max(...line.map((q) => q.end))];
+    const crosses = (r: HRule) => r.page === p.page && r.x0 <= xs[0] + 1 && r.x1 >= xs[0] + 1;
+    let above = Infinity, below = -Infinity;
+    for (const r of hrules) {
+      if (!crosses(r)) continue;
+      if (r.y > p.y && r.y < above) above = r.y;
+      if (r.y < p.y && r.y > below) below = r.y;
+    }
+    return Number.isFinite(above) && Number.isFinite(below) ? `${p.page}:${above.toFixed(1)}:${below.toFixed(1)}` : undefined;
+  };
+  const keys = lines.map(band);
+  // a band with two or more full lines is not one row (a table with an outer frame only, or no rule between rows)
+  const fulls = new Map<string, number>();
+  keys.forEach((k, i) => { if (k && columnsHit(lines[i], rows[i], rules) >= 3) fulls.set(k, (fulls.get(k) ?? 0) + 1); });
+  const out: typeof keep = { lines: [], rows: [], count: [] };
+  // cells of a line: the drawn columns its pieces fall in (a line of letters drawn one by one is many pieces, one cell)
+  for (let i = 0; i < lines.length;) {
+    const key = keys[i];
+    let j = i + 1;
+    while (key && fulls.get(key) === 1 && j < lines.length && keys[j] === key
+      && lines[j - 1][0].y - lines[j][0].y <= Math.max(lines[j][0].size, lines[j - 1][0].size) * 2) j++;
+    const group = rows.slice(i, j);
+    const full = group.flatMap((segs, k) => (columnsHit(lines[i + k], segs, rules) >= 3 ? [k] : []));
+    if (j - i < 2 || full.length !== 1) {
+      for (let k = i; k < j; k++) { out.lines.push(lines[k]); out.rows.push(rows[k]); out.count.push(1); }
+      i = j;
+      continue;
+    }
+    const a = full[0];
+    // with drawn columns the cells join column by column; else every other cell joins the anchor's cell it overlaps
+    // (or starts one); texts in line order, then left to right
+    const xs = borderXs(lines[i + a], rules);
+    const parts: { x: number; end: number; col?: number; texts: { at: number; x: number; text: string }[] }[] = [];
+    const order = [a, ...group.map((_, k) => k).filter((k) => k !== a)];
+    for (const k of order) for (const s of group[k]) {
+      const col = xs.length >= 2 ? xs.filter((x) => x <= (s.x + s.end) / 2).length : undefined;
+      let best: (typeof parts)[number] | undefined, most = 0;
+      for (const p of parts) {
+        if (col !== undefined) { if (p.col === col) best = p; continue; }
+        if (k === a) continue;
+        const o = Math.min(p.end, s.end) - Math.max(p.x, s.x);
+        if (o > most) { most = o; best = p; }
+      }
+      if (best) { best.texts.push({ at: k, x: s.x, text: s.text }); best.x = Math.min(best.x, s.x); best.end = Math.max(best.end, s.end); }
+      else parts.push({ x: s.x, end: s.end, col, texts: [{ at: k, x: s.x, text: s.text }] });
+    }
+    const segs: Seg[] = parts
+      .map((p) => ({ x: p.x, end: p.end, text: p.texts.sort((u, v) => u.at - v.at || u.x - v.x).map((t) => t.text).join(' ').replace(/\s+/g, ' ').trim() }))
+      .sort((u, v) => u.x - v.x);
+    // the anchor line first: its baseline is the row's
+    out.lines.push([...lines[i + a], ...lines.slice(i, j).filter((_, k) => k !== a).flat()]);
+    out.rows.push(segs);
+    // the lines of the cell that wraps the most: the number column in a line of its own is not a wrapped line
+    out.count.push(Math.max(...parts.map((p) => new Set(p.texts.map((t) => t.at)).size)));
+    i = j;
+  }
+  return out;
+}
+
+/** x of the vertical borders that cross a line, left to right. */
+function borderXs(line: Piece[], rules: Rule[]): number[] {
+  const p = line[0];
+  return [...new Set(rules.filter((r) => r.page === p.page && r.y0 <= p.y && r.y1 >= p.y).map((r) => Math.round(r.x)))].sort((a, b) => a - b);
+}
+
+/** The number of cells of a line: the drawn columns its cells fall in when vertical borders cross it, else its cells. */
+function columnsHit(line: Piece[], segs: Seg[], rules: Rule[]): number {
+  const xs = borderXs(line, rules);
+  if (xs.length < 2) return segs.length;
+  return new Set(segs.map((s) => xs.filter((x) => x <= (s.x + s.end) / 2).length)).size;
 }
 
 /**
@@ -762,9 +860,9 @@ const lastWordStacked = (text: string) => /^\p{L}+$/u.test(text);
 
 /** The tables of a PDF as one table (pages one after another). A PDF with no text (a scan) is `import.pdfNoText`. */
 export async function readPdf(bytes: Uint8Array): Promise<Table> {
-  const { pieces, rules } = await readPdfPieces(bytes);
+  const { pieces, rules, hrules } = await readPdfPieces(bytes);
   if (!pieces.some((p) => p.text.trim())) throw new ImportError('import.pdfNoText');
-  const table = layoutTable(pieces, rules);
+  const table = layoutTable(pieces, rules, hrules);
   if (!table.length) throw new ImportError('import.empty');
   return table;
 }

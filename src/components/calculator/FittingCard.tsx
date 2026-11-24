@@ -102,6 +102,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
           <span className="block text-sm font-medium leading-tight">{outcome && !outcome.ok && <span className="mr-1 text-red-600 dark:text-red-400" aria-label={dict.cardHasErrors} title={dict.cardHasErrors}>⚠</span>}{position}. {kindTitle(row.kind, dict)}</span>
           <span className="block truncate font-mono text-xs text-muted">{summary}</span>
           {row.noSizes && <span className="block truncate text-xs text-amber-700 dark:text-amber-400" title={dict.import.noSizes}>⚠ {dict.import.noSizesShort}</span>}
+          {row.joinedLines && <span className="block truncate text-xs text-amber-700 dark:text-amber-400" title={dict.import.joined(row.joinedLines)}>⚠ {dict.import.joinedShort(row.joinedLines)}</span>}
           {row.sizeConflicts && row.sizeConflicts.length > 0 && (
             <span className="block truncate text-xs text-amber-700 dark:text-amber-400" title={row.sizeConflicts.map((c) => dict.import.conflict(dict.fields[c.field], c.name, c.column)).join("\n")}>
               ⚠ {dict.import.conflictShort(row.sizeConflicts.length)}
@@ -225,6 +226,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
       {outcome && !outcome.ok && <ErrorList issues={outcome.issues} />}
       {outcome?.ok && <WarningList warnings={outcome.result.warnings} />}
       {row.noSizes && <p className="mt-2 text-sm text-amber-700 dark:text-amber-400">⚠ {dict.import.noSizes}</p>}
+      {row.joinedLines && <p className="mt-2 text-sm text-amber-700 dark:text-amber-400">⚠ {dict.import.joined(row.joinedLines)}</p>}
       {row.sizeConflicts && (
         <ul aria-label={dict.warnings.title} className="mt-2 space-y-0.5 text-sm text-amber-700 dark:text-amber-400">
           {row.sizeConflicts.map((c) => <li key={c.field}>⚠ {dict.import.conflict(dict.fields[c.field], c.name, c.column)}</li>)}

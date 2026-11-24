@@ -290,6 +290,9 @@ function PreviewRow({ row, onKind }: { row: ImportRow; onKind: (kind: FittingKin
         <p className="text-xs text-muted">
           {row.status === "ok" ? subs([row.position, sizes, `n ${row.quantity}`].filter(Boolean).join(" · ")) : t.status[row.status]}
         </p>
+        {row.status !== "skip" && row.joined && (
+          <p className="text-xs text-amber-700 dark:text-amber-400" title={t.joined(row.joined)}>⚠ {t.joinedShort(row.joined)}</p>
+        )}
         {row.status === "ok" && row.conflicts && (
           <p className="text-xs text-amber-700 dark:text-amber-400" title={row.conflicts.map((c) => t.conflict(dict.fields[c.field], c.name, c.column)).join("\n")}>
             ⚠ {t.conflictShort(row.conflicts.length)}

@@ -4,7 +4,7 @@ import { applyAutoDefaults, setFieldValue } from '../form/auto-defaults';
 import { defaultValues } from '../form/defaults';
 import { initialValues, kindFields, newRow, type FieldKey, type FittingKind, type FormRow, type SizeConflict } from '../form/fields';
 import { parseName, recognizeKind, type NameSize } from './recognize';
-import type { Cell, Table } from './xlsx';
+import { rowLines, type Cell, type Table } from './xlsx';
 
 /**
  * Columns of a spec table and how its rows become form rows (ADR 0061). The size columns follow the engineer's Excel:
@@ -196,6 +196,8 @@ export interface ImportRow {
   raw: RawSizes;
   /** Fields whose size in the name differs from the size column (ADR 0073); the column wins. */
   conflicts?: SizeConflict[];
+  /** The number of text lines of a PDF the row was joined from (a wrapped cell, ADR 0100); absent = one. */
+  joined?: number;
 }
 
 interface RawSizes { cells: Partial<Record<SizeSlot, number>>; sizes: NameSize[]; extra: Partial<Record<SizeSlot, number>> }
@@ -251,7 +253,8 @@ export function importRows(table: Table, mapping: Mapping): ImportRow[] {
     const r = table[i];
     const filled = r.filter((c) => text(c) !== '');
     const source = filled.map(text).join(' · ');
-    const base = { line: i + 1, source, values: {}, quantity: '1', raw: { cells: {}, sizes: [], extra: {} } };
+    const joined = rowLines.get(r);
+    const base = { line: i + 1, source, values: {}, quantity: '1', raw: { cells: {}, sizes: [], extra: {} }, ...(joined ? { joined } : {}) };
     if (!filled.length) continue;
     if (filled.length === 1 && isSystem(filled[0])) {
       heading = text(filled[0]);
@@ -330,6 +333,7 @@ export function toFormRows(rows: ImportRow[], firstId: number, config: CalcConfi
     if (r.conflicts) row = { ...row, sizeConflicts: r.conflicts };
     // a row the file names but gives no size for is added with a warning, never filled silently
     if (!kindFields[r.kind].some((f) => r.values[f.key] !== undefined)) row = { ...row, noSizes: true };
+    if (r.joined) row = { ...row, joinedLines: r.joined };
     out.push(row);
   }
   return out;
