@@ -149,13 +149,16 @@ const numericKeys: ColumnKey[] = ['A', 'B', 'a', 'b', 'l', 'R', 'angle', 'L', 'q
 
 /**
  * A header row may be one cell off its data (a real file: the code column has no header, so «Ширина» stands over the codes).
- * The size columns move together by the offset (-1, 0, +1) under which most of them hold numbers; a tie keeps them.
+ * The size columns move together by the offset (-1, 0, +1) under which most of them hold numbers; a tie goes to the offset with
+ * numbers under «A», else keeps them.
  */
 function alignSizes(columns: Mapping['columns'], taken: Set<number>, numeric: (col: number) => number) {
   const keys = numericKeys.filter((k) => columns[k] !== undefined);
   if (!keys.length) return;
   const score = (off: number) => keys.filter((k) => columns[k]! + off >= 0 && numeric(columns[k]! + off) >= 0.8).length;
-  const best = [0, 1, -1].reduce((b, off) => (score(off) > score(b) ? off : b), 0);
+  // a tie goes to the offset that puts numbers under «A», the main size (a PDF may print a narrow quantity column as «###»)
+  const main = (off: number) => (columns.A !== undefined && columns.A + off >= 0 && numeric(columns.A + off) >= 0.8 ? 1 : 0);
+  const best = [0, 1, -1].reduce((b, off) => (score(off) > score(b) || (score(off) === score(b) && main(off) > main(b)) ? off : b), 0);
   if (best === 0) return;
   for (const k of keys) taken.delete(columns[k]!);
   for (const k of keys) { columns[k] = columns[k]! + best; taken.add(columns[k]!); }

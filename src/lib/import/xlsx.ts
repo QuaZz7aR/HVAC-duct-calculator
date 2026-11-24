@@ -8,7 +8,7 @@
 export type Cell = string | number | null;
 export type Table = Cell[][];
 
-export type ImportErrorCode = 'import.notXlsx' | 'import.noSheet' | 'import.empty' | 'import.unknownType';
+export type ImportErrorCode = 'import.notXlsx' | 'import.noSheet' | 'import.empty' | 'import.unknownType' | 'import.notPdf' | 'import.pdfNoText';
 
 /** Thrown with a stable code; the UI turns it into text. */
 export class ImportError extends Error {
