@@ -6,7 +6,7 @@ import { buildConfig, defaultSettings, type SettingsText } from "@/lib/form/sett
 import { resetToAuto, setFieldValue, withKind } from "@/lib/form/auto-defaults";
 import { sampleRows } from "@/lib/form/sample-rows";
 import { insertIndex } from "@/lib/form/kind-groups";
-import { moveBlock, moveBy } from "@/lib/form/order";
+import { moveBlock, moveBy, numberBySystems } from "@/lib/form/order";
 import { defaultValues, presetRow } from "@/lib/form/defaults";
 import { type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
 import { toFormRows, type ImportRow } from "@/lib/import/mapping";
@@ -98,11 +98,13 @@ export function useCalculator() {
     return added.length;
   };
   const clearRows = () => setRows([]);
+  // «Нумерація по системах» (ADR 0095): positions «система-№», order unchanged
+  const numberRows = (system: string, scope: 'all' | 'empty') => setRows((rs) => numberBySystems(rs, system, scope));
   const removeRow = (id: number) => setRows((rs) => rs.filter((r) => r.id !== id));
   // manual order (ADR 0049): the list, the results and the numbers follow the rows array
   const moveRow = (id: number, step: number) => setRows((rs) => moveBy(rs, id, step));
   // a card or a whole section (its ids) takes the place of the target row
   const dropRows = (ids: number[], targetId: number) => setRows((rs) => moveBlock(rs, ids, targetId));
 
-  return { rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice };
+  return { rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, numberRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice };
 }

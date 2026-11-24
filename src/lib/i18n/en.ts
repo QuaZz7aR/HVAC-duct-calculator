@@ -30,6 +30,17 @@ export const en: Dictionary = {
   itemsTitle: 'Fittings',
   // the frame around a stretch of fittings outside any section (ADR 0070)
   singlesTitle: 'Single fittings',
+  numbering: {
+    button: 'Numbering',
+    system: 'System',
+    scopeLabel: 'Which positions to change',
+    scope: { empty: 'empty positions only', all: 'renumber all' },
+    info: 'Positions are written «system-number»: SV1-1, SV1-2. «Empty positions only» gives the fittings without a position the typed system and continues its numbers. «Renumber all» numbers each system again in list order; fittings without a system get the typed one.',
+    preview: (n: number, sample: string) => `${n} will change: ${sample}`,
+    nothing: 'Nothing will change',
+    apply: 'Number',
+    cancel: 'Cancel',
+  },
   clearAll: { button: 'Delete all', confirm: (n: number) => `Delete all fittings (${n})?`, yes: 'Yes, delete', no: 'Cancel' },
   addItem: 'Add fitting',
   defaultsNote: 'Typical default values. Change them to your size.',

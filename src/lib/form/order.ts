@@ -41,3 +41,35 @@ export function moveBlock(rows: FormRow[], ids: number[], targetId: number): For
   const at = target > from ? t + 1 : t;
   return [...rest.slice(0, at), ...block, ...rest.slice(at)];
 }
+
+/** The system of a position: the part before its last «-» with a number after it ("ПВ1-3" -> "ПВ1"); none -> undefined. */
+export function systemOf(position: string | undefined): string | undefined {
+  const m = position?.trim().match(/^(.+?)\s*-\s*\d+$/);
+  return m ? m[1] : undefined;
+}
+
+/**
+ * «Нумерація по системах» (ADR 0095): positions «система-№» (ПВ1-1, ПВ1-2), as the import writes them.
+ * A row's system is the one in its position, else `system` (the typed one); a row with neither keeps its position.
+ * `scope: 'all'` renumbers every row 1, 2, 3 within its system in list order; `'empty'` gives only the rows without a
+ * position the typed system, numbered after the largest number that system already has. Order of the rows is unchanged.
+ */
+export function numberBySystems(rows: FormRow[], system: string, scope: 'all' | 'empty'): FormRow[] {
+  const typed = system.trim();
+  const next = new Map<string, number>();
+  if (scope === 'empty')
+    for (const r of rows) {
+      const s = systemOf(r.position);
+      const n = Number(r.position?.trim().match(/(\d+)$/)?.[1]);
+      if (s !== undefined) next.set(s, Math.max(next.get(s) ?? 0, n));
+    }
+  return rows.map((r) => {
+    const has = !!r.position?.trim();
+    if (scope === 'empty' && has) return r;
+    const s = (scope === 'all' ? systemOf(r.position) : undefined) ?? (typed || undefined);
+    if (s === undefined) return r;
+    const n = (next.get(s) ?? 0) + 1;
+    next.set(s, n);
+    return { ...r, position: `${s}-${n}` };
+  });
+}
