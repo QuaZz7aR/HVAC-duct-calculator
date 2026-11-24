@@ -1,5 +1,6 @@
 import { Info } from "./Info";
 import { inputClass, labelClass } from "./styles";
+import { subs } from "./subscripts";
 
 interface Props {
   label: string;
@@ -21,7 +22,7 @@ export function TextField({ label, value, onChange, inputMode = "decimal", hint,
     // a column packed to the bottom: a neighbour label that wraps to two lines leaves this label right above its input, and the inputs stay level
     <label className={`flex flex-col justify-end ${wide ? "col-span-2 sm:col-span-1" : ""}`}>
       <span className={labelClass}>
-        {label}
+        {subs(label)}
         {info && <Info text={info} />}
         {hint && <span className="ml-1 text-accent">({hint})</span>}
         {action && (

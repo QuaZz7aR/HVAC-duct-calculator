@@ -12,6 +12,7 @@ import { KindMenu } from "./KindMenu";
 import { buttonClass, cardClass, dangerButtonClass, foldButtonClass, labelClass, selectClass } from "./styles";
 import { Info } from "./Info";
 import { TextField } from "./TextField";
+import { subs } from "./subscripts";
 
 interface Props {
   row: FormRow;
@@ -126,7 +127,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
             <FittingSketch kind={row.kind} view="iso" />
           </button>
           <figcaption className="pt-2 text-sm leading-snug text-muted">
-            {isoLegend(row.kind, dict).join("; ")}. {dict.sketch.note}
+            {subs(isoLegend(row.kind, dict).join("; "))}. {dict.sketch.note}
           </figcaption>
         </figure>
   );

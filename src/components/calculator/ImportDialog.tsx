@@ -6,6 +6,7 @@ import { ImportError, readCsv, readXlsx, type Table } from "@/lib/import/xlsx";
 import { sizeLabel } from "./format";
 import { Info } from "./Info";
 import { buttonClass, railItemClass, labelClass, primaryButtonClass, selectClass } from "./styles";
+import { subs } from "./subscripts";
 
 type ErrorCode = ImportError["code"];
 
@@ -285,7 +286,7 @@ function PreviewRow({ row, onKind }: { row: ImportRow; onKind: (kind: FittingKin
       <div className="min-w-0">
         <p className="truncate" title={row.source}>{row.source}</p>
         <p className="text-xs text-muted">
-          {row.status === "ok" ? [row.position, sizes, `n ${row.quantity}`].filter(Boolean).join(" · ") : t.status[row.status]}
+          {row.status === "ok" ? subs([row.position, sizes, `n ${row.quantity}`].filter(Boolean).join(" · ")) : t.status[row.status]}
         </p>
         {row.status === "ok" && row.conflicts && (
           <p className="text-xs text-amber-700 dark:text-amber-400" title={row.conflicts.map((c) => t.conflict(dict.fields[c.field], c.name, c.column)).join("\n")}>
