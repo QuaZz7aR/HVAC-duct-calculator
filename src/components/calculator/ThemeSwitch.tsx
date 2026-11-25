@@ -30,7 +30,7 @@ export function ThemeSwitch() {
           aria-label={dict.theme[t]}
           title={dict.theme[t]}
           onClick={() => setTheme(t)}
-          className={`px-2.5 py-1 focus-visible:outline-2 focus-visible:outline-accent ${theme === t ? "bg-accent text-background" : "bg-panel text-accent hover:bg-accent-soft"}`}
+          className={`grid min-h-7 place-items-center px-2.5 py-1 focus-visible:outline-2 focus-visible:outline-accent ${theme === t ? "bg-accent text-background" : "bg-panel text-accent hover:bg-accent-soft"}`}
         >
           <ThemeIcon theme={t} />
         </button>
