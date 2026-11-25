@@ -10,8 +10,8 @@ const [lang = 'uk', only = 'all', device = 'desktop'] = process.argv.slice(2);
 // third argument `phone`: a 390 px phone layout, files <step>-<lang>-phone (ADR 0105)
 const phone = device === 'phone';
 const T = {
-  uk: { del: 'Видалити всі', yes: 'Так, видалити', tees: 'Трійники', elbows: 'Відводи', adv: 'Розширений', simple: 'Простий', mode: 'Режим', imp: /Імпорт з Excel/, choose: 'Обрати файл', results: 'Результати по позиціях', metal: 'Відомість металу за товщиною', settings: 'Параметри розрахунку', add: /^Додати \d+/, addBtn: 'Додати деталь', roundElbow: 'Круглий відвід', roundTee: 'Круглий трійник' },
-  en: { del: 'Delete all', yes: 'Yes, delete', tees: 'Tees', elbows: 'Elbows', adv: 'Advanced', simple: 'Simple', mode: 'Mode', imp: /Import Excel/, choose: 'Choose file', results: 'Results by item', metal: 'Sheet metal by thickness', settings: 'Calculation settings', add: /^Add \d+/, addBtn: 'Add fitting', roundElbow: 'Circular elbow', roundTee: 'Circular tee' },
+  uk: { del: 'Видалити всі', yes: 'Так, видалити', tees: 'Трійники', elbows: 'Відводи', adv: 'Розширений', simple: 'Простий', mode: 'Режим', imp: /Імпорт з Excel/, choose: 'Обрати файл', results: 'Результати по позиціях', metal: 'Відомість металу за товщиною', settings: 'Параметри розрахунку', add: /^Додати \d+/, addBtn: 'Додати деталь', roundElbow: 'Круглий відвід', roundTee: 'Круглий трійник', allKinds: 'Усі типи…', query: 'трійн' },
+  en: { del: 'Delete all', yes: 'Yes, delete', tees: 'Tees', elbows: 'Elbows', adv: 'Advanced', simple: 'Simple', mode: 'Mode', imp: /Import Excel/, choose: 'Choose file', results: 'Results by item', metal: 'Sheet metal by thickness', settings: 'Calculation settings', add: /^Add \d+/, addBtn: 'Add fitting', roundElbow: 'Circular elbow', roundTee: 'Circular tee', allKinds: 'All types…', query: 'tee' },
 }[lang];
 const W = phone ? 390 : 1280, H = phone ? 760 : 760;
 const suffix = phone ? '-phone' : '';
@@ -64,7 +64,12 @@ const steps = {
     await click(vis(p.getByRole('button', { name: T.yes })));
     if (phone) {
       await addPhone({ p, click, vis }, T.roundElbow);
-      await addPhone({ p, click, vis }, T.roundTee);
+      // «⋯» in the fan opens the sheet with every kind and a search
+      await addPhone({ p, click, vis }, T.allKinds);
+      await p.waitForTimeout(700);
+      const q = vis(p.getByRole('dialog').getByRole('searchbox'));
+      await click(q); await p.keyboard.type(T.query, { delay: 140 }); await p.waitForTimeout(800);
+      await click(vis(p.getByRole('dialog').getByRole('button', { name: T.roundTee })));
       await p.mouse.move(200, 300, { steps: 15 });
       return;
     }
