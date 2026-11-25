@@ -10,8 +10,8 @@ const [lang = 'uk', only = 'all', device = 'desktop'] = process.argv.slice(2);
 // third argument `phone`: a 390 px phone layout, files <step>-<lang>-phone (ADR 0105)
 const phone = device === 'phone';
 const T = {
-  uk: { del: 'Видалити всі', yes: 'Так, видалити', tees: 'Трійники', elbows: 'Відводи', adv: 'Розширений', simple: 'Простий', mode: 'Режим', imp: /^Імпорт/, choose: 'Обрати файл', results: 'Результати по позиціях', metal: 'Відомість металу за товщиною', settings: 'Параметри розрахунку', add: /^Додати \d+/, addBtn: 'Додати деталь', roundElbow: 'Круглий відвід', roundTee: 'Круглий трійник', totals: 'Разом', xlsx: 'Завантажити Excel', allKinds: 'Усі типи…', query: 'трійн' },
-  en: { del: 'Delete all', yes: 'Yes, delete', tees: 'Tees', elbows: 'Elbows', adv: 'Advanced', simple: 'Simple', mode: 'Mode', imp: /^Import/, choose: 'Choose file', results: 'Results by item', metal: 'Sheet metal by thickness', settings: 'Calculation settings', add: /^Add \d+/, addBtn: 'Add fitting', roundElbow: 'Circular elbow', roundTee: 'Circular tee', totals: 'Total', xlsx: 'Download Excel', allKinds: 'All types…', query: 'tee' },
+  uk: { del: 'Видалити всі', yes: 'Так, видалити', tees: 'Трійники', elbows: 'Відводи', adv: 'Розширений', simple: 'Простий', mode: 'Режим', imp: /^Імпорт/, choose: 'Обрати файл', results: 'Результати по позиціях', metal: 'Відомість металу за товщиною', settings: 'Параметри розрахунку', add: /^Додати \d+/, addBtn: 'Додати деталь', roundElbow: 'Круглий відвід', roundTee: 'Круглий трійник', sketchesOn: 'Показати всі схеми', sketchesOff: 'Сховати всі схеми', foldAll: 'Згорнути всі деталі', unfoldAll: 'Розгорнути всі деталі', closeMenu: 'Закрити меню', toTop: 'Нагору', help: 'Довідка', menu: 'Меню', totals: 'Разом', xlsx: 'Завантажити Excel', allKinds: 'Усі типи…', query: 'трійн' },
+  en: { del: 'Delete all', yes: 'Yes, delete', tees: 'Tees', elbows: 'Elbows', adv: 'Advanced', simple: 'Simple', mode: 'Mode', imp: /^Import/, choose: 'Choose file', results: 'Results by item', metal: 'Sheet metal by thickness', settings: 'Calculation settings', add: /^Add \d+/, addBtn: 'Add fitting', roundElbow: 'Circular elbow', roundTee: 'Circular tee', sketchesOn: 'Show all sketches', sketchesOff: 'Hide all sketches', foldAll: 'Fold all fittings', unfoldAll: 'Expand all fittings', closeMenu: 'Close menu', toTop: 'To top', help: 'Help', menu: 'Menu', totals: 'Total', xlsx: 'Download Excel', allKinds: 'All types…', query: 'tee' },
 }[lang];
 const W = phone ? 390 : 1280, H = phone ? 760 : 760;
 const suffix = phone ? '-phone' : '';
@@ -114,6 +114,20 @@ const steps = {
     await show(vis(p.getByRole('heading', { name: T.metal })), 2200);
     await show(vis(p.getByRole('button', { name: T.xlsx })), 1800);
   },
+  // phone only: the round buttons at the right edge (ADR 0106)
+  async buttons({ p, click, vis }) {
+    if (!phone) return;
+    const btn = (name) => vis(p.getByRole('button', { name, exact: true }));
+    await click(btn(T.sketchesOn)); await p.waitForTimeout(900);
+    await click(btn(T.sketchesOff)); await p.waitForTimeout(500);
+    await click(btn(T.foldAll)); await p.waitForTimeout(1000);
+    await click(btn(T.unfoldAll)); await p.waitForTimeout(500);
+    await click(btn(T.addBtn)); await p.waitForTimeout(1200);
+    await click(btn(T.closeMenu)); await p.waitForTimeout(400);
+    await p.evaluate(() => window.scrollTo({ top: 2500, behavior: 'smooth' })); await p.waitForTimeout(1200);
+    await click(btn(T.toTop)); await p.waitForTimeout(1200);
+    await click(btn(T.help)); await p.waitForTimeout(1500);
+  },
   async price({ p, click, type, vis }) {
     await advanced({ p, click, vis });
     const m = vis(p.getByRole('heading', { name: T.metal }));
@@ -124,6 +138,8 @@ const steps = {
     await p.waitForTimeout(800);
   },
   async import({ p, click, vis }) {
+    // the phone keeps the import in the header menu (ADR 0106)
+    if (phone) await click(vis(p.getByRole('button', { name: T.menu, exact: true })));
     await click(vis(p.getByRole('button', { name: T.imp })));
     await move0(p);
     await p.locator('dialog[open] input[type=file]').setInputFiles(process.env.HELP_PDF);

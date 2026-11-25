@@ -316,6 +316,7 @@ export const en: Dictionary = {
     },
     guide: {
       button: 'Help',
+      prominent: 'How to use',
       title: 'How to use the calculator',
       close: 'Close',
       steps: [
@@ -326,10 +327,12 @@ export const en: Dictionary = {
         { title: 'Set prices (advanced mode)', text: 'In the metal and insulation lists, type a price per m² for each thickness and material. Metal is priced including the order margin.' },
         { title: 'Or import a spec', text: 'The «Import Excel / PDF» button reads .xlsx, .csv or a text .pdf: the site finds the header row and the columns, recognises kinds by code or name and shows every row before adding it. Rows it does not know (offsets, adapters, boxes) are highlighted: pick a kind by hand or skip them.' },
       ],
-      outro: 'Everything is computed in your browser; nothing is sent anywhere or kept after a page reload.',
+      phoneStep: { title: 'Buttons on the right (phone)', text: 'Round buttons at the right edge: «?» opens this help, the arrow goes back to the top. Below: the eye shows or hides all sketches, the next one folds or unfolds the cards, «+» adds a fitting (a fan of common kinds, «⋯» opens all kinds with a search).' },
+      outro: 'Everything is computed in your browser and nothing is sent anywhere. The project is kept in this browser only.',
     },
   },
   // import of a spec table from .xlsx / .csv (ADR 0061)
+  menu: { open: 'Menu', close: 'Close menu' },
   import: {
     button: 'Import Excel / PDF',
     short: 'Import',

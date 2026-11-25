@@ -3,6 +3,7 @@ import type { FittingKind } from "@/lib/form/fields";
 import { quickKinds, searchKinds } from "@/lib/form/kind-groups";
 import { useI18n } from "@/components/i18n";
 import { Sheet } from "./KindPalette";
+import { HelpButton } from "./HelpDialog";
 import type { CardView } from "./useCardView";
 import { scrollToTop } from "./scrollToTop";
 import { useDismiss } from "./useDismiss";
@@ -28,7 +29,7 @@ interface Props {
   onAdd: (kind: FittingKind) => void;
 }
 
-/** Phone: a column of small round buttons at the right edge, within reach of a thumb. Closed: the two view toggles, "to top" after a short scroll down, and "+". Opened by "+": the quick kinds and "..." (the sheet with every kind and a search) fan out along two arcs. The column sits 15 % of the screen height above the bottom edge. */
+/** Phone: a column of small round buttons at the right edge, within reach of a thumb. Closed: «?» (help) and "to top" after a short scroll down, a gap, then the two view toggles and "+" (ADR 0106). Opened by "+": the quick kinds and "..." (the sheet with every kind and a search) fan out along two arcs. The column sits 15 % of the screen height above the bottom edge. */
 export function PhoneActions({ view, hasRows, count, onAdd }: Props) {
   const { dict } = useI18n();
   const [scrolled, setScrolled] = useState(false);
@@ -62,6 +63,17 @@ export function PhoneActions({ view, hasRows, count, onAdd }: Props) {
         className="fixed z-30 flex flex-col gap-2 lg:hidden"
         style={{ right: "max(1rem, env(safe-area-inset-right, 0px))", bottom: "max(1rem, calc(env(safe-area-inset-bottom, 0px) + 15svh))" }}
       >
+        {/* help and «to top» stand apart from the list buttons below (ADR 0106) */}
+        {!open && (
+          <div className="mb-4 flex flex-col gap-2">
+            <HelpButton variant="round" />
+            {scrolled && (
+              <button type="button" onClick={scrollToTop} aria-label={dict.palette.toTop} title={dict.palette.toTop} className={round}>
+                <UpIcon className="h-5 w-7" />
+              </button>
+            )}
+          </div>
+        )}
         {!open && hasRows && (
           <>
             <button type="button" onClick={() => view.setAllSketches(!view.allSketchesOpen)} aria-label={sketches} title={sketches} className={round}>
@@ -71,11 +83,6 @@ export function PhoneActions({ view, hasRows, count, onAdd }: Props) {
               <FoldIcon folded={view.allFolded} className="h-5 w-7" />
             </button>
           </>
-        )}
-        {!open && scrolled && (
-          <button type="button" onClick={scrollToTop} aria-label={dict.palette.toTop} title={dict.palette.toTop} className={round}>
-            <UpIcon className="h-5 w-7" />
-          </button>
         )}
         <div className="relative h-12 w-12 self-end">
           {open && (

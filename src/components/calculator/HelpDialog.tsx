@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useI18n } from "@/components/i18n";
-import { buttonClass, railItemClass } from "./styles";
+import { buttonClass, primaryButtonClass } from "./styles";
 
 /** The «Довідка» button in the header and the short how-to it opens (a native modal dialog: Esc and the cross close it). */
 /** Once the page is idle, fetch the first clip of the guide into the browser cache, so it plays at once when the dialog opens (ADR 0105). */
@@ -18,26 +18,34 @@ function usePrefetchFirstClip(lang: string) {
   }, [lang]);
 }
 
-export function HelpButton({ rail = false }: { rail?: boolean }) {
+/** «Довідка»: `prominent` = a filled button beside the page title on desktop, `round` = the «?» in the phone's right column (ADR 0106), `plain` = an ordinary button. */
+export function HelpButton({ variant = "plain", className = "" }: { variant?: "plain" | "prominent" | "round"; className?: string }) {
   const { dict, lang } = useI18n();
   usePrefetchFirstClip(lang);
   const ref = useRef<HTMLDialogElement>(null);
-  // the button is rendered twice (phone header, desktop rail), so the title id must be unique
+  // the button is rendered twice (desktop header, phone column), so the title id must be unique
   const titleId = useId();
   const g = dict.help.guide;
   // the clips load only while the dialog is open, so the page itself downloads nothing (ADR 0097)
   const [open, setOpen] = useState(false);
-  const show = () => { setOpen(true); ref.current?.showModal(); };
+  // the phone gets one more step on the right-hand buttons (ADR 0106)
+  const [phone, setPhone] = useState(false);
+  const show = () => { setPhone(!!window.matchMedia?.("(max-width: 1023px)").matches); setOpen(true); ref.current?.showModal(); };
+  const steps = g.steps.map((s, i) => ({ ...s, clip: helpClips[i] as string | undefined }));
+  if (phone) steps.splice(1, 0, { ...g.phoneStep, clip: "buttons" });
   return (
     <>
-      {rail ? (
-        // desktop rail: an icon over a label, like the other rail items
-        <button type="button" className={railItemClass} onClick={show} aria-haspopup="dialog">
-          <span aria-hidden="true" className="grid h-5 w-5 place-items-center rounded-full border-2 border-accent text-xs font-bold leading-none text-accent">?</span>
-          {g.button}
+      {variant === "prominent" ? (
+        <button type="button" className={`${primaryButtonClass} inline-flex items-center gap-2 ${className}`} onClick={show} aria-haspopup="dialog">
+          <span aria-hidden="true" className="grid h-5 w-5 place-items-center rounded-full border-2 border-current text-xs font-bold leading-none">?</span>
+          {g.prominent}
+        </button>
+      ) : variant === "round" ? (
+        <button type="button" onClick={show} aria-haspopup="dialog" aria-label={g.button} title={g.button} className={`grid h-12 w-12 place-items-center rounded-full border-2 border-accent bg-panel text-xl font-bold text-accent shadow-lg shadow-black/30 hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent ${className}`}>
+          ?
         </button>
       ) : (
-        <button type="button" className={`${buttonClass} shrink-0`} onClick={show} aria-haspopup="dialog">
+        <button type="button" className={`${buttonClass} shrink-0 ${className}`} onClick={show} aria-haspopup="dialog">
           {g.button}
         </button>
       )}
@@ -58,11 +66,11 @@ export function HelpButton({ rail = false }: { rail?: boolean }) {
             </button>
           </div>
           <ol className="space-y-4">
-            {g.steps.map((s, i) => (
+            {steps.map((s, i) => (
               <li key={s.title}>
                 <h3 className="font-medium">{i + 1}. {s.title}</h3>
                 <p className="mt-1 text-sm leading-relaxed text-muted">{s.text}</p>
-                {open && helpClips[i] && <HelpClip name={`${helpClips[i]}-${lang}`} label={s.title} />}
+                {open && s.clip && <HelpClip name={`${s.clip}-${lang}`} label={s.title} />}
               </li>
             ))}
           </ol>

@@ -9,6 +9,7 @@ import { ErrorList } from "./calculator/ErrorList";
 import { ModeSwitch } from "./calculator/ModeSwitch";
 import { LangSwitch } from "./calculator/LangSwitch";
 import { HelpButton } from "./calculator/HelpDialog";
+import { PhoneMenu } from "./calculator/PhoneMenu";
 import { ExportBar } from "./calculator/ExportBar";
 import { ImportButton } from "./calculator/ImportDialog";
 import { FittingList } from "./calculator/FittingList";
@@ -50,20 +51,23 @@ function CalculatorPage() {
       <main className="min-w-0 space-y-6">
         {/* title, then one toolbar left under it (ADR 0083): mode on its own row on a phone, the other buttons in a second row */}
         <header className="space-y-3">
-          <div>
-            <h1 className="text-2xl font-semibold">{dict.appTitle}</h1>
-            <p className={`mt-1 text-sm ${mutedClass}`}>{dict.appSubtitle}</p>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h1 className="text-2xl font-semibold">{dict.appTitle}</h1>
+              <p className={`mt-1 text-sm ${mutedClass}`}>{dict.appSubtitle}</p>
+            </div>
+            {/* desktop: help in plain sight beside the title, so a new user sees it first (ADR 0106); the phone has the round «?» on the right */}
+            <div className="print-hide hidden lg:block"><HelpButton variant="prominent" /></div>
           </div>
-          {/* desktop: mode, import, help and language live in the rail (ADRs 0048, 0089); the phone keeps the toolbar */}
-          <div className="print-hide flex flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 lg:hidden">
+          {/* phone: the mode switch and one menu button; import, export, language and theme are in the menu (ADR 0106). Desktop: all in the rail (ADRs 0048, 0089) */}
+          <div className="print-hide flex items-center justify-between gap-2 lg:hidden">
             <ModeSwitch />
-            <div className="flex flex-wrap items-center gap-2">
+            <PhoneMenu>
               <ImportButton onImport={importRows} />
               <ExportBar variant="toolbar" {...exportProps} />
-              <HelpButton />
               <LangSwitch />
               <ThemeSwitch />
-            </div>
+            </PhoneMenu>
           </div>
         </header>
 

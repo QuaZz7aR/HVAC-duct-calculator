@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { FittingKind } from "@/lib/form/fields";
 import { kindGroups, searchKinds, type KindGroupId } from "@/lib/form/kind-groups";
 import { useI18n } from "@/components/i18n";
-import { HelpButton } from "./HelpDialog";
 import { KindGlyph } from "./KindGlyph";
 import { LangRailButton } from "./LangSwitch";
 import { ImportButton } from "./ImportDialog";
@@ -111,7 +110,6 @@ export function KindRail({ count, onAdd, onImport, exportItems }: Props & { onIm
           {exportItems}
           <ModeRailButton />
           <ThemeRailButton />
-          <HelpButton rail />
           <LangRailButton />
         </div>
       <ToTopButton />
