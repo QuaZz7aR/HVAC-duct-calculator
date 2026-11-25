@@ -1,6 +1,6 @@
 # 0030. Beta start state, card view state and card look
 
-- Status: Accepted (the beta start state is temporary)
+- Status: Accepted; the beta start state is superseded by [0110](0110-empty-start-state.md)
 - Date: 2026-10-22
 - Source: owner + engineer advice (2026-10-22); PR #25, #26, #27
 

@@ -271,6 +271,13 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
       </div>
       {/* desktop: a bar of only the view toggles sticks to the top (ADR 0088); below the rail's z-30, so the add list still opens over it */}
       {listRows.length > 0 && <ViewBar view={view} twoColumns={twoColumns} onColumns={onColumns}>{onNumber && <NumberSystems rows={listRows} onNumber={onNumber} />}{onClear && <ClearAll count={listRows.length} onClear={onClear} />}</ViewBar>}
+      {/* a new project starts empty (ADR 0110): say where fittings come from */}
+      {listRows.length === 0 && (
+        <div className="rounded-lg border-2 border-dashed border-accent/35 p-6 text-center">
+          <p className="font-medium">{dict.emptyList.title}</p>
+          <p className="mt-2 text-sm text-muted"><span className="hidden lg:inline">{dict.emptyList.rail}</span><span className="lg:hidden">{dict.emptyList.phone}</span></p>
+        </div>
+      )}
       {/* one grid for the page: single cards and folded tiles share the 1-3 columns, a repeated kind is a full-width section with a grid of its own; open cards span the full width */}
       <div className={gridClass}>
         {runs.map(({ kind, items }, r) => {

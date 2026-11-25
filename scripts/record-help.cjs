@@ -60,8 +60,11 @@ const advanced = async ({ p, click, vis }) => {
 
 const steps = {
   async add({ p, click, vis }) {
-    await click(vis(p.getByRole('button', { name: T.del, exact: true })));
-    await click(vis(p.getByRole('button', { name: T.yes })));
+    // a new project starts empty (ADR 0110); clear a list left from an earlier run
+    if (await p.getByRole('button', { name: T.del, exact: true }).locator('visible=true').count()) {
+      await click(vis(p.getByRole('button', { name: T.del, exact: true })));
+      await click(vis(p.getByRole('button', { name: T.yes })));
+    }
     if (phone) {
       await addPhone({ p, click, vis }, T.roundElbow);
       // «⋯» in the fan opens the sheet with every kind and a search
