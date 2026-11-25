@@ -31,7 +31,7 @@ export const en: Dictionary = {
   // the frame around a stretch of fittings outside any section (ADR 0070)
   emptyList: {
     title: 'The project is empty',
-    rail: 'Pick a fitting type in the panel on the left (“Add fitting”) or load a specification with “Import” at the bottom of the panel. “How to use” shows how it works.',
+    rail: 'Pick a fitting type in the panel on the left (“Add fitting”) or load a specification with “Import” at the bottom of the panel. The “How to use” guide shows how it works.',
     phone: 'Tap “+” at the bottom right or import a specification from the “☰” menu. The “?” button shows how it works.',
   },
   singlesTitle: 'Single fittings',
