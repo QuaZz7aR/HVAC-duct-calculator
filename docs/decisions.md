@@ -44,7 +44,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0027](adr/0027-pressure-losses-hidden-in-the-ui.md) | Pressure losses hidden in the UI | 2026-10-19 | Accepted (temporary, until the aerodynamics mode) |
 | [0028](adr/0028-elbow-radius-suggested-from-the-size.md) | Elbow radius suggested from the size | 2026-10-22 | Accepted (values `TODO(confirm)`) |
 | [0029](adr/0029-fitting-sketches.md) | Fitting sketches on each card | 2026-10-22 | Accepted; the sketch layout is amended by [0032](adr/0032-sketch-panels-and-field-alignment.md), the card shows an isometric sketch since [0033](adr/0033-isometric-sketch.md) |
-| [0030](adr/0030-beta-start-state-and-card-view.md) | Beta start state, card view state and card look | 2026-10-22 | Accepted (the beta start state is temporary) |
+| [0030](adr/0030-beta-start-state-and-card-view.md) | Beta start state, card view state and card look | 2026-10-22 | Accepted; the beta start state is superseded by [0110](adr/0110-empty-start-state.md) |
 | [0031](adr/0031-side-panel-for-adding-fittings.md) | Side panel for adding fittings | 2026-10-23 | Accepted |
 | [0032](adr/0032-sketch-panels-and-field-alignment.md) | Two sketch panels and inputs aligned under wrapped labels | 2026-10-26 | Accepted; the two panels are superseded by [0033](adr/0033-isometric-sketch.md) |
 | [0033](adr/0033-isometric-sketch.md) | One isometric sketch instead of two views | 2026-10-27 | Accepted |
@@ -117,6 +117,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0107](adr/0107-rail-bottom-groups.md) | Rail bottom in three groups (mode highlighted, import / export, theme / language) | 2026-11-25 | Accepted |
 | [0108](adr/0108-phone-sticky-bar.md) | Phone: mode, numbering, clear all and «☰» in one sticky bar; list hint as an «i»; subtitle removed | 2026-11-25 | Accepted |
 | [0109](adr/0109-card-buttons-two-rows-by-card-width.md) | Card buttons in two rows when the card is narrower than 56rem (container query); all one size | 2026-11-25 | Accepted |
+| [0110](adr/0110-empty-start-state.md) | A new project starts empty (no example rows); empty-list hint | 2026-11-25 | Accepted |
 | [0095](adr/0095-numbering-by-systems.md) | «Нумерація»: positions «система-№», empty only or all again, preview first | 2026-11-24 | Accepted |
 | [0096](adr/0096-import-from-pdf.md) | Import from PDF: own text reader, columns from table borders or text ranges | 2026-11-24 | Accepted (thresholds `TODO(confirm)`) |
 | [0097](adr/0097-video-clips-in-the-help.md) | Short MP4 clip per help step, loaded only when the dialog opens | 2026-11-24 | Accepted |

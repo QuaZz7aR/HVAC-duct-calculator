@@ -4,7 +4,6 @@ import { calculate, type RowOutcome } from "@/lib/form/calculate";
 import { emptyPrices, pricing, type PriceText } from "@/lib/form/price";
 import { buildConfig, defaultSettings, type SettingsText } from "@/lib/form/settings";
 import { resetToAuto, setFieldValue, withKind } from "@/lib/form/auto-defaults";
-import { sampleRows } from "@/lib/form/sample-rows";
 import { insertIndex } from "@/lib/form/kind-groups";
 import { moveBlock, moveBy, numberBySystems } from "@/lib/form/order";
 import { defaultValues, presetRow } from "@/lib/form/defaults";
@@ -37,8 +36,8 @@ function readProject() {
 
 /** Form state (rows, settings) and the derived calculation; the components only render and call the actions. */
 export function useCalculator() {
-  // beta: the page opens with one example row of every fitting kind
-  const [rows, setRows] = useState<FormRow[]>(() => sampleRows(defaultConfig));
+  // a new project starts empty (ADR 0110)
+  const [rows, setRows] = useState<FormRow[]>([]);
   const [lastAddedId, setLastAddedId] = useState<number | null>(null);
   // the mark on a freshly added card fades after a moment, so a remount (card moved to a section) does not flash it again
   useEffect(() => {
@@ -62,8 +61,8 @@ export function useCalculator() {
   const setInsulationPrice = (code: string, value: string) =>
     setPrices((p) => ({ ...p, insulation: { ...p.insulation, [code]: value } }));
 
-  // the project lives in this browser (ADR 0101): the server and the first client render show the sample rows; right after
-  // hydration the saved project, if any, replaces them, then every change is written back
+  // the project lives in this browser (ADR 0101): the server and the first client render show an empty list; right after
+  // hydration the saved project, if any, replaces it, then every change is written back
   const hydrated = useSyncExternalStore(noSubscribe, () => true, () => false);
   const [loaded, setLoaded] = useState(false);
   if (hydrated && !loaded) {
