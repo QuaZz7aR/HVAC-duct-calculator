@@ -41,11 +41,11 @@ export function ExportBar({ variant = "bar", ...props }: ExportProps & { variant
   return (
     <div className="print-hide flex flex-wrap items-center gap-x-4 gap-y-2">
       <span className="inline-flex items-center gap-1">
-        <button type="button" className={buttonClass} onClick={download} disabled={empty}>{d.xlsx}</button>
+        <button type="button" className={buttonClass} onClick={download} disabled={empty}>{d.menuXlsx}</button>
         <Info text={d.xlsxInfo} />
       </span>
       <span className="inline-flex items-center gap-1">
-        <button type="button" className={buttonClass} onClick={() => window.print()} disabled={empty}>{d.print}</button>
+        <button type="button" className={buttonClass} onClick={() => window.print()} disabled={empty}>{d.menuPdf}</button>
         <Info text={d.printInfo} />
       </span>
     </div>
