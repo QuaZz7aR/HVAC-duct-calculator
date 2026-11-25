@@ -18,7 +18,6 @@ import { ResultsTable } from "./calculator/ResultsTable";
 import { SheetList } from "./calculator/SheetList";
 import { InsulationList } from "./calculator/InsulationList";
 import { KindRail } from "./calculator/KindPalette";
-import { mutedClass } from "./calculator/styles";
 import { Totals } from "./calculator/Totals";
 import { PhoneActions } from "./calculator/PhoneActions";
 import { useCalculator } from "./calculator/useCalculator";
@@ -54,7 +53,6 @@ function CalculatorPage() {
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <div>
               <h1 className="text-2xl font-semibold">{dict.appTitle}</h1>
-              <p className={`mt-1 text-sm ${mutedClass}`}>{dict.appSubtitle}</p>
             </div>
             {/* desktop: help in plain sight beside the title, so a new user sees it first (ADR 0106); the phone has the round «?» on the right */}
             <div className="print-hide hidden lg:block"><HelpButton variant="prominent" /></div>
