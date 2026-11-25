@@ -17,4 +17,4 @@ export const selectClass = `${inputClass} select-chevron`;
 
 /** One item of the desktop side rail: an icon over a short label. */
 export const railItemClass =
-  "grid justify-items-center gap-1 rounded-md border border-transparent px-1 py-1.5 text-center text-sm leading-tight text-muted hover:border-line hover:bg-accent-soft hover:text-foreground focus-visible:outline-2 focus-visible:outline-accent";
+  "grid justify-items-center gap-0.5 rounded-md border border-transparent px-1 py-1 text-center text-sm leading-tight text-muted hover:border-line hover:bg-accent-soft hover:text-foreground focus-visible:outline-2 focus-visible:outline-accent";

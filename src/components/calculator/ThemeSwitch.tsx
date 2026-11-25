@@ -55,7 +55,7 @@ export function ThemeRailButton() {
           setPos({ left: r.right + 12, bottom: window.innerHeight - r.bottom });
           setOpen(!open);
         }} aria-expanded={open} aria-haspopup="true" className={railItemClass} title={dict.theme.label}>
-        <span aria-hidden="true" className="grid h-6 min-w-8 place-items-center rounded-md border-2 border-accent px-1 text-accent"><ThemeIcon theme={theme} /></span>
+        <span aria-hidden="true" className="grid h-5 min-w-7 place-items-center rounded-md border-2 border-accent px-1 text-accent"><ThemeIcon theme={theme} /></span>
         {dict.theme.short}
       </button>
       {open && (

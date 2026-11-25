@@ -17,7 +17,7 @@ export function HelpButton({ rail = false }: { rail?: boolean }) {
       {rail ? (
         // desktop rail: an icon over a label, like the other rail items
         <button type="button" className={railItemClass} onClick={show} aria-haspopup="dialog">
-          <span aria-hidden="true" className="grid h-6 w-6 place-items-center rounded-full border-2 border-accent text-sm font-bold leading-none text-accent">?</span>
+          <span aria-hidden="true" className="grid h-5 w-5 place-items-center rounded-full border-2 border-accent text-xs font-bold leading-none text-accent">?</span>
           {g.button}
         </button>
       ) : (

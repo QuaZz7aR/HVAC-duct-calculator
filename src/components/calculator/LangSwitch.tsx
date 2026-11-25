@@ -40,7 +40,7 @@ export function LangRailButton() {
           setPos({ left: r.right + 12, bottom: window.innerHeight - r.bottom });
           setOpen(!open);
         }} aria-expanded={open} aria-haspopup="true" className={railItemClass} title={dict.language.label}>
-        <span aria-hidden="true" className="grid h-6 min-w-8 place-items-center rounded-md border-2 border-accent px-1 text-xs font-bold leading-none text-accent">{dict.language[lang]}</span>
+        <span aria-hidden="true" className="grid h-5 min-w-7 place-items-center rounded-md border-2 border-accent px-1 text-xs font-bold leading-none text-accent">{dict.language[lang]}</span>
         {dict.language.short}
       </button>
       {open && (

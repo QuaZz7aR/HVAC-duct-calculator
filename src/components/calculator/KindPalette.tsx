@@ -46,10 +46,25 @@ function KindItem({ kind, count, onPick }: { kind: FittingKind; count: number; o
 }
 
 // sections of the one rail panel, split by a line
-const railBox = "flex flex-col gap-1 border-t border-line pt-1.5 first:border-t-0 first:pt-0";
+const railBox = "flex flex-col gap-0.5 border-t border-line pt-1 first:border-t-0 first:pt-0";
 
-const railAction =
-  "grid justify-items-center gap-1 rounded-md border border-transparent px-1 py-1.5 text-center text-xs leading-tight text-muted hover:border-line hover:text-foreground hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent";
+/** Desktop: a round "to top" button at the bottom right of the screen, shown after a short scroll down; it left the rail to give the rail room (ADR 0104). */
+export function ToTopButton() {
+  const { dict } = useI18n();
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 300);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  if (!scrolled) return null;
+  return (
+    <button type="button" onClick={scrollToTop} aria-label={dict.palette.toTop} title={dict.palette.toTop} className="print-hide fixed bottom-6 right-6 z-30 hidden h-11 w-11 place-items-center rounded-full border border-line bg-panel text-accent shadow-lg shadow-black/20 hover:border-accent hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent lg:grid">
+      <UpIcon className="h-5 w-7" />
+    </button>
+  );
+}
 
 /** Desktop: a narrow single-column rail (icon over label) of the kind groups, help and language (the view toggles are in the list header, ADR 0088), always in view; a group opens a list of its kinds beside the rail. */
 export function KindRail({ count, onAdd, onImport, exportItems }: Props & { onImport?: (rows: ImportRow[], replace: boolean) => number; exportItems?: ReactNode }) {
@@ -65,10 +80,10 @@ export function KindRail({ count, onAdd, onImport, exportItems }: Props & { onIm
     <nav ref={ref} aria-label={dict.palette.title} className="hidden lg:block">
       {/* the list opens inside the sticky box, so it stays beside the rail wherever the page is scrolled; the box is a stacking context, so it carries z-30 itself or the positioned sections paint over the list (ADR 0087) */}
       <div ref={box} className="sticky top-4 z-30">
-      <div className="flex h-[calc(100vh-2rem)] flex-col gap-1.5 overflow-y-auto rounded-lg border border-line bg-bar p-1.5">
+      <div className="flex h-[calc(100vh-2rem)] flex-col gap-1 overflow-y-auto rounded-lg border border-line bg-bar p-1">
       <div className={railBox}>
-        <p className="grid justify-items-center gap-0.5 border-b border-line px-0.5 pb-2 pt-1 text-center text-sm font-semibold leading-tight">
-          <span aria-hidden="true" className="grid h-7 w-7 place-items-center rounded-full bg-accent text-xl leading-none text-background">+</span>
+        <p className="grid justify-items-center gap-0.5 border-b border-line px-0.5 pb-1 pt-0.5 text-center text-sm font-semibold leading-tight">
+          <span aria-hidden="true" className="grid h-6 w-6 place-items-center rounded-full bg-accent text-lg leading-none text-background">+</span>
           {dict.palette.title}
         </p>
         <div className="grid grid-cols-1 gap-0.5">
@@ -81,22 +96,16 @@ export function KindRail({ count, onAdd, onImport, exportItems }: Props & { onIm
               setTop(box.current ? e.currentTarget.getBoundingClientRect().top - box.current.getBoundingClientRect().top : 0);
               setOpen(open === g.id ? null : g.id);
             }}
-            className={`grid justify-items-center gap-1 rounded-md border px-0.5 py-0.5 text-sm leading-tight hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent ${open === g.id ? "border-line bg-accent-soft text-foreground" : "border-transparent text-muted"}`}
+            className={`grid justify-items-center gap-0.5 rounded-md border px-0.5 py-0.5 text-sm leading-tight hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-accent ${open === g.id ? "border-line bg-accent-soft text-foreground" : "border-transparent text-muted"}`}
           >
-            <KindGlyph kind={g.kinds[0]} className="h-7 w-11 text-accent" />
+            <KindGlyph kind={g.kinds[0]} className="h-6 w-10 text-accent" />
             <span>{dict.kindGroups[g.id]}</span>
           </button>
         ))}
         </div>
       </div>
-        <div className={railBox}>
-          <button type="button" onClick={scrollToTop} className={railAction}>
-            <UpIcon className="h-5 w-8 text-accent" />
-            {dict.palette.toTop}
-          </button>
-        </div>
         {/* help and language sit at the bottom of the rail on desktop, beside the work; the phone keeps them in the page header */}
-        <div className={`${railBox} mt-auto pb-1`}>
+        <div className={`${railBox} mt-auto pb-0.5`}>
           {/* import and mode moved here from the page header on desktop (ADR 0089) */}
           {onImport && <ImportButton rail onImport={onImport} />}
           {exportItems}
@@ -105,6 +114,7 @@ export function KindRail({ count, onAdd, onImport, exportItems }: Props & { onIm
           <HelpButton rail />
           <LangRailButton />
         </div>
+      <ToTopButton />
       </div>
       {group && (
         <div style={{ top }} className="absolute left-full z-30 ml-2 w-max min-w-64 max-w-[28rem] rounded-lg border border-line bg-panel p-2 shadow-xl shadow-black/30">

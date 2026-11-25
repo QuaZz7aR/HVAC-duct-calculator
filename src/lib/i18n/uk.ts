@@ -354,6 +354,7 @@ export const uk = {
   // import of a spec table from .xlsx / .csv (ADR 0061)
   import: {
     button: 'Імпорт з Excel / PDF',
+    short: 'Імпорт',
     title: 'Імпорт таблиці з Excel або PDF',
     close: 'Закрити',
     intro: 'Завантажте специфікацію у форматі .xlsx, .csv або .pdf. Файл читається лише у вашому браузері й нікуди не надсилається.',

@@ -68,7 +68,7 @@ function ExportRailItem({ empty, onXlsx }: { empty: boolean; onXlsx: () => void 
           setPos({ left: r.right + 12, bottom: window.innerHeight - r.bottom });
           setOpen(!open);
         }} aria-expanded={open} aria-haspopup="true" className={railItemClass}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-6 w-6 text-accent">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-5 w-5 text-accent">
           <path d="M6 3h8l4 4v14H6zM14 3v4h4M12 17v-7M9 13l3-3 3 3" />
         </svg>
         {d.short}

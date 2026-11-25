@@ -22,7 +22,8 @@ describe("kind palette", () => {
   it("shows a rail button per group and quick buttons with the all-kinds entry", () => {
     const rail = renderToStaticMarkup(<KindRail count={() => 0} onAdd={() => {}} />);
     for (const name of Object.values(dict.kindGroups)) expect(rail).toContain(name);
-    expect(rail).toContain(dict.palette.toTop);
+    // "to top" left the rail for a floating button (ADR 0104)
+    expect(rail).not.toContain(dict.palette.toTop);
     // the view toggles moved from the rail to the sticky list header (ADR 0088)
     expect(rail).not.toContain(dict.hideAllSketches);
     const bar = renderToStaticMarkup(<ViewBar view={view} onColumns={() => {}} />);

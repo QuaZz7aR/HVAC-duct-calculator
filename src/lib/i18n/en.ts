@@ -332,6 +332,7 @@ export const en: Dictionary = {
   // import of a spec table from .xlsx / .csv (ADR 0061)
   import: {
     button: 'Import Excel / PDF',
+    short: 'Import',
     title: 'Import a table from Excel or PDF',
     close: 'Close',
     intro: 'Upload a spec as .xlsx, .csv or .pdf. The file is read in your browser only and is never sent anywhere.',

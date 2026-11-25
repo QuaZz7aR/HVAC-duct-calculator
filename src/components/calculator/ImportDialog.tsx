@@ -146,11 +146,11 @@ export function ImportButton({ onImport, className = "", rail = false }: { onImp
     <>
       {rail ? (
         // desktop rail: an icon over a label, like the other rail items (ADR 0089)
-        <button type="button" className={railItemClass} onClick={() => ref.current?.showModal()} aria-haspopup="dialog">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-6 w-6 text-accent">
+        <button type="button" className={railItemClass} onClick={() => ref.current?.showModal()} aria-haspopup="dialog" title={t.button}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-5 w-5 text-accent">
             <path d="M6 3h8l4 4v14H6z" /><path d="M14 3v4h4" /><path d="M12 10v7M9 14l3 3 3-3" />
           </svg>
-          {t.button}
+          {t.short}
         </button>
       ) : (
         <button type="button" className={`${buttonClass} shrink-0 ${className}`} onClick={() => ref.current?.showModal()} aria-haspopup="dialog">
