@@ -51,7 +51,7 @@ function CalculatorPage() {
       <main className="min-w-0 space-y-6">
         {/* title, then one toolbar left under it (ADR 0083): mode on its own row on a phone, the other buttons in a second row */}
         <header className="space-y-3">
-          <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <div>
               <h1 className="text-2xl font-semibold">{dict.appTitle}</h1>
               <p className={`mt-1 text-sm ${mutedClass}`}>{dict.appSubtitle}</p>
