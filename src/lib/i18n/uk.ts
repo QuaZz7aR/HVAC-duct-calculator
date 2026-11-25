@@ -62,6 +62,9 @@ export const uk = {
   },
   export: {
     short: 'Експорт',
+    // the phone menu labels: action and format only (ADR 0106)
+    menuXlsx: 'Експорт Excel',
+    menuPdf: 'Експорт PDF',
     xlsx: 'Завантажити Excel',
     print: 'Друк / PDF',
     xlsxInfo: 'Файл .xlsx з результатами по позиціях, підсумками, відомістю металу за товщинами та відомістю утеплювача. Створюється в браузері, нікуди не надсилається.',
@@ -360,6 +363,7 @@ export const uk = {
   import: {
     button: 'Імпорт з Excel / PDF',
     short: 'Імпорт',
+    menu: 'Імпорт Excel / PDF',
     title: 'Імпорт таблиці з Excel або PDF',
     close: 'Закрити',
     intro: 'Завантажте специфікацію у форматі .xlsx, .csv або .pdf. Файл читається лише у вашому браузері й нікуди не надсилається.',

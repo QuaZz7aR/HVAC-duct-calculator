@@ -8,7 +8,7 @@ Source: owner (Nikita), 2026-11-25: too many buttons and switches on the phone; 
 The phone header held the mode switch, import, two export buttons, help, language and a three-icon theme switch: six rows of controls above the list. On desktop the help was one more item at the bottom of the rail.
 
 ## Decision
-- Phone header: the mode switch and one «☰» menu button (`PhoneMenu`). The menu holds import, «Завантажити Excel», «Друк / PDF», language and theme.
+- Phone header: the mode switch and one «☰» menu button (`PhoneMenu`). The menu holds «Імпорт Excel / PDF», «Експорт Excel», «Експорт PDF» (action and format only, `dict.import.menu`, `dict.export.menuXlsx` / `menuPdf`), then language and theme stretched to the menu width.
 - Phone right column: «?» (help, `HelpButton variant="round"`, accent ring) on top, «to top» under it after a scroll, then a 16 px gap, then the sketches toggle, fold all and «+».
 - Desktop: a filled «Як користуватися» button at the right of the page title (`HelpButton variant="prominent"`); the help item left the rail.
 - The guide on the phone gets one more step, second in the list, on the right-hand buttons (`dict.help.guide.phoneStep`) with its own clip `buttons-<lang>-phone.mp4`. All clips were re-recorded for the new header.

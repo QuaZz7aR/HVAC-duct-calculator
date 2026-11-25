@@ -8,6 +8,7 @@ export function PhoneMenu({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useDismiss(ref, open, () => setOpen(false));
+  // language and theme (inner role=group) stretch to the menu width, their options share it evenly
   const label = open ? dict.menu.close : dict.menu.open;
   return (
     <div ref={ref} className="relative">
@@ -17,7 +18,7 @@ export function PhoneMenu({ children }: { children: ReactNode }) {
         </svg>
       </button>
       {open && (
-        <div role="group" aria-label={dict.menu.open} className="absolute right-0 top-full z-40 mt-2 flex w-max max-w-[calc(100vw-2rem)] flex-col items-stretch gap-2 rounded-lg border border-line bg-panel p-3 shadow-xl shadow-black/30">
+        <div role="group" aria-label={dict.menu.open} className="absolute right-0 top-full z-40 mt-2 flex w-max max-w-[calc(100vw-2rem)] flex-col items-stretch gap-2 [&_[role=group]>button]:flex-1 [&_[role=group]>button]:justify-center rounded-lg border border-line bg-panel p-3 shadow-xl shadow-black/30">
           {children}
         </div>
       )}

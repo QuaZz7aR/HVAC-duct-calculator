@@ -43,6 +43,8 @@ export const en: Dictionary = {
   },
   export: {
     short: 'Export',
+    menuXlsx: 'Export Excel',
+    menuPdf: 'Export PDF',
     xlsx: 'Download Excel',
     print: 'Print / PDF',
     xlsxInfo: 'An .xlsx file with the results by item, the totals, the metal list by thickness and the insulation list. Made in the browser, nothing is sent anywhere.',
@@ -335,6 +337,7 @@ export const en: Dictionary = {
   menu: { open: 'Menu', close: 'Close menu' },
   import: {
     button: 'Import Excel / PDF',
+    menu: 'Import Excel / PDF',
     short: 'Import',
     title: 'Import a table from Excel or PDF',
     close: 'Close',

@@ -154,7 +154,7 @@ export function ImportButton({ onImport, className = "", rail = false }: { onImp
         </button>
       ) : (
         <button type="button" className={`${buttonClass} shrink-0 ${className}`} onClick={() => ref.current?.showModal()} aria-haspopup="dialog">
-          {t.button}
+          {t.menu}
         </button>
       )}
       <dialog
