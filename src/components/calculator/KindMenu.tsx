@@ -6,7 +6,7 @@ import { buttonClass } from "./styles";
 import { useDismiss } from "./useDismiss";
 
 /** "⋯" button of a card: opens the list of kinds to switch this row to (sizes then restart from the new kind's defaults). */
-export function KindMenu({ kind, onChange }: { kind: FittingKind; onChange: (kind: FittingKind) => void }) {
+export function KindMenu({ kind, onChange, className = "" }: { kind: FittingKind; onChange: (kind: FittingKind) => void; className?: string }) {
   const { dict } = useI18n();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -24,7 +24,7 @@ export function KindMenu({ kind, onChange }: { kind: FittingKind; onChange: (kin
   }, [open]);
   return (
     <div ref={ref} className="relative">
-      <button type="button" className={buttonClass} aria-expanded={open} aria-label={dict.palette.changeKind} title={dict.palette.changeKind} onClick={() => setOpen(!open)}>
+      <button type="button" className={`${buttonClass} ${className}`} aria-expanded={open} aria-label={dict.palette.changeKind} title={dict.palette.changeKind} onClick={() => setOpen(!open)}>
         ⋯
       </button>
       {open && (

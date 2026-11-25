@@ -80,10 +80,12 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
       ⠿
     </span>
   );
-  const moveButtons = (
+  // open card: every button one size, so the two rows line up (icon buttons, ADR 0098)
+  const cardBtn = "!h-9 !w-10 sm:!w-11 !p-0 inline-flex items-center justify-center";
+  const moveButtons = (size: string) => (
     <>
-      <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1 disabled:cursor-default disabled:opacity-40`} disabled={first} onClick={() => onMove(-1)} aria-label={dict.order.up} title={dict.order.up}>↑</button>
-      <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1 disabled:cursor-default disabled:opacity-40`} disabled={last} onClick={() => onMove(1)} aria-label={dict.order.down} title={dict.order.down}>↓</button>
+      <button type="button" className={`${buttonClass} shrink-0 ${size} disabled:cursor-default disabled:opacity-40`} disabled={first} onClick={() => onMove(-1)} aria-label={dict.order.up} title={dict.order.up}>↑</button>
+      <button type="button" className={`${buttonClass} shrink-0 ${size} disabled:cursor-default disabled:opacity-40`} disabled={last} onClick={() => onMove(1)} aria-label={dict.order.down} title={dict.order.down}>↓</button>
     </>
   );
   const fieldLabel = (f: (typeof kindFields)[FittingKind][number]) =>
@@ -111,7 +113,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
         </button>
         {/* the four buttons stand in two rows, so the tile keeps room for the name (ADRs 0076, 0077) */}
         <div className="grid shrink-0 grid-cols-2 gap-1">
-          {moveButtons}
+          {moveButtons("!px-2 !py-1")}
           <button type="button" className={`${buttonClass} shrink-0 !px-2 !py-1`} onClick={onClone} aria-label={dict.cloneItem} title={dict.cloneItem}>
             <CloneIcon />
           </button>
@@ -151,19 +153,19 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
           <span className="text-muted">{position}.</span> {kindTitle(row.kind, dict)}
         </h3>
         {/* two-column mode: fold and move in the top row, clone, kind and remove below (ADR 0080); otherwise one wrapping row */}
-        <div className={`flex max-w-full flex-wrap gap-2 ${half ? "xl:flex-col xl:items-end" : ""}`}>
+        <div className={`flex max-w-full flex-wrap gap-1.5 sm:gap-2 ${half ? "xl:flex-col xl:items-end" : ""}`}>
           <div className={half ? "contents xl:flex xl:gap-2" : "contents"}>
-          <button type="button" className={`${foldButtonClass} !px-2.5`} onClick={onToggleCollapsed} aria-label={dict.collapseCard} title={dict.collapseCard}>
+          <button type="button" className={`${foldButtonClass} ${cardBtn}`} onClick={onToggleCollapsed} aria-label={dict.collapseCard} title={dict.collapseCard}>
             <ChevronIcon />
           </button>
-          {moveButtons}
+          {moveButtons(cardBtn)}
           </div>
           <div className={half ? "contents xl:flex xl:gap-2" : "contents"}>
-          <button type="button" className={`${buttonClass} !px-2.5`} onClick={onClone} aria-label={dict.cloneItem} title={dict.cloneItem}>
+          <button type="button" className={`${buttonClass} ${cardBtn}`} onClick={onClone} aria-label={dict.cloneItem} title={dict.cloneItem}>
             <CloneIcon />
           </button>
-          <KindMenu kind={row.kind} onChange={onKindChange} />
-          <button type="button" className={`${dangerButtonClass} !px-2.5`} onClick={onRemove} aria-label={dict.removeItem} title={dict.removeItem}>
+          <KindMenu kind={row.kind} onChange={onKindChange} className={cardBtn} />
+          <button type="button" className={`${dangerButtonClass} ${cardBtn}`} onClick={onRemove} aria-label={dict.removeItem} title={dict.removeItem}>
             <TrashIcon />
           </button>
           </div>
