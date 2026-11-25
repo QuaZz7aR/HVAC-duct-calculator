@@ -104,11 +104,15 @@ export function KindRail({ count, onAdd, onImport, exportItems }: Props & { onIm
         </div>
       </div>
         {/* help and language sit at the bottom of the rail on desktop, beside the work; the phone keeps them in the page header */}
-        <div className={`${railBox} mt-auto pb-0.5`}>
-          {/* import and mode moved here from the page header on desktop (ADR 0089) */}
+        {/* bottom of the rail in three groups: mode (highlighted), import / export, theme / language */}
+        <div className={`${railBox} mt-auto`}>
+          <ModeRailButton />
+        </div>
+        <div className={railBox}>
           {onImport && <ImportButton rail onImport={onImport} />}
           {exportItems}
-          <ModeRailButton />
+        </div>
+        <div className={`${railBox} pb-0.5`}>
           <ThemeRailButton />
           <LangRailButton />
         </div>

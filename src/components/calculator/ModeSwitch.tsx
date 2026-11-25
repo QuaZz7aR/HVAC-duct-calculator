@@ -45,8 +45,8 @@ export function ModeRailButton() {
           const r = e.currentTarget.getBoundingClientRect();
           setPos({ left: r.right + 12, bottom: window.innerHeight - r.bottom });
           setOpen(!open);
-        }} aria-expanded={open} aria-haspopup="true" className={railItemClass} title={dict.mode.label}>
-        <span aria-hidden="true" className="grid h-5 min-w-7 place-items-center rounded-md border-2 border-accent px-1 text-xs font-bold leading-none text-accent">{dict.mode[mode].slice(0, 1)}</span>
+        }} aria-expanded={open} aria-haspopup="true" className={`${railItemClass.replace("border-transparent", "border-line").replace("text-muted", "text-foreground")} bg-accent-soft`} title={dict.mode.label}>
+        <span aria-hidden="true" className="grid h-5 min-w-7 place-items-center rounded-md border-2 border-accent bg-accent px-1 text-xs font-bold leading-none text-background">{dict.mode[mode].slice(0, 1)}</span>
         {dict.mode.short}
       </button>
       {open && (
