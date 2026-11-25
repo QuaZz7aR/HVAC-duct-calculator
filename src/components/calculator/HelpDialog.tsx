@@ -3,8 +3,24 @@ import { useI18n } from "@/components/i18n";
 import { buttonClass, railItemClass } from "./styles";
 
 /** The «Довідка» button in the header and the short how-to it opens (a native modal dialog: Esc and the cross close it). */
+/** Once the page is idle, fetch the first clip of the guide into the browser cache, so it plays at once when the dialog opens (ADR 0105). */
+const prefetched = new Set<string>();
+function usePrefetchFirstClip(lang: string) {
+  useEffect(() => {
+    const phone = !!window.matchMedia?.("(max-width: 1023px)").matches;
+    const url = `/help/${helpClips[0]}-${lang}${phone ? "-phone" : ""}.mp4`;
+    // the button renders twice (phone header, desktop rail): fetch once
+    const run = () => { if (prefetched.has(url)) return; prefetched.add(url); fetch(url).catch(() => {}); };
+    // Safari has no requestIdleCallback: a plain delay there
+    const hasIdle = "requestIdleCallback" in window;
+    const id = hasIdle ? window.requestIdleCallback(run) : window.setTimeout(run, 3000);
+    return () => (hasIdle ? window.cancelIdleCallback(id) : window.clearTimeout(id));
+  }, [lang]);
+}
+
 export function HelpButton({ rail = false }: { rail?: boolean }) {
   const { dict, lang } = useI18n();
+  usePrefetchFirstClip(lang);
   const ref = useRef<HTMLDialogElement>(null);
   // the button is rendered twice (phone header, desktop rail), so the title id must be unique
   const titleId = useId();
@@ -64,7 +80,8 @@ function HelpClip({ name, label }: { name: string; label: string }) {
   const [reduce] = useState(() => typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
   // below lg the page has the phone layout, so the clip shows the phone recording (ADR 0105)
   const [phone] = useState(() => typeof window !== "undefined" && !!window.matchMedia?.("(max-width: 1023px)").matches);
-  const src = `/help/${name}${phone ? "-phone" : ""}.mp4`;
+  const base = `/help/${name}${phone ? "-phone" : ""}`;
+  const src = `${base}.mp4`;
   // load a clip only when it scrolls near the view: the dialog no longer pulls all six at once (ADR 0105)
   const ref = useRef<HTMLVideoElement>(null);
   const [near, setNear] = useState(false);
@@ -83,8 +100,12 @@ function HelpClip({ name, label }: { name: string; label: string }) {
     <video
       ref={ref}
       src={near ? src : undefined}
+      // the first frame shows at once while the clip loads (ADR 0105)
+      poster={`${base}.webp`}
       aria-label={label}
-      className={phone ? "mx-auto mt-2 max-h-[70svh] w-auto rounded-md border border-line" : "mt-2 w-full rounded-md border border-line"}
+      className={phone ? "mx-auto mt-2 h-[70svh] w-auto rounded-md border border-line" : "mt-2 w-full rounded-md border border-line"}
+      // a fixed box before anything loads, so the clips below stay out of view and do not load early
+      style={{ aspectRatio: phone ? "390 / 760" : "960 / 570" }}
       width={phone ? 390 : 960}
       height={phone ? 760 : 570}
       muted

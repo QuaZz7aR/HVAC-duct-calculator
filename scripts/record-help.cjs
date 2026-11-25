@@ -1,7 +1,7 @@
 /* eslint-disable */
 // Records the «Довідка» clips (ADR 0097). Run a production build on port 3200 (npm run build && npx next start -p 3200), then
 //   HELP_PDF=<a demo spec .pdf> node scripts/record-help.cjs <uk|en> <add|sizes|settings|results|price|import|all>
-// and convert each .webm: ffmpeg -i add-uk.webm -vf "scale=960:-2,fps=24" -c:v libx264 -pix_fmt yuv420p -crf 30 -preset slow -movflags +faststart -an public/help/add-uk.mp4
+// and convert each .webm: ffmpeg -i add-uk.webm -vf "scale=960:-2,fps=15" -c:v libx264 -pix_fmt yuv420p -crf 33 -preset veryslow -tune animation -movflags +faststart -an public/help/add-uk.mp4
 //   phone (390 px): add `phone` as the third argument and convert with scale=390:-2 to public/help/add-uk-phone.mp4
 // The demo PDF must hold made-up rows only (the clips are public).
 const { chromium } = require('playwright');
@@ -10,8 +10,8 @@ const [lang = 'uk', only = 'all', device = 'desktop'] = process.argv.slice(2);
 // third argument `phone`: a 390 px phone layout, files <step>-<lang>-phone (ADR 0105)
 const phone = device === 'phone';
 const T = {
-  uk: { del: 'Видалити всі', yes: 'Так, видалити', tees: 'Трійники', elbows: 'Відводи', adv: 'Розширений', simple: 'Простий', mode: 'Режим', imp: /Імпорт з Excel/, choose: 'Обрати файл', results: 'Результати по позиціях', metal: 'Відомість металу за товщиною', settings: 'Параметри розрахунку', add: /^Додати \d+/, addBtn: 'Додати деталь', roundElbow: 'Круглий відвід', roundTee: 'Круглий трійник', allKinds: 'Усі типи…', query: 'трійн' },
-  en: { del: 'Delete all', yes: 'Yes, delete', tees: 'Tees', elbows: 'Elbows', adv: 'Advanced', simple: 'Simple', mode: 'Mode', imp: /Import Excel/, choose: 'Choose file', results: 'Results by item', metal: 'Sheet metal by thickness', settings: 'Calculation settings', add: /^Add \d+/, addBtn: 'Add fitting', roundElbow: 'Circular elbow', roundTee: 'Circular tee', allKinds: 'All types…', query: 'tee' },
+  uk: { del: 'Видалити всі', yes: 'Так, видалити', tees: 'Трійники', elbows: 'Відводи', adv: 'Розширений', simple: 'Простий', mode: 'Режим', imp: /^Імпорт/, choose: 'Обрати файл', results: 'Результати по позиціях', metal: 'Відомість металу за товщиною', settings: 'Параметри розрахунку', add: /^Додати \d+/, addBtn: 'Додати деталь', roundElbow: 'Круглий відвід', roundTee: 'Круглий трійник', allKinds: 'Усі типи…', query: 'трійн' },
+  en: { del: 'Delete all', yes: 'Yes, delete', tees: 'Tees', elbows: 'Elbows', adv: 'Advanced', simple: 'Simple', mode: 'Mode', imp: /^Import/, choose: 'Choose file', results: 'Results by item', metal: 'Sheet metal by thickness', settings: 'Calculation settings', add: /^Add \d+/, addBtn: 'Add fitting', roundElbow: 'Circular elbow', roundTee: 'Circular tee', allKinds: 'All types…', query: 'tee' },
 }[lang];
 const W = phone ? 390 : 1280, H = phone ? 760 : 760;
 const suffix = phone ? '-phone' : '';
