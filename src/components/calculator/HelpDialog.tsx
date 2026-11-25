@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useI18n } from "@/components/i18n";
 import { buttonClass, railItemClass } from "./styles";
 
@@ -62,9 +62,24 @@ export const helpClips = ["add", "sizes", "settings", "results", "price", "impor
 /** A muted looping clip; with reduced motion it does not play by itself and shows its controls. */
 function HelpClip({ src, label }: { src: string; label: string }) {
   const [reduce] = useState(() => typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+  // load a clip only when it scrolls near the view: the dialog no longer pulls all six at once (ADR 0105)
+  const ref = useRef<HTMLVideoElement>(null);
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || near) return;
+    if (typeof IntersectionObserver === "undefined") {
+      el.src = src;
+      return;
+    }
+    const io = new IntersectionObserver((e) => { if (e.some((x) => x.isIntersecting)) setNear(true); }, { rootMargin: "200px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [near, src]);
   return (
     <video
-      src={src}
+      ref={ref}
+      src={near ? src : undefined}
       aria-label={label}
       className="mt-2 w-full rounded-md border border-line"
       width={960}
@@ -74,7 +89,7 @@ function HelpClip({ src, label }: { src: string; label: string }) {
       playsInline
       autoPlay={!reduce}
       controls={reduce}
-      preload="metadata"
+      preload={near ? "auto" : "none"}
     />
   );
 }

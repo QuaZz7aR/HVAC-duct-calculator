@@ -9,7 +9,7 @@ The desktop rail holds the seven kind groups, «Нагору», and at the botto
 
 ## Decision
 - «Нагору» leaves the rail. On desktop it is a round button at the bottom right of the screen, shown after 300 px of scroll (`ToTopButton` in `KindPalette.tsx`), like the phone's button in `PhoneActions`.
-- Rail items are tighter: smaller gaps and padding (`railItemClass`, `railBox`), icons 20 px instead of 24 px, group glyphs slightly smaller.
+- Rail items are tighter: smaller gaps and padding (`railItemClass`, `railBox`), icons 20 px instead of 24 px (import and export keep 24 px, owner 2026-11-25), group glyphs slightly smaller.
 - The import item says «Імпорт» / «Import» (`dict.import.short`); the full «Імпорт з Excel / PDF» stays in its `title` and in the phone header.
 
 ## Consequences
