@@ -136,7 +136,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
         </figure>
   );
   return (
-    <div id={`fitting-${row.id}`} {...dropTarget} className={`${cardClass} col-span-full ${half ? "xl:col-span-2" : ""} scroll-mt-16 lg:scroll-mt-24 ${justAdded ? "flash-card" : ""} ${dragging ? "!border-2 !border-dashed !border-accent bg-accent-soft opacity-60 pointer-events-none" : ""}`}>
+    <div id={`fitting-${row.id}`} {...dropTarget} className={`@container ${cardClass} col-span-full ${half ? "xl:col-span-2" : ""} scroll-mt-16 lg:scroll-mt-24 ${justAdded ? "flash-card" : ""} ${dragging ? "!border-2 !border-dashed !border-accent bg-accent-soft opacity-60 pointer-events-none" : ""}`}>
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <span className="flex self-center">{handle}</span>
         <button
@@ -152,15 +152,16 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
         <h3 className="min-w-0 flex-1 self-center text-base font-medium leading-snug">
           <span className="text-muted">{position}.</span> {kindTitle(row.kind, dict)}
         </h3>
-        {/* two-column mode: fold and move in the top row, clone, kind and remove below (ADR 0080); otherwise one wrapping row */}
-        <div className={`flex max-w-full flex-wrap gap-1.5 sm:gap-2 ${half ? "xl:flex-col xl:items-end" : ""}`}>
-          <div className={half ? "contents xl:flex xl:gap-2" : "contents"}>
+        {/* phone: one wrapping row under the title; from sm, two rows (fold and move on top, clone, kind and remove below, ADR 0080)
+            unless the card is wide enough (container query) for one row beside the name, so the name is never squeezed (ADR 0109) */}
+        <div className="flex max-w-full flex-wrap gap-1.5 sm:flex-col sm:flex-nowrap sm:items-end sm:gap-2 @4xl:flex-row">
+          <div className="contents sm:flex sm:gap-2">
           <button type="button" className={`${foldButtonClass} ${cardBtn}`} onClick={onToggleCollapsed} aria-label={dict.collapseCard} title={dict.collapseCard}>
             <ChevronIcon />
           </button>
           {moveButtons(cardBtn)}
           </div>
-          <div className={half ? "contents xl:flex xl:gap-2" : "contents"}>
+          <div className="contents sm:flex sm:gap-2">
           <button type="button" className={`${buttonClass} ${cardBtn}`} onClick={onClone} aria-label={dict.cloneItem} title={dict.cloneItem}>
             <CloneIcon />
           </button>

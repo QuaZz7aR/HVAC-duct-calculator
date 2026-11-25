@@ -116,6 +116,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0106](adr/0106-minimal-phone-header-and-visible-help.md) | Phone header = mode + «☰» menu; round «?» in the phone column; «Як користуватися» beside the title on desktop | 2026-11-25 | Accepted |
 | [0107](adr/0107-rail-bottom-groups.md) | Rail bottom in three groups (mode highlighted, import / export, theme / language) | 2026-11-25 | Accepted |
 | [0108](adr/0108-phone-sticky-bar.md) | Phone: mode, numbering, clear all and «☰» in one sticky bar; list hint as an «i»; subtitle removed | 2026-11-25 | Accepted |
+| [0109](adr/0109-card-buttons-two-rows-by-card-width.md) | Card buttons in two rows when the card is narrower than 56rem (container query); all one size | 2026-11-25 | Accepted |
 | [0095](adr/0095-numbering-by-systems.md) | «Нумерація»: positions «система-№», empty only or all again, preview first | 2026-11-24 | Accepted |
 | [0096](adr/0096-import-from-pdf.md) | Import from PDF: own text reader, columns from table borders or text ranges | 2026-11-24 | Accepted (thresholds `TODO(confirm)`) |
 | [0097](adr/0097-video-clips-in-the-help.md) | Short MP4 clip per help step, loaded only when the dialog opens | 2026-11-24 | Accepted |
