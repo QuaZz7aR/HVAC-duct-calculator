@@ -8,7 +8,7 @@ Source: owner (Nikita), 2026-11-25
 On the phone the hint under «Деталі» took a line, and «Нумерація», «Видалити всі» and the «☰» menu scrolled away with the page.
 
 ## Decision
-- Below `lg` the mode switch, «Нумерація» (a «№» icon), «Видалити всі» (a trash icon) and «☰» form one bar that sticks to the top (`Calculator.tsx`; `compact` on `NumberSystems` and `ClearAll`, names kept in `aria-label` / `title`). Their panels (numbering, the clear confirmation) open across the bar's width under it.
+- Below `lg` the mode switch, «Нумерація» (a «№» icon), «Видалити всі» (a trash icon) and «☰» form one bar that sticks to the top (`Calculator.tsx`; `compact` on `NumberSystems` and `ClearAll`, names kept in `aria-label` / `title`). All four are 36 px high. Their panels (numbering, the clear confirmation) open across the bar's width under it, start with a title naming the action, and only one panel (or the menu) is open at a time (a press outside closes it, `useDismiss`).
 - The phone hint «Щоб додати деталь…» is an «i» beside the «Деталі» heading; the desktop keeps its line.
 - The page subtitle is gone from the page (still the meta description); the desktop «Як користуватися» stands right after the title.
 

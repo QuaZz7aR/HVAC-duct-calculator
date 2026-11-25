@@ -11,6 +11,7 @@ import type { CardView } from "./useCardView";
 import { ViewBar } from "./ViewBar";
 import { NumberSystems } from "./NumberSystems";
 import { Info } from "./Info";
+import { useDismiss } from "./useDismiss";
 
 interface Props {
   rows: FormRow[];
@@ -54,6 +55,9 @@ export function ClearAll({ count, onClear, compact = false }: { count: number; o
   const { dict } = useI18n();
   const t = dict.clearAll;
   const [asking, setAsking] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  // compact: a press elsewhere (another bar button, the menu) closes it, so only one panel is open
+  useDismiss(ref, compact && asking, () => setAsking(false));
   // compact (the phone's sticky bar, ADR 0108): a trash icon, the confirmation opens in a panel under it
   const button = compact ? (
     <button type="button" className={dangerButtonClass} aria-label={t.button} title={t.button} aria-expanded={asking} onClick={() => setAsking(!asking)}>
@@ -63,9 +67,10 @@ export function ClearAll({ count, onClear, compact = false }: { count: number; o
   if (!asking) return button;
   if (compact) return (
     // no positioned wrapper: the panel spans the sticky bar under it
-    <div>
+    <div ref={ref}>
       {button}
       <div role="group" aria-label={t.button} className="absolute inset-x-4 top-full z-20 flex flex-wrap items-center gap-2 rounded-md border border-line bg-panel p-3 shadow-lg">
+        <h3 className="w-full font-medium">{t.button}</h3>
         <span className="w-full text-sm">{t.confirm(count)}</span>
         <button type="button" className={dangerButtonClass} onClick={() => { onClear(); setAsking(false); }}>{t.yes}</button>
         <button type="button" className={buttonClass} onClick={() => setAsking(false)}>{t.no}</button>
