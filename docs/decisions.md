@@ -118,6 +118,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0108](adr/0108-phone-sticky-bar.md) | Phone: mode, numbering, clear all and «☰» in one sticky bar; list hint as an «i»; subtitle removed | 2026-11-25 | Accepted |
 | [0109](adr/0109-card-buttons-two-rows-by-card-width.md) | Card buttons in two rows when the card is narrower than 56rem (container query); all one size | 2026-11-25 | Accepted |
 | [0110](adr/0110-empty-start-state.md) | A new project starts empty (no example rows); empty-list hint | 2026-11-25 | Accepted |
+| [0111](adr/0111-no-flash-before-the-saved-project.md) | List and results stay invisible until the saved project is read | 2026-11-25 | Accepted |
 | [0095](adr/0095-numbering-by-systems.md) | «Нумерація»: positions «система-№», empty only or all again, preview first | 2026-11-24 | Accepted |
 | [0096](adr/0096-import-from-pdf.md) | Import from PDF: own text reader, columns from table borders or text ranges | 2026-11-24 | Accepted (thresholds `TODO(confirm)`) |
 | [0097](adr/0097-video-clips-in-the-help.md) | Short MP4 clip per help step, loaded only when the dialog opens | 2026-11-24 | Accepted |

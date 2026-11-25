@@ -38,7 +38,7 @@ export function Calculator() {
 
 function CalculatorPage() {
   const { dict } = useI18n();
-  const { rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, numberRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice } = useCalculator();
+  const { loaded, rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, numberRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice } = useCalculator();
 
   const exportProps = { rows, outcome, calc, pricing: costs, settings };
   const { mode } = useMode();
@@ -76,6 +76,9 @@ function CalculatorPage() {
         </div>
         {/* simple mode: the settings block is hidden, but a bad setting is still reported (ADR 0082) */}
         {mode === "simple" && settingsIssues.length > 0 && <ErrorList issues={settingsIssues} />}
+        {/* the project is read from localStorage right after hydration (ADR 0101): until then the list and the results stay
+            invisible, so a reload does not flash the empty project before the saved one (ADR 0111) */}
+        <div className={`space-y-6 ${loaded ? "" : "invisible"}`} aria-busy={!loaded}>
         <div className="print-hide">
         <FittingList
           rows={rows}
@@ -105,6 +108,7 @@ function CalculatorPage() {
           <div className="adv-only min-w-0">
           <InsulationList groups={calc.insulationList} prices={prices.insulation} costs={costs.insulation} onPrice={setInsulationPrice} />
           </div>
+        </div>
         </div>
 
         <footer className="text-xs text-muted">{dict.footer}</footer>
