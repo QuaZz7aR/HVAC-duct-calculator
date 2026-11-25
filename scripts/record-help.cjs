@@ -1,7 +1,7 @@
 /* eslint-disable */
 // Records the «Довідка» clips (ADR 0097). Run a production build on port 3200 (npm run build && npx next start -p 3200), then
 //   HELP_PDF=<a demo spec .pdf> node scripts/record-help.cjs <uk|en> <add|sizes|settings|results|price|import|all>
-// and convert each .webm: ffmpeg -i add-uk.webm -vf "scale=960:-2,fps=15" -c:v libx264 -pix_fmt yuv420p -crf 33 -preset veryslow -tune animation -movflags +faststart -an public/help/add-uk.mp4
+// and convert each .webm: ffmpeg -i add-uk.webm -vf "scale=960:-2,fps=15" -c:v libx264 -pix_fmt yuv420p -crf 33 -preset veryslow -tune animation -movflags +faststart -an public/help/add-uk.mp4; poster: ffmpeg -ss 1 -i add-uk.mp4 -frames:v 1 -c:v libwebp -quality 70 add-uk.webp
 //   phone (390 px): add `phone` as the third argument and convert with scale=390:-2 to public/help/add-uk-phone.mp4
 // The demo PDF must hold made-up rows only (the clips are public).
 const { chromium } = require('playwright');
@@ -10,8 +10,8 @@ const [lang = 'uk', only = 'all', device = 'desktop'] = process.argv.slice(2);
 // third argument `phone`: a 390 px phone layout, files <step>-<lang>-phone (ADR 0105)
 const phone = device === 'phone';
 const T = {
-  uk: { del: 'Видалити всі', yes: 'Так, видалити', tees: 'Трійники', elbows: 'Відводи', adv: 'Розширений', simple: 'Простий', mode: 'Режим', imp: /^Імпорт/, choose: 'Обрати файл', results: 'Результати по позиціях', metal: 'Відомість металу за товщиною', settings: 'Параметри розрахунку', add: /^Додати \d+/, addBtn: 'Додати деталь', roundElbow: 'Круглий відвід', roundTee: 'Круглий трійник', allKinds: 'Усі типи…', query: 'трійн' },
-  en: { del: 'Delete all', yes: 'Yes, delete', tees: 'Tees', elbows: 'Elbows', adv: 'Advanced', simple: 'Simple', mode: 'Mode', imp: /^Import/, choose: 'Choose file', results: 'Results by item', metal: 'Sheet metal by thickness', settings: 'Calculation settings', add: /^Add \d+/, addBtn: 'Add fitting', roundElbow: 'Circular elbow', roundTee: 'Circular tee', allKinds: 'All types…', query: 'tee' },
+  uk: { del: 'Видалити всі', yes: 'Так, видалити', tees: 'Трійники', elbows: 'Відводи', adv: 'Розширений', simple: 'Простий', mode: 'Режим', imp: /^Імпорт/, choose: 'Обрати файл', results: 'Результати по позиціях', metal: 'Відомість металу за товщиною', settings: 'Параметри розрахунку', add: /^Додати \d+/, addBtn: 'Додати деталь', roundElbow: 'Круглий відвід', roundTee: 'Круглий трійник', totals: 'Разом', xlsx: 'Завантажити Excel', allKinds: 'Усі типи…', query: 'трійн' },
+  en: { del: 'Delete all', yes: 'Yes, delete', tees: 'Tees', elbows: 'Elbows', adv: 'Advanced', simple: 'Simple', mode: 'Mode', imp: /^Import/, choose: 'Choose file', results: 'Results by item', metal: 'Sheet metal by thickness', settings: 'Calculation settings', add: /^Add \d+/, addBtn: 'Add fitting', roundElbow: 'Circular elbow', roundTee: 'Circular tee', totals: 'Total', xlsx: 'Download Excel', allKinds: 'All types…', query: 'tee' },
 }[lang];
 const W = phone ? 390 : 1280, H = phone ? 760 : 760;
 const suffix = phone ? '-phone' : '';
@@ -96,16 +96,23 @@ const steps = {
     await type(vis(p.locator('label', { hasText: /Запас на замовлення|order margin/i }).locator('input')), '15');
     await p.mouse.move(W / 2, 380, { steps: 15 }); await p.waitForTimeout(600);
   },
-  async results({ p, click, vis }) {
-    const h = vis(p.getByRole('heading', { name: T.results }));
-    await p.evaluate(() => window.scrollTo({ top: document.body.scrollHeight * 0.55, behavior: 'smooth' })); await p.waitForTimeout(900);
-    await h.scrollIntoViewIfNeeded(); await p.waitForTimeout(700);
-    // the phone shows the results as blocks, not a table (ADR 0058): take the fourth row link either way
-    const rows = phone ? h.locator('xpath=ancestor::section[1]').locator('button').locator('visible=true') : p.locator('table').first().locator('tbody tr').nth(3).locator('button, a');
-    await click(phone ? rows.nth(3) : rows.first());
-    await p.waitForTimeout(1800);
-    const m = vis(p.getByRole('heading', { name: T.metal }));
-    await m.scrollIntoViewIfNeeded(); await p.waitForTimeout(1500);
+  // jump, do not scroll: each part sits at the top with a pause and the cursor on it (owner 2026-11-25: the old clip scrolled too much)
+  async results({ p, move, vis }) {
+    const show = async (loc, wait = 1600) => {
+      await loc.evaluate((el) => window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 70, behavior: 'instant' }));
+      await p.waitForTimeout(500); await move(loc, { fx: 0.15 }); await p.waitForTimeout(wait);
+    };
+    const res = vis(p.getByRole('heading', { name: T.results }));
+    await show(res, 900);
+    const sec = res.locator('xpath=ancestor::section[1]');
+    // walk the cursor over the first rows: name, then thickness and area
+    const rows = sec.locator(phone ? 'button' : 'tbody tr').locator('visible=true');
+    for (const i of [0, 1, 2]) await move(rows.nth(i), { fx: phone ? 0.3 : 0.2 });
+    if (!phone) for (const fx of [0.5, 0.65, 0.8]) await move(rows.nth(2), { fx });
+    await p.waitForTimeout(900);
+    await show(vis(p.getByRole('heading', { name: T.totals })));
+    await show(vis(p.getByRole('heading', { name: T.metal })), 2200);
+    await show(vis(p.getByRole('button', { name: T.xlsx })), 1800);
   },
   async price({ p, click, type, vis }) {
     await advanced({ p, click, vis });
