@@ -34,7 +34,7 @@ export function Info({ text }: { text: string }) {
       {"\u2060" /* word joiner: the icon stays on the line of the last word */}
       <button
         type="button"
-        className="print-hide relative ml-1.5 inline-flex h-5 w-5 shrink-0 before:absolute before:-inset-2.5 before:content-[''] sm:ml-1 sm:h-4 sm:w-4 sm:before:-inset-1 items-center justify-center rounded-full align-[-4px] sm:align-[-3px] text-accent hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
+        className="print-hide relative ml-1.5 inline-flex h-5 w-5 shrink-0 before:absolute before:-inset-2.5 before:content-[''] sm:ml-1 sm:h-4 sm:w-4 sm:before:hidden items-center justify-center rounded-full align-[-4px] sm:align-[-3px] text-accent hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
         aria-label={dict.help.info}
         aria-expanded={pos !== null}
         aria-controls={pos ? id : undefined}
