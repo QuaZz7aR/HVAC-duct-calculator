@@ -61,7 +61,7 @@ export function ClearAll({ count, onClear, compact = false }: { count: number; o
   // compact (the phone's sticky bar, ADR 0108): a trash icon, the confirmation opens in a panel under it
   const button = compact ? (
     <button type="button" className={dangerButtonClass} aria-label={t.button} title={t.button} aria-expanded={asking} onClick={() => setAsking(!asking)}>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-5 w-5"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" /></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-5 w-5">{/* a list with a cross, not the card trash: this empties the whole list */}<path d="M3 6h12M3 12h8M3 18h8M15 14l6 6M21 14l-6 6" /></svg>
     </button>
   ) : <button type="button" className={dangerButtonClass} onClick={() => setAsking(true)}>{t.button}</button>;
   if (!asking) return button;
