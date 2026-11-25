@@ -55,7 +55,7 @@ export function HelpButton({ variant = "plain", className = "" }: { variant?: "p
         aria-labelledby={titleId}
         // click on the backdrop (the dialog element itself, outside the content box) closes it
         onClick={(e) => e.target === e.currentTarget && e.currentTarget.close()}
-        className="m-0 h-full max-h-none w-full max-w-none bg-panel p-0 text-foreground backdrop:bg-black/50 sm:m-auto sm:h-auto sm:max-h-[85vh] sm:max-w-3xl sm:rounded-lg sm:border sm:border-line"
+        className="m-0 overscroll-contain h-full max-h-none w-full max-w-none bg-panel p-0 text-foreground backdrop:bg-black/50 sm:m-auto sm:h-auto sm:max-h-[85vh] sm:max-w-3xl sm:rounded-lg sm:border sm:border-line"
       >
         <div className="p-5">
           {/* the title and «×» stay on top while the steps scroll (owner, 2026-11-25) */}

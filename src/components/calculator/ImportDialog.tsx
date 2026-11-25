@@ -248,7 +248,7 @@ export function ImportButton({ onImport, className = "", rail = false }: { onImp
                   </label>
                 </div>
                 <p className="text-sm" aria-live="polite">{t.summary(counts.ok, counts.unknown, counts.skip)}</p>
-                <ul className="max-h-[50vh] space-y-1.5 overflow-y-auto pr-1">
+                <ul className="max-h-[50vh] space-y-1.5 overflow-y-auto overscroll-contain pr-1">
                   {rows.filter((r) => showSkipped || r.status !== "skip").map((r) => (
                     <PreviewRow key={r.line} row={r} onKind={(kind) => setChosen((m) => new Map(m).set(r.line, kind))} />
                   ))}
