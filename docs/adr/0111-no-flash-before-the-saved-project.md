@@ -1,6 +1,6 @@
 # 0111. No flash of the empty project before the saved one
 
-- Status: Accepted
+- Status: Accepted; refined by [0112](0112-pre-paint-project-and-mode.md)
 - Date: 2026-11-25
 - Source: owner (2026-11-25: on reload the empty project shows first, then the saved one)
 

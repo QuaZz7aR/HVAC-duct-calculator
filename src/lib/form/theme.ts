@@ -18,3 +18,10 @@ export const themeStorageKey = 'theme';
 
 /** Runs in <head> before paint, so a stored theme shows without a flash of the other one. */
 export const themeScript = `try{var t=localStorage.getItem('${themeStorageKey}');var d=t==='dark'||(t!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=d?'dark':'light'}catch(e){}`;
+
+/**
+ * Runs before paint with the theme script (ADR 0112): the stored mode goes on `<html data-mode>` so advanced-only blocks
+ * do not pop in after hydration, and a saved project with rows marks `<html data-project="rows">` so the list stays hidden
+ * until React has read it (`data-loaded`); an empty or new project shows its hint at once.
+ */
+export const preloadScript = `try{var h=document.documentElement;if(localStorage.getItem('mode')==='advanced')h.dataset.mode='advanced';var p=JSON.parse(localStorage.getItem('project')||'null');if(p&&p.rows&&p.rows.length)h.dataset.project='rows'}catch(e){}`;

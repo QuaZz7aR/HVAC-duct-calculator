@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { defaultConfig } from "@/lib/calc/config";
 import { calculate, type RowOutcome } from "@/lib/form/calculate";
 import { emptyPrices, pricing, type PriceText } from "@/lib/form/price";
@@ -74,6 +74,10 @@ export function useCalculator() {
       setPrices(saved.prices);
     }
   }
+  // the saved rows are on screen: lift the pre-paint hiding of the list (ADR 0112)
+  useLayoutEffect(() => {
+    if (loaded) document.documentElement.dataset.loaded = "";
+  }, [loaded]);
   useEffect(() => {
     // ids stay unique after a load or an import
     nextId.current = Math.max(nextId.current, ...rows.map((r) => r.id + 1));
