@@ -146,15 +146,15 @@ export function ImportButton({ onImport, className = "", rail = false }: { onImp
     <>
       {rail ? (
         // desktop rail: an icon over a label, like the other rail items (ADR 0089)
-        <button type="button" className={railItemClass} onClick={() => ref.current?.showModal()} aria-haspopup="dialog">
+        <button type="button" className={railItemClass} onClick={() => ref.current?.showModal()} aria-haspopup="dialog" title={t.button}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-6 w-6 text-accent">
             <path d="M6 3h8l4 4v14H6z" /><path d="M14 3v4h4" /><path d="M12 10v7M9 14l3 3 3-3" />
           </svg>
-          {t.button}
+          {t.short}
         </button>
       ) : (
         <button type="button" className={`${buttonClass} shrink-0 ${className}`} onClick={() => ref.current?.showModal()} aria-haspopup="dialog">
-          {t.button}
+          {t.menu}
         </button>
       )}
       <dialog
@@ -248,7 +248,7 @@ export function ImportButton({ onImport, className = "", rail = false }: { onImp
                   </label>
                 </div>
                 <p className="text-sm" aria-live="polite">{t.summary(counts.ok, counts.unknown, counts.skip)}</p>
-                <ul className="max-h-[50vh] space-y-1.5 overflow-y-auto pr-1">
+                <ul className="max-h-[50vh] space-y-1.5 overflow-y-auto overscroll-contain pr-1">
                   {rows.filter((r) => showSkipped || r.status !== "skip").map((r) => (
                     <PreviewRow key={r.line} row={r} onKind={(kind) => setChosen((m) => new Map(m).set(r.line, kind))} />
                   ))}

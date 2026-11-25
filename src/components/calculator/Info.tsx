@@ -34,14 +34,14 @@ export function Info({ text }: { text: string }) {
       {"\u2060" /* word joiner: the icon stays on the line of the last word */}
       <button
         type="button"
-        className="print-hide ml-1 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full align-[-3px] text-accent hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
+        className="print-hide relative ml-1.5 inline-flex h-5 w-5 shrink-0 before:absolute before:-inset-2.5 before:content-[''] sm:ml-1 sm:h-4 sm:w-4 sm:before:-inset-1 items-center justify-center rounded-full align-[-4px] sm:align-[-3px] text-accent hover:bg-accent-soft focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
         aria-label={dict.help.info}
         aria-expanded={pos !== null}
         aria-controls={pos ? id : undefined}
         onClick={toggle}
       >
         {/* drawn, not a font glyph: a letter sits off centre by the font's own metrics */}
-        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" className="block">
+        <svg viewBox="0 0 16 16" aria-hidden="true" className="block h-full w-full">
           <circle cx="8" cy="8" r="7.25" fill="none" stroke="currentColor" strokeWidth="1.5" />
           <circle cx="8" cy="4.9" r="1" fill="currentColor" />
           <rect x="7.25" y="6.9" width="1.5" height="5" rx="0.75" fill="currentColor" />

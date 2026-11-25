@@ -33,8 +33,8 @@ export function ExportBar({ variant = "bar", ...props }: ExportProps & { variant
   if (variant === "toolbar") {
     return (
       <>
-        <button type="button" className={`${buttonClass} shrink-0`} onClick={download} disabled={empty}>{d.xlsx}</button>
-        <button type="button" className={`${buttonClass} shrink-0`} onClick={() => window.print()} disabled={empty}>{d.print}</button>
+        <button type="button" className={`${buttonClass} shrink-0`} onClick={download} disabled={empty}>{d.menuXlsx}</button>
+        <button type="button" className={`${buttonClass} shrink-0`} onClick={() => window.print()} disabled={empty}>{d.menuPdf}</button>
       </>
     );
   }

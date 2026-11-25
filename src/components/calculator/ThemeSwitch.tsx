@@ -30,7 +30,7 @@ export function ThemeSwitch() {
           aria-label={dict.theme[t]}
           title={dict.theme[t]}
           onClick={() => setTheme(t)}
-          className={`px-2.5 py-1 focus-visible:outline-2 focus-visible:outline-accent ${theme === t ? "bg-accent text-background" : "bg-panel text-accent hover:bg-accent-soft"}`}
+          className={`grid min-h-7 place-items-center px-2.5 py-1 focus-visible:outline-2 focus-visible:outline-accent ${theme === t ? "bg-accent text-background" : "bg-panel text-accent hover:bg-accent-soft"}`}
         >
           <ThemeIcon theme={t} />
         </button>
@@ -55,7 +55,7 @@ export function ThemeRailButton() {
           setPos({ left: r.right + 12, bottom: window.innerHeight - r.bottom });
           setOpen(!open);
         }} aria-expanded={open} aria-haspopup="true" className={railItemClass} title={dict.theme.label}>
-        <span aria-hidden="true" className="grid h-6 min-w-8 place-items-center rounded-md border-2 border-accent px-1 text-accent"><ThemeIcon theme={theme} /></span>
+        <span aria-hidden="true" className="grid h-5 min-w-7 place-items-center rounded-md border-2 border-accent px-1 text-accent"><ThemeIcon theme={theme} /></span>
         {dict.theme.short}
       </button>
       {open && (

@@ -10,6 +10,8 @@ import { buttonClass, dangerButtonClass } from "./styles";
 import type { CardView } from "./useCardView";
 import { ViewBar } from "./ViewBar";
 import { NumberSystems } from "./NumberSystems";
+import { Info } from "./Info";
+import { useDismiss } from "./useDismiss";
 
 interface Props {
   rows: FormRow[];
@@ -49,11 +51,32 @@ export function groupRuns(rows: FormRow[]) {
 }
 
 /** «Видалити всі»: a second tap confirms, so one slip does not empty the list (no browser dialog). */
-function ClearAll({ count, onClear }: { count: number; onClear: () => void }) {
+export function ClearAll({ count, onClear, compact = false }: { count: number; onClear: () => void; compact?: boolean }) {
   const { dict } = useI18n();
   const t = dict.clearAll;
   const [asking, setAsking] = useState(false);
-  if (!asking) return <button type="button" className={dangerButtonClass} onClick={() => setAsking(true)}>{t.button}</button>;
+  const ref = useRef<HTMLDivElement>(null);
+  // compact: a press elsewhere (another bar button, the menu) closes it, so only one panel is open
+  useDismiss(ref, compact && asking, () => setAsking(false));
+  // compact (the phone's sticky bar, ADR 0108): a trash icon, the confirmation opens in a panel under it
+  const button = compact ? (
+    <button type="button" className={dangerButtonClass} aria-label={t.button} title={t.button} aria-expanded={asking} onClick={() => setAsking(!asking)}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-5 w-5">{/* a list with a cross, not the card trash: this empties the whole list */}<path d="M3 6h12M3 12h8M3 18h8M15 14l6 6M21 14l-6 6" /></svg>
+    </button>
+  ) : <button type="button" className={dangerButtonClass} onClick={() => setAsking(true)}>{t.button}</button>;
+  if (!asking) return button;
+  if (compact) return (
+    // no positioned wrapper: the panel spans the sticky bar under it
+    <div ref={ref}>
+      {button}
+      <div role="group" aria-label={t.button} className="absolute inset-x-4 top-full z-20 flex flex-wrap items-center gap-2 rounded-md border border-line bg-panel p-3 shadow-lg">
+        <h3 className="w-full font-medium">{t.button}</h3>
+        <span className="w-full text-sm">{t.confirm(count)}</span>
+        <button type="button" className={dangerButtonClass} onClick={() => { onClear(); setAsking(false); }}>{t.yes}</button>
+        <button type="button" className={buttonClass} onClick={() => setAsking(false)}>{t.no}</button>
+      </div>
+    </div>
+  );
   return (
     <div role="group" aria-label={t.button} className="flex flex-wrap items-center gap-2">
       <span className="text-sm">{t.confirm(count)}</span>
@@ -241,14 +264,10 @@ export function FittingList({ rows: listRows, view, outcome, onKindChange, onVal
     >
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
         <div>
-          <h2 id="items-title" className="font-medium">{dict.itemsTitle}</h2>
-          <p className="text-sm text-muted">
-            <span className="hidden lg:inline">{dict.palette.hintRail}</span>
-            <span className="lg:hidden">{dict.palette.hintBar}</span>
-          </p>
+          {/* phone: the hint is an «i» beside the heading; numbering, clear-all and the menu are in the sticky page bar (ADR 0108) */}
+          <h2 id="items-title" className="font-medium">{dict.itemsTitle}<span className="ml-1 lg:hidden"><Info text={dict.palette.hintBar} /></span></h2>
+          <p className="hidden text-sm text-muted lg:block">{dict.palette.hintRail}</p>
         </div>
-        {/* desktop: «Видалити всі» sits in the sticky view bar (ADR 0088) */}
-        {listRows.length > 0 && <div className="flex flex-wrap items-center gap-2 lg:hidden">{onNumber && <NumberSystems rows={listRows} onNumber={onNumber} />}{onClear && <ClearAll count={listRows.length} onClear={onClear} />}</div>}
       </div>
       {/* desktop: a bar of only the view toggles sticks to the top (ADR 0088); below the rail's z-30, so the add list still opens over it */}
       {listRows.length > 0 && <ViewBar view={view} twoColumns={twoColumns} onColumns={onColumns}>{onNumber && <NumberSystems rows={listRows} onNumber={onNumber} />}{onClear && <ClearAll count={listRows.length} onClear={onClear} />}</ViewBar>}
