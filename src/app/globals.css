@@ -22,6 +22,11 @@
 }
 
 /* simple mode hides the advanced parts (ADR 0082) */
+/* a saved project with rows: the list and results wait until it is read (ADR 0112) */
+[data-project="rows"]:not([data-loaded]) .project-wait {
+  visibility: hidden;
+}
+
 [data-mode="simple"] .adv-only {
   display: none !important;
 }
