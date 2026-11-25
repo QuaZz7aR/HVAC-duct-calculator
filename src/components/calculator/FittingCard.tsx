@@ -173,7 +173,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
       {showSketch && <div className="mb-4 sm:hidden [&>figure]:mt-0">{sketch}</div>}
       {row.preset && <p className="-mt-2 mb-3 text-xs text-muted">{dict.defaultsNote}</p>}
       <div
-        className="grid grid-cols-2 gap-3 sm:[grid-template-columns:repeat(var(--cols),minmax(0,1fr))]"
+        className="grid grid-cols-2 gap-x-3 gap-y-5 sm:gap-3 sm:[grid-template-columns:repeat(var(--cols),minmax(0,1fr))]"
         style={{ "--cols": fieldColumns(labels) } as React.CSSProperties}
       >
         <TextField
