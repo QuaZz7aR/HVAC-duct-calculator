@@ -48,7 +48,7 @@ export function NumberSystems({ rows, onNumber, compact = false }: { rows: FormR
         <option value="empty">{t.scope.empty}</option>
         <option value="all">{t.scope.all}</option>
       </select>
-      <p className="text-sm text-muted" aria-live="polite">{changed.length ? t.preview(changed.length, sample) : t.nothing}<Info text={t.info} /></p>
+      <p className="text-sm text-muted" aria-live="polite">{changed.length ? t.preview(changed.length, sample) : system.trim() ? t.nothing : t.noSystem}<Info text={t.info} /></p>
       <div className="flex gap-2">
       <button type="button" className={buttonClass} disabled={!changed.length} onClick={() => { onNumber(system, scope); setOpen(false); }}>{t.apply}</button>
       <button type="button" className={buttonClass} onClick={() => setOpen(false)}>{t.cancel}</button>
