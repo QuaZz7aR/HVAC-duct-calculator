@@ -112,7 +112,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0102](adr/0102-export-to-excel-and-print.md) | Export: own .xlsx writer (specification, metal, insulation sheets) and print / PDF via print styles | 2026-11-24 | Accepted |
 | [0103](adr/0103-export-beside-the-import.md) | Export also in the rail («Експорт» list after the import) and the phone header toolbar | 2026-11-24 | Accepted |
 | [0104](adr/0104-compact-side-rail.md) | Compact side rail; «Нагору» is a floating button at the bottom right on desktop | 2026-11-25 | Accepted |
-| [0105](adr/0105-help-clips-load-on-scroll.md) | «Довідка» clips load only when scrolled near, not all at once | 2026-11-25 | Accepted |
+| [0105](adr/0105-help-clips-load-on-scroll.md) | «Довідка» clips load only when scrolled near; phone recordings below lg | 2026-11-25 | Accepted |
 | [0095](adr/0095-numbering-by-systems.md) | «Нумерація»: positions «система-№», empty only or all again, preview first | 2026-11-24 | Accepted |
 | [0096](adr/0096-import-from-pdf.md) | Import from PDF: own text reader, columns from table borders or text ranges | 2026-11-24 | Accepted (thresholds `TODO(confirm)`) |
 | [0097](adr/0097-video-clips-in-the-help.md) | Short MP4 clip per help step, loaded only when the dialog opens | 2026-11-24 | Accepted |

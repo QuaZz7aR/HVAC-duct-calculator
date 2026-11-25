@@ -1,4 +1,4 @@
-# 0105. Help clips load when scrolled near
+# 0105. Help clips load when scrolled near, phone clips on the phone
 
 Status: Accepted
 Date: 2026-11-25
@@ -10,5 +10,7 @@ The dialog rendered all six clips with `preload="metadata"` and `autoPlay`, so o
 ## Decision
 `HelpClip` sets its `src` only when the clip comes within 200 px of the view (`IntersectionObserver`); before that it has no source and `preload="none"`. Opening the dialog loads the first one or two clips, the rest follow as the user scrolls.
 
+Below `lg` (the phone layout) the dialog shows phone recordings `public/help/<step>-<lang>-phone.mp4` (390 x 760, the «+» button and its fan, the header mode switch, the results as blocks), capped at 70svh and centred (owner chose them on 2026-11-25). They are recorded by `scripts/record-help.cjs <lang> <step|all> phone`; the import clip uses a made-up demo PDF.
+
 ## Consequences
-The first clip starts sooner. The clips still show the desktop layout; phone recordings are a separate decision.
+The first clip starts sooner and the phone shows its own interface. Twelve more clips (about 1.8 MB) to re-record when the phone UI changes.

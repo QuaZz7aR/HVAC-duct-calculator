@@ -45,7 +45,7 @@ export function HelpButton({ rail = false }: { rail?: boolean }) {
               <li key={s.title}>
                 <h3 className="font-medium">{i + 1}. {s.title}</h3>
                 <p className="mt-1 text-sm leading-relaxed text-muted">{s.text}</p>
-                {open && helpClips[i] && <HelpClip src={`/help/${helpClips[i]}-${lang}.mp4`} label={s.title} />}
+                {open && helpClips[i] && <HelpClip name={`${helpClips[i]}-${lang}`} label={s.title} />}
               </li>
             ))}
           </ol>
@@ -60,8 +60,11 @@ export function HelpButton({ rail = false }: { rail?: boolean }) {
 export const helpClips = ["add", "sizes", "settings", "results", "price", "import"] as const;
 
 /** A muted looping clip; with reduced motion it does not play by itself and shows its controls. */
-function HelpClip({ src, label }: { src: string; label: string }) {
+function HelpClip({ name, label }: { name: string; label: string }) {
   const [reduce] = useState(() => typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+  // below lg the page has the phone layout, so the clip shows the phone recording (ADR 0105)
+  const [phone] = useState(() => typeof window !== "undefined" && !!window.matchMedia?.("(max-width: 1023px)").matches);
+  const src = `/help/${name}${phone ? "-phone" : ""}.mp4`;
   // load a clip only when it scrolls near the view: the dialog no longer pulls all six at once (ADR 0105)
   const ref = useRef<HTMLVideoElement>(null);
   const [near, setNear] = useState(false);
@@ -81,9 +84,9 @@ function HelpClip({ src, label }: { src: string; label: string }) {
       ref={ref}
       src={near ? src : undefined}
       aria-label={label}
-      className="mt-2 w-full rounded-md border border-line"
-      width={960}
-      height={570}
+      className={phone ? "mx-auto mt-2 max-h-[70svh] w-auto rounded-md border border-line" : "mt-2 w-full rounded-md border border-line"}
+      width={phone ? 390 : 960}
+      height={phone ? 760 : 570}
       muted
       loop
       playsInline
