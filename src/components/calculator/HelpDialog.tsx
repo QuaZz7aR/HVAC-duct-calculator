@@ -50,7 +50,8 @@ export function HelpButton({ rail = false }: { rail?: boolean }) {
         className="m-0 h-full max-h-none w-full max-w-none bg-panel p-0 text-foreground backdrop:bg-black/50 sm:m-auto sm:h-auto sm:max-h-[85vh] sm:max-w-3xl sm:rounded-lg sm:border sm:border-line"
       >
         <div className="p-5">
-          <div className="mb-3 flex items-start justify-between gap-3">
+          {/* the title and «×» stay on top while the steps scroll (owner, 2026-11-25) */}
+          <div className="sticky top-0 z-10 -mx-5 -mt-5 mb-3 flex items-start justify-between gap-3 border-b border-line bg-panel px-5 pb-3 pt-5">
             <h2 id={titleId} className="text-lg font-semibold">{g.title}</h2>
             <button type="button" className={`${buttonClass} !px-2 !py-1`} onClick={() => ref.current?.close()} aria-label={g.close} title={g.close}>
               ×
