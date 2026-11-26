@@ -21,6 +21,7 @@ export const errorCodes = [
   'insulation.unknown',
   'box.ends',
   'box.partitions',
+  'box.openFaces',
   'offset.negative',
 ] as const;
 

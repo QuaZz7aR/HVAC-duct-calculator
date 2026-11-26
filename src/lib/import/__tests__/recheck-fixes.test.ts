@@ -31,7 +31,11 @@ describe('import fixes (ADR 0115)', () => {
     const table: Table = [['№', 'Наименование', 'Длина, мм', 'Кол-во, шт'], [1, name, '', 2]];
     const [row] = importRows(table, guessMapping(table));
     expect(row.kind).toBe('rectBox');
-    expect(row.values).toMatchObject({ width: '95', height: '220', length: '3010', partitions: '6' });
+    expect(row.values).toMatchObject({ width: '95', height: '220', length: '3010', partitions: '6', openFaces: '1' });
+  });
+
+  it('leaves a box without a slot diffuser closed', () => {
+    expect(parseName('Приточный адаптер 660х153, 2 врезки Д150').openFace).toBeUndefined();
   });
 
   it('still leaves a diffuser or a grille alone unrecognised', () => {

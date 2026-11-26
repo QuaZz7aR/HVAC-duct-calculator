@@ -123,6 +123,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0113](adr/0113-adapters-boxes-and-offsets-beta.md) | Adapters / boxes (ПА) and offsets (ПУ, КУ) as a beta from open formulas; import by codes only | 2026-11-26 | Accepted (beta) |
 | [0114](adr/0114-box-and-offset-sketches.md) | Own isometric sketches and rail glyphs for ПА, ПУ, КУ | 2026-11-26 | Accepted |
 | [0115](adr/0115-import-fixes-from-the-full-recheck.md) | Import: «###» quantity left empty and flagged, slot adapters «A×B×C» with partitions, flexible duct not recognised | 2026-11-26 | Accepted |
+| [0116](adr/0116-open-face-of-a-box.md) | ПА: open face under a slot diffuser (`openFaces` 0 / 1), set by the import | 2026-11-26 | Accepted (beta) |
 | [0095](adr/0095-numbering-by-systems.md) | «Нумерація»: positions «система-№», empty only or all again, preview first | 2026-11-24 | Accepted |
 | [0096](adr/0096-import-from-pdf.md) | Import from PDF: own text reader, columns from table borders or text ranges | 2026-11-24 | Accepted (thresholds `TODO(confirm)`) |
 | [0097](adr/0097-video-clips-in-the-help.md) | Short MP4 clip per help step, loaded only when the dialog opens | 2026-11-24 | Accepted |
@@ -161,7 +162,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `import/pdf.ts` layout | Word gap 0.2 font size, border must cross a third of the body lines, header lines within 2.2 font sizes: tuned on LibreOffice and Chrome PDFs of our samples only ([0096](adr/0096-import-from-pdf.md)). |
 | `import/pdf.ts` clipped cells | A clip box up to 20 font sizes high and wide is one cell; a wrapped fragment of 1-2 letters or digits joins without a space: tuned on one GridCraft PDF ([0099](adr/0099-pdf-clipped-cells-and-unicode-cmaps.md)). |
 | `import/pdf.ts` wrapped rows | Lines between two row borders join when the band has exactly one full line (3+ columns), lines within two font sizes: tuned on kyiv.pdf and order.pdf ([0100](adr/0100-pdf-wrapped-rows-between-row-borders.md)). |
-| `calc/sheet-area.ts` `rectBox`, `rectOffset`, `roundOffset` | Beta ([0113](adr/0113-adapters-boxes-and-offsets-beta.md)): box = closed plates a x b (ends 0-2) + partitions, no open side; box centre line = L; round offset is a smooth slanted tube, not segmented elbows; offset along side a. Prefill ends 2, partitions 0 (`form/fields.ts`). |
+| `calc/sheet-area.ts` `rectBox`, `rectOffset`, `roundOffset` | Beta ([0113](adr/0113-adapters-boxes-and-offsets-beta.md)): box = closed plates a x b (ends 0-2) + partitions; open a x L face 0 / 1 under a slot diffuser ([0116](adr/0116-open-face-of-a-box.md)), whether partitions count there; box centre line = L; round offset is a smooth slanted tube, not segmented elbows; offset along side a. Prefill ends 2, partitions 0 (`form/fields.ts`). |
 | `import/recognize.ts` beta kinds | Codes ПА / ПУ / КУ only; the words «утка», «короб», «адаптер» wait for the owner (they change pinned import tests). |
 | `public/help/*.mp4` | Clip format and count are the agent's choice (MP4, one per step, uk + en) ([0097](adr/0097-video-clips-in-the-help.md)). |
 

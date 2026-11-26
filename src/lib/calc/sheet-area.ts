@@ -112,7 +112,9 @@ export function sheetArea(f: Fitting): number {
       }
     case 'rectBox':
       // BETA, ADR 0113 (engineer's template «Адаптор» 2(AB + AL + BL)): four walls + closed end plates + inner partitions, each plate width x height
-      return 2 * (mmToM(f.width) + mmToM(f.height)) * developedLength(f) + (f.ends + f.partitions) * mmToM(f.width) * mmToM(f.height);
+      // an open face (ADR 0116, TODO(confirm)) is one a x L wall left out, e.g. the slot under a slot diffuser
+      return (2 * (mmToM(f.width) + mmToM(f.height)) - (f.openFaces ?? 0) * mmToM(f.width)) * developedLength(f)
+        + (f.ends + f.partitions) * mmToM(f.width) * mmToM(f.height);
     case 'roundOffset':
       // BETA, ADR 0113: slanted cylinder wall: circumference x developed length (the oblique end cuts are ignored)
       return Math.PI * mmToM(f.diameter) * developedLength(f);

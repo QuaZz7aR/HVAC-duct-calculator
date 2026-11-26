@@ -207,6 +207,7 @@ export const en: Dictionary = {
     offset: `Axis offset ${sym.offset}, mm`,
     ends: 'Closed ends (0, 1, 2)',
     partitions: 'Partitions, pcs',
+    openFaces: 'Open face for a diffuser (0, 1)',
   },
   results: {
     title: 'Results by item',
@@ -292,6 +293,7 @@ export const en: Dictionary = {
     'insulation.unknown': 'Unknown insulation material',
     'box.ends': 'Closed ends must be 0, 1 or 2',
     'box.partitions': 'Partitions: a whole number from 0',
+    'box.openFaces': 'Open face: 0 or 1',
     'offset.negative': 'The offset cannot be negative',
     'quantity.invalid': 'A whole number, at least 1',
   },
@@ -322,6 +324,7 @@ export const en: Dictionary = {
       offset: 'How far the outlet axis is shifted from the inlet. On a rectangular offset the shift runs along side a₁. Beta: the walls follow the straight slant √(L² + H²).',
       ends: 'How many ends of the box are closed by an a₁ × b₁ plate. A closed box (adapter) = 2.\nSpigots (taps) are not part of the box area: add each one as a separate CTap or RTap fitting.',
       partitions: 'Inner partitions (e.g. in a slot-diffuser adapter), each an a₁ × b₁ plate.',
+      openFaces: 'One a₁ × L wall is left out of the area: the slot for a diffuser. Set by the import when the name mentions a slot diffuser. Preliminary rule (beta).',
     },
     settings: {
       thicknessTable: 'Which table picks the sheet thickness: ДБН В.2.5-67:2013 (annex Ц) or the engineer’s table.',

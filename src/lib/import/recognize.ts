@@ -19,6 +19,8 @@ export interface NameParse {
   offset?: number;
   /** Partitions of a box or adapter («6 перемычек», «3 перемички»), ADR 0115. */
   partitions?: number;
+  /** A box under a slot diffuser («под щелевой диффузор»): one face is open (ADR 0116). */
+  openFace?: boolean;
 }
 
 type Family = 'straight' | 'elbow' | 'reducer' | 'cap' | 'tap' | 'tee' | 'cross' | 'offset' | 'box';
@@ -106,6 +108,7 @@ export function parseName(name: string): NameParse {
     rest = rest.replace(m[0], ' ');
   }
   const out: NameParse = { sizes };
+  if (/(щел|щіл|slot)\S*\s+(диффуз|дифуз|diffus)/iu.test(name)) out.openFace = true;
   if (boxLength !== undefined) out.length = boxLength;
   const parts = /(\d+)\s*(?:перемыч|перемич|перегород|partition)/iu.exec(rest);
   if (parts) { out.partitions = Number(parts[1]); rest = rest.replace(parts[0], ' '); }

@@ -7,7 +7,7 @@ export type FieldKey =
   | 'diameter' | 'smallDiameter' | 'width' | 'height' | 'smallWidth' | 'smallHeight'
   | 'length' | 'centerRadius' | 'innerRadius' | 'angle' | 'allowance'
   | 'branchDiameter' | 'branchWidth' | 'branchHeight' | 'maxPiece'
-  | 'offset' | 'ends' | 'partitions';
+  | 'offset' | 'ends' | 'partitions' | 'openFaces';
 
 export interface FieldDef {
   key: FieldKey;
@@ -62,7 +62,7 @@ export const kindFields: Record<FittingKind, FieldDef[]> = {
   ],
   rectToRoundReducer: [{ key: 'width' }, { key: 'height' }, { key: 'smallDiameter' }, reducerLength, allowance],
   // TODO(confirm): a box with both end plates and no partitions as the prefill (the engineer's template «Адаптор» is a closed box)
-  rectBox: [{ key: 'width' }, { key: 'height' }, { key: 'length' }, { key: 'ends', initial: '2' }, { key: 'partitions', initial: '0' }],
+  rectBox: [{ key: 'width' }, { key: 'height' }, { key: 'length' }, { key: 'ends', initial: '2' }, { key: 'partitions', initial: '0' }, { key: 'openFaces', initial: '0' }],
   roundOffset: [{ key: 'diameter' }, { key: 'length' }, { key: 'offset' }, allowance],
   rectOffset: [{ key: 'width' }, { key: 'height' }, { key: 'length' }, { key: 'offset' }, allowance],
 };
