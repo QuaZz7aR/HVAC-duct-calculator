@@ -104,6 +104,30 @@ class Sketch {
     this.items.push({ type: "angle", arc, rays: ends.map((e): [V2, V2] => [c, p(e)]), label, at: [mid[0] + shift[0], mid[1] + shift[1]] });
   }
 
+  /** Where an allowance strip begins on a round wall: the half of the section ring turned to the viewer, as a thin line. */
+  seamRound(c: V3, u: V3, v: V3, r: number) {
+    const pts = ring(c, u, v, r, 72);
+    const radial = (q: V3) => sub(q, c);
+    const n = pts.length;
+    const start = pts.findIndex((q, i) => dot(radial(q), view) > 0 && dot(radial(pts[(i - 1 + n) % n]), view) <= 0);
+    const out: V3[] = [];
+    for (let k = 0; k < n; k++) {
+      const q = pts[(start + k) % n];
+      if (dot(radial(q), view) <= 0) break;
+      out.push(q);
+    }
+    this.items.push({ type: "outline", points: out.map(p) });
+  }
+
+  /** Where an allowance strip begins on a rect wall: the section rectangle, edges on the far walls dashed. */
+  seamRect(corners: V3[], centre: V3) {
+    corners.forEach((a, i) => {
+      const b = corners[(i + 1) % corners.length];
+      const mid = scale(add(a, b), 0.5);
+      this.edge(a, b, dot(sub(mid, centre), view) <= 0);
+    });
+  }
+
   /** Centre line of a bent duct, dash-dot. */
   axis(points: V3[]) {
     this.items.push({ type: "axis", points: points.map(p) });
@@ -324,8 +348,12 @@ function elbow(s: Sketch, round: boolean) {
     // R beside its leader, α just above the middle of its arc
     s.radius([0, 0, 0], centres[0], sym.radius, [6, 11], 0.3);
     s.angle([0, 0, 0], [centres[n]], 0.18, t[0], t[n], sym.angle, [-4, -4]);
-    // the end at x = 0 faces right on screen: its diameter is measured beside it
-    s.dim(...offset([[0, -rc, -mainR], [0, -rc, mainR]], [0, -mainR - 0.14, 0]), sym.diameter, [10, 5], "start");
+    // straight allowance strips continue both legs: +x from the end at x = 0, +y from the end at y = 0
+    s.cylinder([-rc, 0, 0], [-rc, P, 0], mainR);
+    s.cylinder([0, -rc, 0], [P, -rc, 0], mainR);
+    // the end at x = P faces right on screen: its diameter is measured beside it
+    s.dim(...offset([[P, -rc, -mainR], [P, -rc, mainR]], [0, -mainR - 0.14, 0]), sym.diameter, [10, 5], "start");
+    s.dim(...offset([[0, -rc, mainR], [P, -rc, mainR]], [0, 0, 0.2]), sym.allowance, [0, -8]);
   } else {
     const [ri, w, h] = [0.55, 0.55, 0.5];
     const ro = ri + w;
@@ -338,52 +366,133 @@ function elbow(s: Sketch, round: boolean) {
     // R and α are drawn in the bottom plane, from the centre to the lower inner edge, so they stay off the walls
     s.radius([0, 0, -h / 2], bi[0], sym.radius, [6, 11], 0.3);
     s.angle([0, 0, -h / 2], [bi[n]], 0.18, t[0], t[n], sym.angle, [-4, -5]);
-    s.dim(...offset([[-ro, 0, -h / 2], [-ri, 0, -h / 2]], [0, 0, -0.16]), sym.width, [-8, 18]);
-    s.dim(...offset([[-ro, 0, -h / 2], [-ro, 0, h / 2]], [-0.14, 0, 0]), sym.height, [-10, 5], "end");
+    // straight allowance strips continue both legs: +x from the end at x = 0, +y from the end at y = 0
+    const strip = (r0: V3[], d: V3) => {
+      const r1 = r0.map((q) => add(q, d));
+      s.solid([r0, r1, ...r0.map((q, i) => [q, r0[(i + 1) % 4], r1[(i + 1) % 4], r1[i]])], ["opening", "opening", "face", "face", "face", "face"]);
+    };
+    strip([bi[n], bo[n], to[n], ti[n]], [0, P, 0]);
+    strip([bi[0], bo[0], to[0], ti[0]], [P, 0, 0]);
+    s.dim(...offset([[-ro, P, -h / 2], [-ri, P, -h / 2]], [0, 0, -0.16]), sym.width, [-8, 18]);
+    s.dim(...offset([[-ro, P, -h / 2], [-ro, P, h / 2]], [-0.14, 0, 0]), sym.height, [-10, 5], "end");
+    s.dim(...offset([[0, -ro, h / 2], [P, -ro, h / 2]], [0, 0, 0.2]), sym.allowance, [0, -8]);
   }
 }
+
+/** Length of the allowance strip on the sketches, world units (schematic). */
+const P = 0.2;
+
+/** Section rectangle across x at x, sizes w (y) x h (z). */
+const rectAt = (x: number, w: number, h: number): V3[] => [[x, -w / 2, -h / 2], [x, w / 2, -h / 2], [x, w / 2, h / 2], [x, -w / 2, h / 2]];
 
 function reducer(s: Sketch, roundMain: boolean, roundSmall: boolean) {
   const len2 = 1.3;
   const r1 = 0.22;
   const [w1, h1] = [0.5, 0.36];
   if (roundMain) {
-    s.cylinder([0, 0, 0], [len2, 0, 0], mainR + 0.06, "opening", "face", r1);
     const R = mainR + 0.06;
+    // straight allowance strips at both ends, the cone between them
+    s.cylinder([0, 0, 0], [P, 0, 0], R);
+    s.cylinder([P, 0, 0], [len2 - P, 0, 0], R, "opening", "face", r1);
+    s.cylinder([len2 - P, 0, 0], [len2, 0, 0], r1);
     // the large end faces away: d₁ is taken across its outline, the extension lines carry the outline back past the end
     const d = R * Math.SQRT1_2;
     s.dim(...offset([[0, d, -d], [0, -d, d]], [-0.42, 0, 0]), sym.diameter, [-10, 5], "end");
     s.dim(...offset([[len2, 0, -r1], [len2, 0, r1]], [0, -r1 - 0.14, 0]), sym.smallDiameter, [10, 5], "start");
     s.dim([lower(0, R, 0), lower(len2, r1, 0)], lower(0, R), lower(len2, r1), sym.length, [-8, 20]);
+    // allowance strips at both ends, p measured on the top line at the small end
+    s.dim(...offset([[len2 - P, 0, r1], [len2, 0, r1]], [0, 0, 0.2]), sym.allowance, [0, -8]);
     return;
   }
   const [W, H] = [0.9, 0.62];
   if (roundSmall) {
     // rect end at x = 0 turning into a round end at x = len2: outline is the hull of both ends
-    const rect: V3[] = [[0, -W / 2, -H / 2], [0, W / 2, -H / 2], [0, W / 2, H / 2], [0, -W / 2, H / 2]];
-    const circle = ring([len2, 0, 0], [0, 1, 0], [0, 0, 1], r1);
+    // straight rect strip 0..P, the transition P..len2 - P, a straight round strip to len2
+    s.prism("x", 0, P, W, H);
+    const rect = rectAt(P, W, H);
+    const circle = ring([len2 - P, 0, 0], [0, 1, 0], [0, 0, 1], r1);
     s.items.push({ type: "face", points: hull([...rect, ...circle].map(p)), tone: "face" });
     // seams from the three visible corners of the rect end to the round end
-    const seam = (corner: V3, angle: number) => s.edge(corner, [len2, r1 * Math.cos(angle), r1 * Math.sin(angle)]);
+    const seam = (corner: V3, angle: number) => s.edge(corner, [len2 - P, r1 * Math.cos(angle), r1 * Math.sin(angle)]);
     seam(rect[2], Math.PI / 4);
     seam(rect[1], -Math.PI / 4);
     seam(rect[3], (3 * Math.PI) / 4);
     s.edge(rect[2], rect[1]);
     s.edge(rect[2], rect[3]);
-    s.face(circle, "opening");
+    s.cylinder([len2 - P, 0, 0], [len2, 0, 0], r1);
     rectEnd(s, W, H);
     s.dim(...offset([[len2, 0, -r1], [len2, 0, r1]], [0, -r1 - 0.14, 0]), sym.smallDiameter, [10, 5], "start");
     // vertical extension lines down to one level: from the rect end's near corner and the round end's lowest point on screen
     const foot: V3 = [len2, r1 * 0.447, -r1 * 0.894];
     s.dim([[0, W / 2, -H / 2], foot], [0, W / 2, -H / 2 - 0.16], [len2, foot[1], -H / 2 - 0.16], sym.length, [-8, 20]);
+    s.dim(...offset([[len2 - P, 0, r1], [len2, 0, r1]], [0, 0, 0.3]), sym.allowance, [0, -8]);
     return;
   }
-  s.prism("x", 0, len2, W, H, w1, h1);
+  s.prism("x", 0, P, W, H);
+  s.prism("x", P, len2 - P, W, H, w1, h1);
+  s.prism("x", len2 - P, len2, w1, h1);
   rectEnd(s, W, H);
   s.dim(...offset([[len2, -w1 / 2, -h1 / 2], [len2, w1 / 2, -h1 / 2]], [0.18, 0, 0]), sym.smallWidth, [10, 14], "start");
   s.dim(...offset([[len2, -w1 / 2, -h1 / 2], [len2, -w1 / 2, h1 / 2]], [0, -0.14, 0]), sym.smallHeight, [10, 5], "start");
   // vertical extension lines from both near lower corners down to one level
   s.dim([[0, W / 2, -H / 2], [len2, w1 / 2, -h1 / 2]], [0, W / 2, -H / 2 - 0.16], [len2, w1 / 2, -H / 2 - 0.16], sym.length, [-8, 20]);
+  const top = (x: number): V3 => [x, -w1 / 2, h1 / 2];
+  s.dim(...offset([top(len2 - P), top(len2)], [0, 0, 0.2]), sym.allowance, [0, -8]);
+}
+
+/** Adapter / box (ADR 0114): a closed rect box, end plates toned as plates, one partition shown dashed in the middle. */
+function box(s: Sketch) {
+  const [W, H, L] = [0.72, 0.5, 1.3];
+  s.prism("x", 0, L, W, H, W, H, "plate");
+  const mid = L / 2;
+  const q: V3[] = [[mid, -W / 2, -H / 2], [mid, W / 2, -H / 2], [mid, W / 2, H / 2], [mid, -W / 2, H / 2]];
+  q.forEach((a, i) => s.edge(a, q[(i + 1) % 4], true));
+  s.dim(...offset([[0, -W / 2, H / 2], [0, W / 2, H / 2]], [-0.18, 0, 0]), sym.width, [-8, -8]);
+  s.dim(...offset([[0, W / 2, -H / 2], [0, W / 2, H / 2]], [0, 0.14, 0]), sym.height, [-10, 5], "end");
+  s.dim(...offset([[0, W / 2, -H / 2], [L, W / 2, -H / 2]], [0, 0, -0.16]), sym.length, [-8, 20]);
+}
+
+/**
+ * Offset («утка», ADR 0114): a straight slanted duct whose outlet is raised by `off` (the «підйом» of a spec), drawn upwards so the shift reads at once.
+ * On a rect offset the raised side is a₁, so a₁ stands vertical here. L is the axial length, H the shift between the axes, measured at the inlet.
+ */
+function offsetDuct(s: Sketch, round: boolean) {
+  // P: the allowance strip at each end, a straight stub on the axis of its end; p is dimensioned at the outlet, in a chain with L
+  const [L, off, P] = [1.2, 0.8, 0.2];
+  const at = (x: number, z: number): V3 => [x, 0, z];
+  const X = L + P;
+  // H: from the inlet axis up to the outlet axis level, beside the inlet
+  const hDim = () => {
+    s.axis([at(-P - 0.05, off), at(X, off)]);
+    s.dim([at(-P, 0), at(-P - 0.05, off)], at(-P - 0.32, 0), at(-P - 0.32, off), sym.offset, [-10, 5], "end");
+  };
+  if (round) {
+    s.cylinder([-P, 0, 0], [0, 0, 0], mainR);
+    const n = 12;
+    const centres = Array.from({ length: n + 1 }, (_, k) => at((L * k) / n, (off * k) / n));
+    s.tube(centres, centres.map((): [V3, V3] => [[0, 1, 0], [0, 0, 1]]), centres.map(() => mainR));
+    s.cylinder([L, 0, off], [X, 0, off], mainR);
+    s.axis([at(-P, 0), at(0, 0), at(L, off), at(X, off)]);
+    s.dim(...offset([[X, 0, off - mainR], [X, 0, off + mainR]], [0, -mainR - 0.14, 0]), sym.diameter, [10, 5], "start");
+    const low = (x: number, z: number, gap: number): V3 => [x, (mainR + gap) * Math.SQRT1_2, z - (mainR + gap) * Math.SQRT1_2];
+    s.dim([low(0, 0, 0), low(L, off, 0)], low(0, 0, 0.16), [L, (mainR + 0.16) * Math.SQRT1_2, -(mainR + 0.16) * Math.SQRT1_2], sym.length, [-8, 20]);
+    s.dim([low(L, off, 0), low(X, off, 0)], [L, (mainR + 0.16) * Math.SQRT1_2, -(mainR + 0.16) * Math.SQRT1_2], [X, (mainR + 0.16) * Math.SQRT1_2, -(mainR + 0.16) * Math.SQRT1_2], sym.allowance, [22, 22], "start");
+    hDim();
+    return;
+  }
+  const [A, B] = [0.4, 0.55]; // a₁ vertical (the raised side), b₁ across
+  const rect = (x: number, z: number): V3[] => [[x, -B / 2, z - A / 2], [x, B / 2, z - A / 2], [x, B / 2, z + A / 2], [x, -B / 2, z + A / 2]];
+  const prism = (r0: V3[], r1: V3[]) => s.solid([r0, r1, ...r0.map((q, i) => [q, r0[(i + 1) % 4], r1[(i + 1) % 4], r1[i]])], ["opening", "opening", "face", "face", "face", "face"]);
+  prism(rect(-P, 0), rect(0, 0));
+  prism(rect(0, 0), rect(L, off));
+  prism(rect(L, off), rect(X, off));
+  s.axis([at(-P, 0), at(0, 0), at(L, off), at(X, off)]);
+  s.dim(...offset([[X, -B / 2, off - A / 2], [X, -B / 2, off + A / 2]], [0, -0.14, 0]), sym.width, [10, 5], "start");
+  s.dim(...offset([[X, -B / 2, off - A / 2], [X, B / 2, off - A / 2]], [0.18, 0, 0]), sym.height, [10, 14], "start");
+  const z = -A / 2 - 0.16;
+  s.dim([[0, B / 2, -A / 2], [L, B / 2, off - A / 2]], [0, B / 2, z], [L, B / 2, z], sym.length, [-8, 20]);
+  s.dim([[L, B / 2, off - A / 2], [X, B / 2, off - A / 2]], [L, B / 2, z], [X, B / 2, z], sym.allowance, [22, 22], "start");
+  hDim();
 }
 
 /** a₁ and b₁ of a reducer's large rect end at x = 0. */
@@ -421,6 +530,13 @@ function branchFitting(s: Sketch, roundMain: boolean, roundSmall: boolean, cross
     s.dim(...offset([[half, -rectW / 2, -rectH / 2], [half, -rectW / 2, rectH / 2]], [0, -0.14, 0]), sym.height, [10, 5], "start");
     s.dim(...offset([[-half, -rectW / 2, rectH / 2], [-half, rectW / 2, rectH / 2]], [-0.18, 0, 0]), sym.width, [-8, -8]);
   }
+  // allowance strips at both ends of the run, p on the top line at x = half
+  for (const x of [-half + P, half - P]) {
+    if (roundMain) s.seamRound([x, 0, 0], [0, 1, 0], [0, 0, 1], mainR);
+    else s.seamRect(rectAt(x, rectW, rectH), [x, 0, 0]);
+  }
+  const runTop = (x: number): V3 => (roundMain ? [x, 0, mainR] : [x, -rectW / 2, rectH / 2]);
+  s.dim(...offset([runTop(half - P), runTop(half)], [0, 0, 0.2]), sym.allowance, [0, -8]);
   if (roundSmall) {
     s.dim(...offset(flatDiameter(rb, top), [0, 0, 0.24]), sym.smallDiameter, [0, -8]);
   } else {
@@ -452,6 +568,12 @@ export function isoDrawing(kind: FittingKind): IsoDrawing {
     case "straight":
     case "cap":
       straight(s, roundMain, shape === "cap");
+      break;
+    case "box":
+      box(s);
+      break;
+    case "offset":
+      offsetDuct(s, roundMain);
       break;
     case "tap":
       tap(s, roundMain);

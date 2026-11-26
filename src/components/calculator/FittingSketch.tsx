@@ -73,6 +73,8 @@ function Side({ kind }: { kind: FittingKind }) {
   switch (shape) {
     case "straight":
     case "cap":
+    case "box":
+    case "offset":
       return (
         <>
           <rect x={70} y={30} width={180} height={50} className={body} strokeWidth={1.6} />

@@ -1,7 +1,7 @@
 import type { FittingKind } from "@/lib/form/fields";
 import { uk, type Dictionary } from "@/lib/i18n/uk";
 
-export type SketchShape = "straight" | "cap" | "tap" | "elbow" | "reducer" | "tee" | "cross";
+export type SketchShape = "straight" | "cap" | "tap" | "elbow" | "reducer" | "tee" | "cross" | "box" | "offset";
 
 export interface SketchSpec {
   shape: SketchShape;
@@ -32,10 +32,10 @@ export const sketchSpecs: Record<FittingKind, SketchSpec> = {
   roundCrossRectBranches: { shape: "cross", roundMain: true, roundSmall: false },
   rectCross: { shape: "cross", roundMain: false, roundSmall: false },
   rectCrossRoundBranches: { shape: "cross", roundMain: false, roundSmall: true },
-  // BETA (ADR 0113): drawn as a straight piece for now
-  rectBox: { shape: "straight", roundMain: false },
-  roundOffset: { shape: "straight", roundMain: true },
-  rectOffset: { shape: "straight", roundMain: false },
+  // BETA (ADR 0113, sketches ADR 0114)
+  rectBox: { shape: "box", roundMain: false },
+  roundOffset: { shape: "offset", roundMain: true },
+  rectOffset: { shape: "offset", roundMain: false },
 };
 
 /** The letters a sketch uses, each with what it stands for, in the wording of the input fields. */
@@ -47,7 +47,10 @@ export function sketchLegend(kind: FittingKind, dict: Dictionary = uk): string[]
   switch (shape) {
     case "straight":
     case "cap":
+    case "box":
       return [main, l.length];
+    case "offset":
+      return [main, l.length, l.offset];
     case "tap":
       return [main, l.tapLength];
     case "elbow":
@@ -79,14 +82,18 @@ export function isoLegend(kind: FittingKind, dict: Dictionary = uk): string[] {
     case "straight":
     case "cap":
       return [main, l.length];
+    case "box":
+      return [main, l.length, l.boxPlates];
+    case "offset":
+      return [main, l.length, l.offset, l.allowance];
     case "tap":
       return [main, l.tapLength, l.tapDuct];
     case "elbow":
-      return [main, roundMain ? l.centerRadius : l.innerRadius, l.angleNote];
+      return [main, roundMain ? l.centerRadius : l.innerRadius, l.angleNote, l.allowance];
     case "reducer":
-      return [main, roundSmall ? l.smallEndDiameter : l.smallEndSides, l.length];
+      return [main, roundSmall ? l.smallEndDiameter : l.smallEndSides, l.length, l.allowance];
     case "tee":
     case "cross":
-      return [main, roundSmall ? l.branchDiameter : l.branchSides];
+      return [main, roundSmall ? l.branchDiameter : l.branchSides, l.allowance];
   }
 }

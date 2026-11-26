@@ -18,6 +18,10 @@ export function KindGlyph({ kind, className }: { kind: FittingKind; className?: 
     tee: <path d="M4 16H15V4H25V16H36V26H4Z" />,
     // main run with a branch on each side
     cross: <path d="M15 2H25V10H36V18H25V26H15V18H4V10H15Z" />,
+    // closed box with a partition
+    box: <><path d="M6 7h28v14H6z" /><path d="M20 7v14" strokeDasharray="2 2" /></>,
+    // duct whose outlet axis is shifted
+    offset: <><path d="M4 16h8l12-10h10v10H26L14 26H4z" />{roundMain ? <ellipse cx={4} cy={21} rx={2} ry={5} /> : null}</>,
   };
   return (
     <svg viewBox="0 0 40 28" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" aria-hidden="true" className={className}>
