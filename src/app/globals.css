@@ -94,6 +94,8 @@
 :root[data-accent="red"] {
   --accent: #b03a1e;
   --accent-soft: #f6e3dc;
+  /* single fittings: teal, the opposite of the brick, so they stay apart from the sections (ADR 0117) */
+  --single: #0f766e;
   --color-blue-300: #f9b8a3;
   --color-blue-400: #f08a6a;
   --color-blue-600: #b03a1e;
@@ -107,6 +109,7 @@
 :root[data-accent="red"][data-theme="dark"] {
   --accent: #f08a6a;
   --accent-soft: #3d2018;
+  --single: #2dd4bf;
 }
 
 body {
