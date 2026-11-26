@@ -19,6 +19,9 @@ export const errorCodes = [
   'input.unknownKey',
   'input.invalid',
   'insulation.unknown',
+  'box.ends',
+  'box.partitions',
+  'offset.negative',
 ] as const;
 
 export type ErrorCode = (typeof errorCodes)[number];

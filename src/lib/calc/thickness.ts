@@ -36,6 +36,7 @@ export function thicknessSize(f: Fitting): ThicknessSize {
     case 'roundCap':
     case 'roundTap':
     case 'roundElbow':
+    case 'roundOffset':
       return { shape: 'round', diameter: f.diameter };
     case 'roundReducer':
       // max over both ends: a mis-ordered "small" end must not pick a thinner sheet
@@ -48,6 +49,8 @@ export function thicknessSize(f: Fitting): ThicknessSize {
     case 'rectTap':
     case 'rectElbow':
     case 'rectToRoundReducer':
+    case 'rectBox':
+    case 'rectOffset':
       return { shape: 'rect', width: f.width, height: f.height };
     case 'roundTee':
     case 'roundTeeRectBranch':

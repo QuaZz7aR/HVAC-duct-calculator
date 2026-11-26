@@ -26,11 +26,14 @@ function openings(f: Fitting): Opening[] {
     case 'roundCap':
     case 'roundTap':
     case 'roundElbow':
+    case 'roundOffset':
       return [roundOpening(f.diameter)];
     case 'rectStraight':
     case 'rectCap':
     case 'rectTap':
     case 'rectElbow':
+    case 'rectBox':
+    case 'rectOffset':
       return [rectOpening(f.width, f.height)];
     case 'roundReducer':
       return [roundOpening(f.diameter), roundOpening(f.smallDiameter)];

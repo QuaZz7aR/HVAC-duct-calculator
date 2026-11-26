@@ -33,8 +33,8 @@ describe('recognizeKind', () => {
   });
   it('does not guess parts it does not compute', () => {
     const k = (name: string) => recognizeKind(undefined, name, parseName(name).sizes);
-    expect(k('Утка 200х400об, подъем на 120мм')).toBeUndefined();
-    expect(k('Приточный адаптер 660х153, 2 врезки Д150')).toBeUndefined();
+    expect(k('Утка 200х400об, подъем на 120мм')).toBe('rectOffset');
+    expect(k('Приточный адаптер 660х153, 2 врезки Д150')).toBe('rectBox');
     expect(k('Итого прямиков')).toBeUndefined();
   });
 });
@@ -95,7 +95,9 @@ describe('guessMapping and importRows', () => {
     expect(m.columns).toMatchObject({ position: 0, name: 1, L: 2, quantity: 3 });
     expect(m.lengthUnit).toBe('mm');
     const rows = importRows(freeText, m);
-    expect(rows.map((r) => r.status)).toEqual(['skip', 'ok', 'ok', 'unknown', 'skip', 'skip', 'ok']);
+    expect(rows.map((r) => r.status)).toEqual(['skip', 'ok', 'ok', 'ok', 'skip', 'skip', 'ok']);
+    // an утка is a beta offset (ADR 0113): sizes and the rise from the name, L from its column
+    expect(rows[3]).toMatchObject({ kind: 'rectOffset', values: { width: '200', height: '400', length: '350', offset: '120' } });
     expect(rows[1]).toMatchObject({ kind: 'roundStraight', values: { diameter: '150', length: '1000' }, quantity: '32', position: 'ПВ1-1' });
     expect(rows[2]).toMatchObject({ kind: 'roundElbow', values: { diameter: '150', angle: '90' } });
     expect(rows[6]).toMatchObject({ kind: 'roundReducer', values: { diameter: '150', smallDiameter: '100', length: '150' }, position: 'В1-25' });

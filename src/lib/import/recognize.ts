@@ -15,9 +15,11 @@ export interface NameParse {
   angle?: number;
   /** Part length in mm («l150мм», «L=300»). */
   length?: number;
+  /** Offset (утка) shift in mm («подъем на 120мм», «зміщення 100»), ADR 0113. */
+  offset?: number;
 }
 
-type Family = 'straight' | 'elbow' | 'reducer' | 'cap' | 'tap' | 'tee' | 'cross';
+type Family = 'straight' | 'elbow' | 'reducer' | 'cap' | 'tap' | 'tee' | 'cross' | 'offset' | 'box';
 
 // codes, compared in upper case; the engineer's Excel first, then this site's designations (uk and en)
 const codes: Record<string, FittingKind | Family> = {
@@ -34,6 +36,8 @@ const codes: Record<string, FittingKind | Family> = {
   'ПКХ': 'rectCrossRoundBranches', 'ПККР': 'rectCrossRoundBranches',
   CD: 'roundStraight', RD: 'rectStraight', CE: 'roundElbow', RE: 'rectElbow', CR: 'roundReducer', RR: 'rectReducer',
   RC: 'rectToRoundReducer', CTAP: 'roundTap', RTAP: 'rectTap', CAP: 'cap', CT: 'roundTee', CRT: 'roundTeeRectBranch',
+  // BETA kinds (ADR 0113)
+  'ПА': 'rectBox', 'КУ': 'roundOffset', 'ПУ': 'rectOffset', RA: 'rectBox', CO: 'roundOffset', RO: 'rectOffset',
   RT: 'rectTee', RCT: 'rectTeeRoundBranch', CX: 'roundCross', CRX: 'roundCrossRectBranches', RX: 'rectCross', RCX: 'rectCrossRoundBranches',
 };
 
@@ -46,10 +50,12 @@ const words: [RegExp, Family][] = [
   [/^(врізк|врезк|tap)/, 'tap'],
   [/^(трійник|тройник|tee)/, 'tee'],
   [/^(хрестовин|крестовин|cross)/, 'cross'],
+  [/^(утк|offset)/, 'offset'],
+  [/^(короб|адаптер|адаптор|plenum|adapter)/, 'box'],
 ];
 
-// parts this site does not compute (ADR 0061): a name with one of these is never matched by a word inside it («Адаптер ..., 2 врізки»)
-const notOurs = /утк|адаптер|короб|дифуз|диффуз|решітк|решетк|клапан|шумоглуш|offset|adapter|plenum/i;
+// parts a name word never matches (ADR 0061); adapters, boxes and offsets are matched by their words since ADR 0113
+const notOurs = /дифуз|диффуз|решітк|решетк|клапан|шумоглуш/i;
 
 // a hood over kitchen equipment is a cap by its metal: lid A x B plus a rim (ADR 0079); the name wins over a code such as ПП
 const hood = /зонт|парасольк|(?<!\p{L})hood/iu;
@@ -85,6 +91,8 @@ export function parseName(name: string): NameParse {
   const out: NameParse = { sizes };
   const length = new RegExp(String.raw`(?:^|[\s,(])[lLлЛ]\s*=?\s*${num}\s*(?:мм|mm)?`).exec(rest);
   if (length) { out.length = toNum(length[1]); rest = rest.replace(length[0], ' '); }
+  const shift = new RegExp(String.raw`(?:подъ[её]м|підйом|підйому|смещени[ея]|зміщення|offset)\s*(?:на\s*)?=?\s*${num}`, 'iu').exec(rest);
+  if (shift) { out.offset = toNum(shift[1]); rest = rest.replace(shift[0], ' '); }
   // an angle with its sign, or a bare common elbow angle («КО 90 Д150»); another bare number is a type or a count, not an angle
   const marked = new RegExp(String.raw`${num}\s*(?:°|град|deg)`).exec(rest);
   const bare = new RegExp(String.raw`(?:^|\s)(15|30|45|60|75|90)(?=\s|$)`).exec(rest);
@@ -105,6 +113,8 @@ function byShape(family: Family, sizes: NameSize[]): FittingKind | undefined {
     case 'elbow': return isRound(main) ? 'roundElbow' : 'rectElbow';
     case 'cap': return isRound(main) ? 'roundCap' : 'rectCap';
     case 'tap': return isRound(main) ? 'roundTap' : 'rectTap';
+    case 'offset': return isRound(main) ? 'roundOffset' : 'rectOffset';
+    case 'box': return isRound(main) ? undefined : 'rectBox';
     case 'reducer':
       if (!other) return undefined;
       if (isRound(main) && isRound(other)) return 'roundReducer';
@@ -132,6 +142,7 @@ export function recognizeKind(code: string | undefined, name: string | undefined
   if (fromCode) return byShape(fromCode, sizes);
   if (!name) return undefined;
   if (notOurs.test(name)) return undefined;
+  // an adapter or box names its taps later («Адаптер ..., 2 врізки»): the first family word decides
   const tokens = name.split(/[\s,;()]+/).filter(Boolean);
   // the first token may be a code («КО 90 Д150»); a code anywhere else is too risky (a «ПП» inside a description)
   const first = tokens[0] && codeOf(tokens[0]);

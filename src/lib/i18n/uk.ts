@@ -22,6 +22,7 @@ const sym = {
   radius: 'R',
   angle: 'α',
   allowance: 'p',
+  offset: 'H',
   quantity: 'n',
 };
 
@@ -117,6 +118,7 @@ export const uk = {
     tap: 'Врізки',
     tee: 'Трійники',
     cross: 'Хрестовини',
+    beta: 'Адаптери, утки (бета)',
   },
   removeItem: 'Видалити',
   cloneItem: 'Клонувати',
@@ -200,6 +202,9 @@ export const uk = {
     roundCrossRectBranches: { designation: 'КПХ', name: 'Кругла хрестовина із прямокутними врізками' },
     rectCross: { designation: 'ППХ', name: 'Прямокутна хрестовина із прямокутними врізками' },
     rectCrossRoundBranches: { designation: 'ПКХ', name: 'Прямокутна хрестовина із круглими врізками' },
+    rectBox: { designation: 'ПА', name: 'Адаптер / короб прямокутний (бета)' },
+    roundOffset: { designation: 'КУ', name: 'Утка кругла (бета)' },
+    rectOffset: { designation: 'ПУ', name: 'Утка прямокутна (бета)' },
   } satisfies Record<FittingKind, { designation: string; name: string }>,
   fields: {
     diameter: `Діаметр ${sym.diameter}, мм`,
@@ -217,6 +222,9 @@ export const uk = {
     branchWidth: `Ширина врізки ${sym.smallWidth} (вздовж осі), мм`,
     branchHeight: `Висота врізки ${sym.smallHeight}, мм`,
     maxPiece: 'Макс. довжина ланки, мм (0 — без поділу)',
+    offset: `Зміщення осі ${sym.offset}, мм`,
+    ends: 'Глухих торців (0, 1, 2)',
+    partitions: 'Перемичок, шт.',
   },
   results: {
     title: 'Результати по позиціях',
@@ -301,6 +309,9 @@ export const uk = {
     'input.unknownKey': 'Зайве поле',
     'input.invalid': 'Некоректні дані',
     'insulation.unknown': 'Невідомий матеріал утеплення',
+    'box.ends': 'Глухих торців може бути 0, 1 або 2',
+    'box.partitions': 'Кількість перемичок: ціле число від 0',
+    'offset.negative': 'Зміщення не може бути від’ємним',
     'quantity.invalid': 'Ціле число, не менше 1',
   } satisfies Record<FormIssueCode, string>,
   // non-blocking advice next to a row; numbers come from the warning, thresholds from config
@@ -329,6 +340,9 @@ export const uk = {
       length: 'Довжина деталі вздовж осі. Для переходу можна лишити порожнім: тоді 300 мм.',
       quantity: 'Скільки однакових деталей. Площа в сумах множиться на цю кількість.',
       insulation: 'Матеріал утеплення для цієї деталі. Площа рахується по зовнішній поверхні шару.',
+      offset: 'Наскільки зміщена вісь на виході відносно входу. У прямокутної утки зміщення йде вздовж сторони a₁. Бета: стінки рахуються по прямому похилу √(L² + H²).',
+      ends: 'Скільки торців короба закриті листом a₁ × b₁. Закрита коробка (адаптер) = 2. Патрубки й врізки додайте окремими рядками Квр / Пвр.',
+      partitions: 'Внутрішні перемички (наприклад, у щілинному адаптері), кожна — пластина a₁ × b₁.',
     },
     settings: {
       thicknessTable: 'За якою таблицею обирається товщина металу: ДБН В.2.5-67:2013 (додаток Ц) або таблиця інженера.',

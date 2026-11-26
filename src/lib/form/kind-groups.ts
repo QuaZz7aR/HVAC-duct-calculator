@@ -1,9 +1,9 @@
 import { uk, type Dictionary } from '../i18n/uk';
 import type { FittingKind, FormRow } from './fields';
 
-export type KindGroupId = 'straight' | 'elbow' | 'reducer' | 'cap' | 'tap' | 'tee' | 'cross';
+export type KindGroupId = 'straight' | 'elbow' | 'reducer' | 'cap' | 'tap' | 'tee' | 'cross' | 'beta';
 
-/** The kinds as the side panel lists them: seven groups, each in the order of `kindOrder`. */
+/** The kinds as the side panel lists them: eight groups (the last, BETA, ADR 0113), each in the order of `kindOrder`. */
 export const kindGroups: { id: KindGroupId; kinds: FittingKind[] }[] = [
   { id: 'straight', kinds: ['roundStraight', 'rectStraight'] },
   { id: 'elbow', kinds: ['roundElbow', 'rectElbow'] },
@@ -12,6 +12,7 @@ export const kindGroups: { id: KindGroupId; kinds: FittingKind[] }[] = [
   { id: 'tap', kinds: ['roundTap', 'rectTap'] },
   { id: 'tee', kinds: ['roundTee', 'roundTeeRectBranch', 'rectTee', 'rectTeeRoundBranch'] },
   { id: 'cross', kinds: ['roundCross', 'roundCrossRectBranches', 'rectCross', 'rectCrossRoundBranches'] },
+  { id: 'beta', kinds: ['rectBox', 'roundOffset', 'rectOffset'] },
 ];
 
 /** The kinds the phone shows as quick buttons above the list. */

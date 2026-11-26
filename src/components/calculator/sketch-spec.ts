@@ -32,6 +32,10 @@ export const sketchSpecs: Record<FittingKind, SketchSpec> = {
   roundCrossRectBranches: { shape: "cross", roundMain: true, roundSmall: false },
   rectCross: { shape: "cross", roundMain: false, roundSmall: false },
   rectCrossRoundBranches: { shape: "cross", roundMain: false, roundSmall: true },
+  // BETA (ADR 0113): drawn as a straight piece for now
+  rectBox: { shape: "straight", roundMain: false },
+  roundOffset: { shape: "straight", roundMain: true },
+  rectOffset: { shape: "straight", roundMain: false },
 };
 
 /** The letters a sketch uses, each with what it stands for, in the wording of the input fields. */

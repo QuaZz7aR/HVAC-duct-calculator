@@ -43,6 +43,32 @@ export function createSchemas(config: CalcConfig) {
       obj({ kind: z.literal('rectCap'), width: size(), height: size(), length: size() }),
       obj({ kind: z.literal('roundTap'), diameter: size(), length: size() }),
       obj({ kind: z.literal('rectTap'), width: size(), height: size(), length: size() }),
+      // BETA, ADR 0113: adapter / box and offsets
+      obj({
+        kind: z.literal('rectBox'),
+        width: size(),
+        height: size(),
+        length: size(),
+        ends: z.union([z.literal(0), z.literal(1), z.literal(2)], { error: 'box.ends' }),
+        partitions: z.number({ error: typeError('field.invalid') }).int({ error: 'box.partitions' }).gte(0, { error: 'box.partitions' }),
+      }),
+      obj({
+        kind: z.literal('roundOffset'),
+        diameter: size(),
+        length: size(),
+        offset: z.number({ error: typeError('field.invalid') }).gte(0, { error: 'offset.negative' }),
+        allowance: allowance(),
+        allowanceCount: allowanceCount(),
+      }),
+      obj({
+        kind: z.literal('rectOffset'),
+        width: size(),
+        height: size(),
+        length: size(),
+        offset: z.number({ error: typeError('field.invalid') }).gte(0, { error: 'offset.negative' }),
+        allowance: allowance(),
+        allowanceCount: allowanceCount(),
+      }),
       obj({
         kind: z.literal('roundElbow'),
         diameter: size(),

@@ -23,6 +23,9 @@ const defaultSizes: Record<FittingKind, FormRow['values']> = {
   roundCrossRectBranches: { diameter: '500', branchWidth: '250', branchHeight: '150' },
   rectCross: { width: '600', height: '300', branchWidth: '250', branchHeight: '200' },
   rectCrossRoundBranches: { width: '600', height: '300', branchDiameter: '200' },
+  rectBox: { width: '600', height: '300', length: '500' },
+  roundOffset: { diameter: '200', length: '500', offset: '200' },
+  rectOffset: { width: '400', height: '200', length: '500', offset: '200' },
 };
 
 /** Prefills of the kind plus its default sizes. */
