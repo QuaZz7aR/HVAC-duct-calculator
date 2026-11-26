@@ -16,8 +16,21 @@ export function resolveTheme(theme: Theme, systemDark: boolean): 'light' | 'dark
 
 export const themeStorageKey = 'theme';
 
+/** Accent colour (ADR 0117): the blue of the blueprint by default, or a brick red; works in both themes. */
+export const accents = ['blue', 'red'] as const;
+export type Accent = (typeof accents)[number];
+
+export const defaultAccent: Accent = 'blue';
+
+/** A stored value back to an accent; anything unknown is the default. */
+export function toAccent(value: string | null | undefined): Accent {
+  return accents.find((a) => a === value) ?? defaultAccent;
+}
+
+export const accentStorageKey = 'accent';
+
 /** Runs in <head> before paint, so a stored theme shows without a flash of the other one. */
-export const themeScript = `try{var t=localStorage.getItem('${themeStorageKey}');var d=t==='dark'||(t!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=d?'dark':'light'}catch(e){}`;
+export const themeScript = `try{var t=localStorage.getItem('${themeStorageKey}');var d=t==='dark'||(t!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=d?'dark':'light';if(localStorage.getItem('${accentStorageKey}')==='red')document.documentElement.dataset.accent='red'}catch(e){}`;
 
 /**
  * Runs before paint with the theme script (ADR 0112): the stored mode goes on `<html data-mode>` so advanced-only blocks

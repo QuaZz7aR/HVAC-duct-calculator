@@ -13,6 +13,7 @@ export const en: Dictionary = {
   locale: 'en-GB',
   decimal: '.',
   mode: { label: 'Interface mode', short: 'Mode', simple: 'Simple', advanced: 'Advanced', info: 'Simple mode shows sizes, quantity and metal areas. Advanced adds the calculation settings, allowances, insulation and price. Hidden values are kept and still count.' },
+  accent: { label: 'Accent', blue: 'Blue', red: 'Brick red' }, 
   theme: { short: 'Theme', label: 'Colour theme', system: 'Match system', light: 'Light', dark: 'Dark' },
   language: { short: 'Language', label: 'Interface language', uk: 'УКР', en: 'EN' },
   appTitle: 'Duct calculator',

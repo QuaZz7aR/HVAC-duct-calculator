@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useI18n } from "@/components/i18n";
 import { useTheme } from "@/components/theme";
-import { themes, type Theme } from "@/lib/form/theme";
+import { accents, themes, type Accent, type Theme } from "@/lib/form/theme";
 import { railItemClass } from "./styles";
 import { useDismiss } from "./useDismiss";
 
@@ -13,6 +13,33 @@ function ThemeIcon({ theme, className = "h-4 w-4" }: { theme: Theme; className?:
       {theme === "light" && <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></>}
       {theme === "dark" && <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />}
     </svg>
+  );
+}
+
+/** The swatch of an accent: its own colour in the current theme, independent of the accent shown now. */
+const swatch: Record<Accent, string> = { blue: "bg-[#1d5fd1] dark:bg-[#6ea2ff]", red: "bg-[#b03a1e] dark:bg-[#f08a6a]" };
+
+/** Accent choice (ADR 0117): one swatch button per accent, in the phone menu and the rail's theme list. */
+export function AccentSwitch() {
+  const { dict } = useI18n();
+  const { accent, setAccent } = useTheme();
+  return (
+    <div role="group" aria-label={dict.accent.label} className="flex shrink-0 items-center gap-2 text-sm">
+      <span className="text-muted">{dict.accent.label}</span>
+      {accents.map((a) => (
+        <button
+          key={a}
+          type="button"
+          aria-pressed={accent === a}
+          aria-label={dict.accent[a]}
+          title={dict.accent[a]}
+          onClick={() => setAccent(a)}
+          className={`grid h-7 w-7 place-items-center rounded-full border-2 focus-visible:outline-2 focus-visible:outline-accent ${accent === a ? "border-foreground" : "border-transparent"}`}
+        >
+          <span aria-hidden="true" className={`h-5 w-5 rounded-full ${swatch[a]}`} />
+        </button>
+      ))}
+    </div>
   );
 }
 
@@ -76,6 +103,7 @@ export function ThemeRailButton() {
               <span>{dict.theme[t]}</span>
             </button>
           ))}
+          <div className="mt-2 border-t border-line px-1.5 pt-2"><AccentSwitch /></div>
         </div>
       )}
     </div>
