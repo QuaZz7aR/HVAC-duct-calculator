@@ -178,6 +178,8 @@ export const uk = {
       centerRadius: `${sym.radius} — радіус по осі`,
       innerRadius: `${sym.radius} — внутрішній радіус`,
       angle: `${sym.angle} — кут`,
+      offset: `${sym.offset} — зміщення осі`,
+      boxPlates: 'торці й перемички — пластини a₁ × b₁',
     },
   },
   autoValue: 'авто',

@@ -14,7 +14,7 @@ Three new kinds, marked «(бета)» in their names (uk and en) and listed in 
 - **КУ `roundOffset`** (round offset): `pi d (sqrt(L^2 + H^2) + count x p)`, the oblique end cuts ignored; a smooth slanted tube, not two segmented elbows (`TODO(confirm)`).
 - Offsets and boxes have no waste factor other than the user's seam allowance, consumption = actual area, insulation by the usual + 2t rule.
 - Import: recognised by the codes ПА, ПУ, КУ (RA, RO, CO); an offset's «подъем / підйом / зміщення на N мм» in the name fills H. Recognition by the words «утка», «короб», «адаптер» is **not** switched on: two existing import tests pin those names as not recognised, and tests are changed only by the owner. A ready patch for that is offered separately.
-- The sketch of all three is the straight piece for now.
+- The sketch of all three is the straight piece for now (replaced by [0114](0114-box-and-offset-sketches.md)).
 
 ## Consequences
 - Lifts «Offsets ("utka"), adapters/boxes» from the out-of-scope list in `CLAUDE.md`; refines [0061](0061-import-from-excel.md) (codes only).

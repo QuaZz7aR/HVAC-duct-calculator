@@ -386,6 +386,51 @@ function reducer(s: Sketch, roundMain: boolean, roundSmall: boolean) {
   s.dim([[0, W / 2, -H / 2], [len2, w1 / 2, -h1 / 2]], [0, W / 2, -H / 2 - 0.16], [len2, w1 / 2, -H / 2 - 0.16], sym.length, [-8, 20]);
 }
 
+/** Adapter / box (ADR 0114): a closed rect box, end plates toned as plates, one partition shown dashed in the middle. */
+function box(s: Sketch) {
+  const [W, H, L] = [0.72, 0.5, 1.3];
+  s.prism("x", 0, L, W, H, W, H, "plate");
+  const mid = L / 2;
+  const q: V3[] = [[mid, -W / 2, -H / 2], [mid, W / 2, -H / 2], [mid, W / 2, H / 2], [mid, -W / 2, H / 2]];
+  q.forEach((a, i) => s.edge(a, q[(i + 1) % 4], true));
+  s.dim(...offset([[0, -W / 2, H / 2], [0, W / 2, H / 2]], [-0.18, 0, 0]), sym.width, [-8, -8]);
+  s.dim(...offset([[0, W / 2, -H / 2], [0, W / 2, H / 2]], [0, 0.14, 0]), sym.height, [-10, 5], "end");
+  s.dim(...offset([[0, W / 2, -H / 2], [L, W / 2, -H / 2]], [0, 0, -0.16]), sym.length, [-8, 20]);
+}
+
+/**
+ * Offset («утка», ADR 0114): a straight slanted duct whose outlet is raised by `off` (the «підйом» of a spec), drawn upwards so the shift reads at once.
+ * On a rect offset the raised side is a₁, so a₁ stands vertical here. L is the axial length, H the shift between the axes, measured at the inlet.
+ */
+function offsetDuct(s: Sketch, round: boolean) {
+  const [L, off] = [1.2, 0.8];
+  const at = (x: number, z: number): V3 => [x, 0, z];
+  // H: from the inlet axis up to the outlet axis level, beside the inlet
+  const hDim = () => {
+    s.axis([at(-0.05, off), at(L, off)]);
+    s.dim([at(0, 0), at(-0.05, off)], at(-0.32, 0), at(-0.32, off), sym.offset, [-10, 5], "end");
+  };
+  if (round) {
+    const n = 12;
+    const centres = Array.from({ length: n + 1 }, (_, k) => at((L * k) / n, (off * k) / n));
+    s.tube(centres, centres.map((): [V3, V3] => [[0, 1, 0], [0, 0, 1]]), centres.map(() => mainR));
+    s.axis([at(0, 0), at(L, off)]);
+    s.dim(...offset([[L, 0, off - mainR], [L, 0, off + mainR]], [0, -mainR - 0.14, 0]), sym.diameter, [10, 5], "start");
+    s.dim([lower(0, mainR, 0), [L, mainR * Math.SQRT1_2, -mainR * Math.SQRT1_2 + off]], lower(0, mainR), [L, (mainR + 0.16) * Math.SQRT1_2, -(mainR + 0.16) * Math.SQRT1_2], sym.length, [-8, 20]);
+    hDim();
+    return;
+  }
+  const [A, B] = [0.4, 0.55]; // a₁ vertical (the raised side), b₁ across
+  const rect = (x: number, z: number): V3[] => [[x, -B / 2, z - A / 2], [x, B / 2, z - A / 2], [x, B / 2, z + A / 2], [x, -B / 2, z + A / 2]];
+  const [r0, r1] = [rect(0, 0), rect(L, off)];
+  s.solid([r0, r1, ...r0.map((q, i) => [q, r0[(i + 1) % 4], r1[(i + 1) % 4], r1[i]])], ["opening", "opening", "face", "face", "face", "face"]);
+  s.axis([at(0, 0), at(L, off)]);
+  s.dim(...offset([[L, -B / 2, off - A / 2], [L, -B / 2, off + A / 2]], [0, -0.14, 0]), sym.width, [10, 5], "start");
+  s.dim(...offset([[L, -B / 2, off - A / 2], [L, B / 2, off - A / 2]], [0.18, 0, 0]), sym.height, [10, 14], "start");
+  s.dim([[0, B / 2, -A / 2], [L, B / 2, off - A / 2]], [0, B / 2, -A / 2 - 0.16], [L, B / 2, -A / 2 - 0.16], sym.length, [-8, 20]);
+  hDim();
+}
+
 /** a₁ and b₁ of a reducer's large rect end at x = 0. */
 function rectEnd(s: Sketch, W: number, H: number) {
   s.dim(...offset([[0, -W / 2, H / 2], [0, W / 2, H / 2]], [-0.18, 0, 0]), sym.width, [-8, -8]);
@@ -452,6 +497,12 @@ export function isoDrawing(kind: FittingKind): IsoDrawing {
     case "straight":
     case "cap":
       straight(s, roundMain, shape === "cap");
+      break;
+    case "box":
+      box(s);
+      break;
+    case "offset":
+      offsetDuct(s, roundMain);
       break;
     case "tap":
       tap(s, roundMain);

@@ -157,6 +157,8 @@ export const en: Dictionary = {
       centerRadius: `${sym.radius} — centre-line radius`,
       innerRadius: `${sym.radius} — inner radius`,
       angle: `${sym.angle} — angle`,
+      offset: `${sym.offset} — axis offset`,
+      boxPlates: 'ends and partitions — a₁ × b₁ plates',
     },
   },
   autoValue: 'auto',
