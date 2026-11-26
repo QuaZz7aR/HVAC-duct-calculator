@@ -122,6 +122,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0112](adr/0112-pre-paint-project-and-mode.md) | Pre-paint script: stored mode and saved rows on `<html>`, the list hidden only for a saved project | 2026-11-25 | Accepted |
 | [0113](adr/0113-adapters-boxes-and-offsets-beta.md) | Adapters / boxes (ПА) and offsets (ПУ, КУ) as a beta from open formulas; import by codes only | 2026-11-26 | Accepted (beta) |
 | [0114](adr/0114-box-and-offset-sketches.md) | Own isometric sketches and rail glyphs for ПА, ПУ, КУ | 2026-11-26 | Accepted |
+| [0115](adr/0115-import-fixes-from-the-full-recheck.md) | Import: «###» quantity left empty and flagged, slot adapters «A×B×C» with partitions, flexible duct not recognised | 2026-11-26 | Accepted |
 | [0095](adr/0095-numbering-by-systems.md) | «Нумерація»: positions «система-№», empty only or all again, preview first | 2026-11-24 | Accepted |
 | [0096](adr/0096-import-from-pdf.md) | Import from PDF: own text reader, columns from table borders or text ranges | 2026-11-24 | Accepted (thresholds `TODO(confirm)`) |
 | [0097](adr/0097-video-clips-in-the-help.md) | Short MP4 clip per help step, loaded only when the dialog opens | 2026-11-24 | Accepted |

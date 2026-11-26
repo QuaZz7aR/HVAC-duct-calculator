@@ -408,6 +408,8 @@ export const en: Dictionary = {
     noSizesShort: 'no sizes in the file',
     joined: (n: number) => `joined from ${n} lines of the PDF: please check the name and the sizes`,
     joinedShort: (n: number) => `joined from ${n} lines`,
+    quantityUnreadable: 'the quantity in the file is unreadable («###»): enter it on the card',
+    quantityUnreadableShort: 'quantity unreadable',
     conflictShort: (n: number) => `sizes in the name and the columns differ (${n})`,
     another: 'Another file',
     errors: {

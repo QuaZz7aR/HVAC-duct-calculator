@@ -435,6 +435,8 @@ export const uk = {
     noSizesShort: 'розмірів у файлі немає',
     joined: (n: number) => `склеєно з ${n} рядків PDF: перевірте назву й розміри`,
     joinedShort: (n: number) => `склеєно з ${n} рядків`,
+    quantityUnreadable: 'кількість у файлі не читається («###»): вкажіть її в картці',
+    quantityUnreadableShort: 'кількість не читається',
     conflictShort: (n: number) => `розміри в назві й у колонках різняться (${n})`,
     another: 'Інший файл',
     errors: {
