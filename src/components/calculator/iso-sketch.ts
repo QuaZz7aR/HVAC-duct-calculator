@@ -348,13 +348,12 @@ function elbow(s: Sketch, round: boolean) {
     // R beside its leader, α just above the middle of its arc
     s.radius([0, 0, 0], centres[0], sym.radius, [6, 11], 0.3);
     s.angle([0, 0, 0], [centres[n]], 0.18, t[0], t[n], sym.angle, [-4, -4]);
-    // the end at x = 0 faces right on screen: its diameter is measured beside it
-    s.dim(...offset([[0, -rc, -mainR], [0, -rc, mainR]], [0, -mainR - 0.14, 0]), sym.diameter, [10, 5], "start");
-    // allowance strips at both ends of the bend, p on the top line of the end at x = 0
-    const dt = P / rc;
-    for (const a of [t[0] - dt, t[n] + dt]) s.seamRound([rc * Math.cos(a), rc * Math.sin(a), 0], [Math.cos(a), Math.sin(a), 0], [0, 0, 1], mainR);
-    const topAt = (a: number): V3 => [rc * Math.cos(a), rc * Math.sin(a), mainR];
-    s.dim(...offset([topAt(t[0]), topAt(t[0] - dt)], [0, 0, 0.2]), sym.allowance, [0, -8]);
+    // straight allowance strips continue both legs: +x from the end at x = 0, +y from the end at y = 0
+    s.cylinder([-rc, 0, 0], [-rc, P, 0], mainR);
+    s.cylinder([0, -rc, 0], [P, -rc, 0], mainR);
+    // the end at x = P faces right on screen: its diameter is measured beside it
+    s.dim(...offset([[P, -rc, -mainR], [P, -rc, mainR]], [0, -mainR - 0.14, 0]), sym.diameter, [10, 5], "start");
+    s.dim(...offset([[0, -rc, mainR], [P, -rc, mainR]], [0, 0, 0.2]), sym.allowance, [0, -8]);
   } else {
     const [ri, w, h] = [0.55, 0.55, 0.5];
     const ro = ri + w;
@@ -367,14 +366,16 @@ function elbow(s: Sketch, round: boolean) {
     // R and α are drawn in the bottom plane, from the centre to the lower inner edge, so they stay off the walls
     s.radius([0, 0, -h / 2], bi[0], sym.radius, [6, 11], 0.3);
     s.angle([0, 0, -h / 2], [bi[n]], 0.18, t[0], t[n], sym.angle, [-4, -5]);
-    s.dim(...offset([[-ro, 0, -h / 2], [-ri, 0, -h / 2]], [0, 0, -0.16]), sym.width, [-8, 18]);
-    s.dim(...offset([[-ro, 0, -h / 2], [-ro, 0, h / 2]], [-0.14, 0, 0]), sym.height, [-10, 5], "end");
-    const rm = ri + w / 2;
-    const dt = P / rm;
-    const sec = (a: number): V3[] => [[ri * Math.cos(a), ri * Math.sin(a), -h / 2], [ro * Math.cos(a), ro * Math.sin(a), -h / 2], [ro * Math.cos(a), ro * Math.sin(a), h / 2], [ri * Math.cos(a), ri * Math.sin(a), h / 2]];
-    for (const a of [t[0] - dt, t[n] + dt]) s.seamRect(sec(a), [rm * Math.cos(a), rm * Math.sin(a), 0]);
-    const topAt = (a: number): V3 => [ro * Math.cos(a), ro * Math.sin(a), h / 2];
-    s.dim(...offset([topAt(t[0]), topAt(t[0] - dt)], [0, 0, 0.2]), sym.allowance, [0, -8]);
+    // straight allowance strips continue both legs: +x from the end at x = 0, +y from the end at y = 0
+    const strip = (r0: V3[], d: V3) => {
+      const r1 = r0.map((q) => add(q, d));
+      s.solid([r0, r1, ...r0.map((q, i) => [q, r0[(i + 1) % 4], r1[(i + 1) % 4], r1[i]])], ["opening", "opening", "face", "face", "face", "face"]);
+    };
+    strip([bi[n], bo[n], to[n], ti[n]], [0, P, 0]);
+    strip([bi[0], bo[0], to[0], ti[0]], [P, 0, 0]);
+    s.dim(...offset([[-ro, P, -h / 2], [-ri, P, -h / 2]], [0, 0, -0.16]), sym.width, [-8, 18]);
+    s.dim(...offset([[-ro, P, -h / 2], [-ro, P, h / 2]], [-0.14, 0, 0]), sym.height, [-10, 5], "end");
+    s.dim(...offset([[0, -ro, h / 2], [P, -ro, h / 2]], [0, 0, 0.2]), sym.allowance, [0, -8]);
   }
 }
 
