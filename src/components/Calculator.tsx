@@ -4,7 +4,7 @@ import { useState } from "react";
 import { I18nProvider, useI18n } from "@/components/i18n";
 import { ModeProvider, useMode } from "@/components/mode";
 import { ThemeProvider } from "@/components/theme";
-import { ThemeSwitch } from "./calculator/ThemeSwitch";
+import { AccentSwitch, ThemeSwitch } from "./calculator/ThemeSwitch";
 import { ErrorList } from "./calculator/ErrorList";
 import { ModeSwitch } from "./calculator/ModeSwitch";
 import { LangSwitch } from "./calculator/LangSwitch";
@@ -59,7 +59,7 @@ function CalculatorPage() {
             <div className="print-hide hidden lg:block"><HelpButton variant="prominent" /></div>
           </div>
         </header>
-        {/* phone: one sticky bar: mode, numbering, clear all and the «☰» menu (import, export, language, theme; ADRs 0106, 0108). Desktop: all in the rail (ADRs 0048, 0089) */}
+        {/* phone: one sticky bar: mode, numbering, clear all and the «☰» menu (import, export, language, theme, accent; ADRs 0106, 0108, 0117). Desktop: all in the rail (ADRs 0048, 0089) */}
         <div className="print-hide sticky top-0 z-20 -mx-4 flex items-center gap-2 bg-background px-4 py-2 lg:hidden [&>*>button]:h-9 [&_[role=group]>button]:h-9 [&>div>div>button]:h-9">
           <ModeSwitch />
           {rows.length > 0 && <div className="ml-auto flex items-center gap-2"><NumberSystems compact rows={rows} onNumber={numberRows} /><ClearAll compact count={rows.length} onClear={clearRows} /></div>}
@@ -68,6 +68,7 @@ function CalculatorPage() {
             <ExportBar variant="toolbar" {...exportProps} />
             <LangSwitch />
             <ThemeSwitch />
+            <AccentSwitch />
           </PhoneMenu></div>
         </div>
 
