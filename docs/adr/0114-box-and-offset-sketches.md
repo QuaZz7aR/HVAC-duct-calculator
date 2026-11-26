@@ -10,8 +10,8 @@
 ## Decision
 - New sketch shapes `box` and `offset` in `sketch-spec.ts`, drawn by `iso-sketch.ts` in the same line style and dimension rules as the other kinds ([0033](0033-isometric-sketch.md)).
 - ПА: a closed box, end plates toned as plates, one partition dashed in the middle; a₁, b₁, L.
-- ПУ / КУ: a straight slanted duct raised by H (the «підйом» of a spec), centre line dash-dot, the inlet axis carried on to show H beside the inlet; on ПУ the raised side a₁ stands vertical. d₁ or a₁ × b₁ at the outlet, L below.
-- Legends: «торці й перемички — пластини a₁ × b₁» for the box, «H — зміщення осі» for offsets; rail glyphs for both shapes (`KindGlyph`).
+- ПУ / КУ: a straight slanted duct raised by H (the «підйом» of a spec), centre line dash-dot, the inlet axis carried on to show H beside the inlet; on ПУ the raised side a₁ stands vertical. d₁ or a₁ × b₁ at the outlet, L below. A short straight allowance strip stands at each end, p dimensioned at the outlet in a chain with L (owner, 2026-11-26: «нужно также показывать и припуск»).
+- Legends: «торці й перемички — пластини a₁ × b₁» for the box, «H — зміщення осі» and «p — припуск на кожному кінці» for offsets; rail glyphs for both shapes (`KindGlyph`).
 
 ## Consequences
 - The layout tests of `iso-sketch.test.ts` (labels off the walls, no crossing dimensions) cover the new kinds as they cover every kind.

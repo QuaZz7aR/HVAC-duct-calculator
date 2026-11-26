@@ -403,31 +403,41 @@ function box(s: Sketch) {
  * On a rect offset the raised side is a₁, so a₁ stands vertical here. L is the axial length, H the shift between the axes, measured at the inlet.
  */
 function offsetDuct(s: Sketch, round: boolean) {
-  const [L, off] = [1.2, 0.8];
+  // P: the allowance strip at each end, a straight stub on the axis of its end; p is dimensioned at the outlet, in a chain with L
+  const [L, off, P] = [1.2, 0.8, 0.2];
   const at = (x: number, z: number): V3 => [x, 0, z];
+  const X = L + P;
   // H: from the inlet axis up to the outlet axis level, beside the inlet
   const hDim = () => {
-    s.axis([at(-0.05, off), at(L, off)]);
-    s.dim([at(0, 0), at(-0.05, off)], at(-0.32, 0), at(-0.32, off), sym.offset, [-10, 5], "end");
+    s.axis([at(-P - 0.05, off), at(X, off)]);
+    s.dim([at(-P, 0), at(-P - 0.05, off)], at(-P - 0.32, 0), at(-P - 0.32, off), sym.offset, [-10, 5], "end");
   };
   if (round) {
+    s.cylinder([-P, 0, 0], [0, 0, 0], mainR);
     const n = 12;
     const centres = Array.from({ length: n + 1 }, (_, k) => at((L * k) / n, (off * k) / n));
     s.tube(centres, centres.map((): [V3, V3] => [[0, 1, 0], [0, 0, 1]]), centres.map(() => mainR));
-    s.axis([at(0, 0), at(L, off)]);
-    s.dim(...offset([[L, 0, off - mainR], [L, 0, off + mainR]], [0, -mainR - 0.14, 0]), sym.diameter, [10, 5], "start");
-    s.dim([lower(0, mainR, 0), [L, mainR * Math.SQRT1_2, -mainR * Math.SQRT1_2 + off]], lower(0, mainR), [L, (mainR + 0.16) * Math.SQRT1_2, -(mainR + 0.16) * Math.SQRT1_2], sym.length, [-8, 20]);
+    s.cylinder([L, 0, off], [X, 0, off], mainR);
+    s.axis([at(-P, 0), at(0, 0), at(L, off), at(X, off)]);
+    s.dim(...offset([[X, 0, off - mainR], [X, 0, off + mainR]], [0, -mainR - 0.14, 0]), sym.diameter, [10, 5], "start");
+    const low = (x: number, z: number, gap: number): V3 => [x, (mainR + gap) * Math.SQRT1_2, z - (mainR + gap) * Math.SQRT1_2];
+    s.dim([low(0, 0, 0), low(L, off, 0)], low(0, 0, 0.16), [L, (mainR + 0.16) * Math.SQRT1_2, -(mainR + 0.16) * Math.SQRT1_2], sym.length, [-8, 20]);
+    s.dim([low(L, off, 0), low(X, off, 0)], [L, (mainR + 0.16) * Math.SQRT1_2, -(mainR + 0.16) * Math.SQRT1_2], [X, (mainR + 0.16) * Math.SQRT1_2, -(mainR + 0.16) * Math.SQRT1_2], sym.allowance, [22, 22], "start");
     hDim();
     return;
   }
   const [A, B] = [0.4, 0.55]; // a₁ vertical (the raised side), b₁ across
   const rect = (x: number, z: number): V3[] => [[x, -B / 2, z - A / 2], [x, B / 2, z - A / 2], [x, B / 2, z + A / 2], [x, -B / 2, z + A / 2]];
-  const [r0, r1] = [rect(0, 0), rect(L, off)];
-  s.solid([r0, r1, ...r0.map((q, i) => [q, r0[(i + 1) % 4], r1[(i + 1) % 4], r1[i]])], ["opening", "opening", "face", "face", "face", "face"]);
-  s.axis([at(0, 0), at(L, off)]);
-  s.dim(...offset([[L, -B / 2, off - A / 2], [L, -B / 2, off + A / 2]], [0, -0.14, 0]), sym.width, [10, 5], "start");
-  s.dim(...offset([[L, -B / 2, off - A / 2], [L, B / 2, off - A / 2]], [0.18, 0, 0]), sym.height, [10, 14], "start");
-  s.dim([[0, B / 2, -A / 2], [L, B / 2, off - A / 2]], [0, B / 2, -A / 2 - 0.16], [L, B / 2, -A / 2 - 0.16], sym.length, [-8, 20]);
+  const prism = (r0: V3[], r1: V3[]) => s.solid([r0, r1, ...r0.map((q, i) => [q, r0[(i + 1) % 4], r1[(i + 1) % 4], r1[i]])], ["opening", "opening", "face", "face", "face", "face"]);
+  prism(rect(-P, 0), rect(0, 0));
+  prism(rect(0, 0), rect(L, off));
+  prism(rect(L, off), rect(X, off));
+  s.axis([at(-P, 0), at(0, 0), at(L, off), at(X, off)]);
+  s.dim(...offset([[X, -B / 2, off - A / 2], [X, -B / 2, off + A / 2]], [0, -0.14, 0]), sym.width, [10, 5], "start");
+  s.dim(...offset([[X, -B / 2, off - A / 2], [X, B / 2, off - A / 2]], [0.18, 0, 0]), sym.height, [10, 14], "start");
+  const z = -A / 2 - 0.16;
+  s.dim([[0, B / 2, -A / 2], [L, B / 2, off - A / 2]], [0, B / 2, z], [L, B / 2, z], sym.length, [-8, 20]);
+  s.dim([[L, B / 2, off - A / 2], [X, B / 2, off - A / 2]], [L, B / 2, z], [X, B / 2, z], sym.allowance, [22, 22], "start");
   hDim();
 }
 

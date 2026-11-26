@@ -158,6 +158,7 @@ export const en: Dictionary = {
       innerRadius: `${sym.radius} — inner radius`,
       angle: `${sym.angle} — angle`,
       offset: `${sym.offset} — axis offset`,
+      allowance: `${sym.allowance} — allowance at each end`,
       boxPlates: 'ends and partitions — a₁ × b₁ plates',
     },
   },

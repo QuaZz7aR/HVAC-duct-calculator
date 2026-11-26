@@ -85,7 +85,7 @@ export function isoLegend(kind: FittingKind, dict: Dictionary = uk): string[] {
     case "box":
       return [main, l.length, l.boxPlates];
     case "offset":
-      return [main, l.length, l.offset];
+      return [main, l.length, l.offset, l.allowance];
     case "tap":
       return [main, l.tapLength, l.tapDuct];
     case "elbow":
