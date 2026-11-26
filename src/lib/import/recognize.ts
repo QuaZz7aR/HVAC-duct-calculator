@@ -50,12 +50,12 @@ const words: [RegExp, Family][] = [
   [/^(врізк|врезк|tap)/, 'tap'],
   [/^(трійник|тройник|tee)/, 'tee'],
   [/^(хрестовин|крестовин|cross)/, 'cross'],
+  [/^(утк|offset)/, 'offset'],
+  [/^(короб|адаптер|адаптор|plenum|adapter)/, 'box'],
 ];
 
-// parts a name word never matches (ADR 0061): «Адаптер ..., 2 врізки» must not become a tap. The beta kinds of ADR 0113
-// (адаптер / короб, утка) are recognised by their codes only (ПА, КУ, ПУ): matching them by name changes pinned import tests,
-// which waits for the owner (TODO(confirm)).
-const notOurs = /утк|адаптер|короб|дифуз|диффуз|решітк|решетк|клапан|шумоглуш|offset|adapter|plenum/i;
+// parts a name word never matches (ADR 0061); adapters, boxes and offsets are matched by their words since ADR 0113
+const notOurs = /дифуз|диффуз|решітк|решетк|клапан|шумоглуш/i;
 
 // a hood over kitchen equipment is a cap by its metal: lid A x B plus a rim (ADR 0079); the name wins over a code such as ПП
 const hood = /зонт|парасольк|(?<!\p{L})hood/iu;
@@ -142,6 +142,7 @@ export function recognizeKind(code: string | undefined, name: string | undefined
   if (fromCode) return byShape(fromCode, sizes);
   if (!name) return undefined;
   if (notOurs.test(name)) return undefined;
+  // an adapter or box names its taps later («Адаптер ..., 2 врізки»): the first family word decides
   const tokens = name.split(/[\s,;()]+/).filter(Boolean);
   // the first token may be a code («КО 90 Д150»); a code anywhere else is too risky (a «ПП» inside a description)
   const first = tokens[0] && codeOf(tokens[0]);
