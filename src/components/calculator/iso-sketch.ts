@@ -104,6 +104,30 @@ class Sketch {
     this.items.push({ type: "angle", arc, rays: ends.map((e): [V2, V2] => [c, p(e)]), label, at: [mid[0] + shift[0], mid[1] + shift[1]] });
   }
 
+  /** Where an allowance strip begins on a round wall: the half of the section ring turned to the viewer, as a thin line. */
+  seamRound(c: V3, u: V3, v: V3, r: number) {
+    const pts = ring(c, u, v, r, 72);
+    const radial = (q: V3) => sub(q, c);
+    const n = pts.length;
+    const start = pts.findIndex((q, i) => dot(radial(q), view) > 0 && dot(radial(pts[(i - 1 + n) % n]), view) <= 0);
+    const out: V3[] = [];
+    for (let k = 0; k < n; k++) {
+      const q = pts[(start + k) % n];
+      if (dot(radial(q), view) <= 0) break;
+      out.push(q);
+    }
+    this.items.push({ type: "outline", points: out.map(p) });
+  }
+
+  /** Where an allowance strip begins on a rect wall: the section rectangle, edges on the far walls dashed. */
+  seamRect(corners: V3[], centre: V3) {
+    corners.forEach((a, i) => {
+      const b = corners[(i + 1) % corners.length];
+      const mid = scale(add(a, b), 0.5);
+      this.edge(a, b, dot(sub(mid, centre), view) <= 0);
+    });
+  }
+
   /** Centre line of a bent duct, dash-dot. */
   axis(points: V3[]) {
     this.items.push({ type: "axis", points: points.map(p) });
@@ -326,6 +350,11 @@ function elbow(s: Sketch, round: boolean) {
     s.angle([0, 0, 0], [centres[n]], 0.18, t[0], t[n], sym.angle, [-4, -4]);
     // the end at x = 0 faces right on screen: its diameter is measured beside it
     s.dim(...offset([[0, -rc, -mainR], [0, -rc, mainR]], [0, -mainR - 0.14, 0]), sym.diameter, [10, 5], "start");
+    // allowance strips at both ends of the bend, p on the top line of the end at x = 0
+    const dt = P / rc;
+    for (const a of [t[0] - dt, t[n] + dt]) s.seamRound([rc * Math.cos(a), rc * Math.sin(a), 0], [Math.cos(a), Math.sin(a), 0], [0, 0, 1], mainR);
+    const topAt = (a: number): V3 => [rc * Math.cos(a), rc * Math.sin(a), mainR];
+    s.dim(...offset([topAt(t[0]), topAt(t[0] - dt)], [0, 0, 0.2]), sym.allowance, [0, -8]);
   } else {
     const [ri, w, h] = [0.55, 0.55, 0.5];
     const ro = ri + w;
@@ -340,8 +369,20 @@ function elbow(s: Sketch, round: boolean) {
     s.angle([0, 0, -h / 2], [bi[n]], 0.18, t[0], t[n], sym.angle, [-4, -5]);
     s.dim(...offset([[-ro, 0, -h / 2], [-ri, 0, -h / 2]], [0, 0, -0.16]), sym.width, [-8, 18]);
     s.dim(...offset([[-ro, 0, -h / 2], [-ro, 0, h / 2]], [-0.14, 0, 0]), sym.height, [-10, 5], "end");
+    const rm = ri + w / 2;
+    const dt = P / rm;
+    const sec = (a: number): V3[] => [[ri * Math.cos(a), ri * Math.sin(a), -h / 2], [ro * Math.cos(a), ro * Math.sin(a), -h / 2], [ro * Math.cos(a), ro * Math.sin(a), h / 2], [ri * Math.cos(a), ri * Math.sin(a), h / 2]];
+    for (const a of [t[0] - dt, t[n] + dt]) s.seamRect(sec(a), [rm * Math.cos(a), rm * Math.sin(a), 0]);
+    const topAt = (a: number): V3 => [ro * Math.cos(a), ro * Math.sin(a), h / 2];
+    s.dim(...offset([topAt(t[0]), topAt(t[0] - dt)], [0, 0, 0.2]), sym.allowance, [0, -8]);
   }
 }
+
+/** Length of the allowance strip on the sketches, world units (schematic). */
+const P = 0.2;
+
+/** Section rectangle across x at x, sizes w (y) x h (z). */
+const rectAt = (x: number, w: number, h: number): V3[] => [[x, -w / 2, -h / 2], [x, w / 2, -h / 2], [x, w / 2, h / 2], [x, -w / 2, h / 2]];
 
 function reducer(s: Sketch, roundMain: boolean, roundSmall: boolean) {
   const len2 = 1.3;
@@ -355,6 +396,10 @@ function reducer(s: Sketch, roundMain: boolean, roundSmall: boolean) {
     s.dim(...offset([[0, d, -d], [0, -d, d]], [-0.42, 0, 0]), sym.diameter, [-10, 5], "end");
     s.dim(...offset([[len2, 0, -r1], [len2, 0, r1]], [0, -r1 - 0.14, 0]), sym.smallDiameter, [10, 5], "start");
     s.dim([lower(0, R, 0), lower(len2, r1, 0)], lower(0, R), lower(len2, r1), sym.length, [-8, 20]);
+    // allowance strips at both ends, p measured on the top line at the small end
+    const rAt = (x: number) => R + ((r1 - R) * x) / len2;
+    for (const x of [P, len2 - P]) s.seamRound([x, 0, 0], [0, 1, 0], [0, 0, 1], rAt(x));
+    s.dim(...offset([[len2 - P, 0, rAt(len2 - P)], [len2, 0, r1]], [0, 0, 0.2]), sym.allowance, [0, -8]);
     return;
   }
   const [W, H] = [0.9, 0.62];
@@ -376,6 +421,9 @@ function reducer(s: Sketch, roundMain: boolean, roundSmall: boolean) {
     // vertical extension lines down to one level: from the rect end's near corner and the round end's lowest point on screen
     const foot: V3 = [len2, r1 * 0.447, -r1 * 0.894];
     s.dim([[0, W / 2, -H / 2], foot], [0, W / 2, -H / 2 - 0.16], [len2, foot[1], -H / 2 - 0.16], sym.length, [-8, 20]);
+    s.seamRect(rectAt(P, W, H), [P, 0, 0]);
+    s.seamRound([len2 - P, 0, 0], [0, 1, 0], [0, 0, 1], r1);
+    s.dim(...offset([[len2 - P, 0, r1], [len2, 0, r1]], [0, 0, 0.3]), sym.allowance, [0, -8]);
     return;
   }
   s.prism("x", 0, len2, W, H, w1, h1);
@@ -384,6 +432,10 @@ function reducer(s: Sketch, roundMain: boolean, roundSmall: boolean) {
   s.dim(...offset([[len2, -w1 / 2, -h1 / 2], [len2, -w1 / 2, h1 / 2]], [0, -0.14, 0]), sym.smallHeight, [10, 5], "start");
   // vertical extension lines from both near lower corners down to one level
   s.dim([[0, W / 2, -H / 2], [len2, w1 / 2, -h1 / 2]], [0, W / 2, -H / 2 - 0.16], [len2, w1 / 2, -H / 2 - 0.16], sym.length, [-8, 20]);
+  const at = (x: number, a: number, b: number) => a + ((b - a) * x) / len2;
+  for (const x of [P, len2 - P]) s.seamRect(rectAt(x, at(x, W, w1), at(x, H, h1)), [x, 0, 0]);
+  const top = (x: number): V3 => [x, -at(x, W, w1) / 2, at(x, H, h1) / 2];
+  s.dim(...offset([top(len2 - P), top(len2)], [0, 0, 0.2]), sym.allowance, [0, -8]);
 }
 
 /** Adapter / box (ADR 0114): a closed rect box, end plates toned as plates, one partition shown dashed in the middle. */
@@ -476,6 +528,13 @@ function branchFitting(s: Sketch, roundMain: boolean, roundSmall: boolean, cross
     s.dim(...offset([[half, -rectW / 2, -rectH / 2], [half, -rectW / 2, rectH / 2]], [0, -0.14, 0]), sym.height, [10, 5], "start");
     s.dim(...offset([[-half, -rectW / 2, rectH / 2], [-half, rectW / 2, rectH / 2]], [-0.18, 0, 0]), sym.width, [-8, -8]);
   }
+  // allowance strips at both ends of the run, p on the top line at x = half
+  for (const x of [-half + P, half - P]) {
+    if (roundMain) s.seamRound([x, 0, 0], [0, 1, 0], [0, 0, 1], mainR);
+    else s.seamRect(rectAt(x, rectW, rectH), [x, 0, 0]);
+  }
+  const runTop = (x: number): V3 => (roundMain ? [x, 0, mainR] : [x, -rectW / 2, rectH / 2]);
+  s.dim(...offset([runTop(half - P), runTop(half)], [0, 0, 0.2]), sym.allowance, [0, -8]);
   if (roundSmall) {
     s.dim(...offset(flatDiameter(rb, top), [0, 0, 0.24]), sym.smallDiameter, [0, -8]);
   } else {

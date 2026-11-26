@@ -16,3 +16,6 @@
 ## Consequences
 - The layout tests of `iso-sketch.test.ts` (labels off the walls, no crossing dimensions) cover the new kinds as they cover every kind.
 - The old side / profile views draw both shapes as a straight piece (unused by the card).
+
+## Addendum 2026-11-26: the allowance on every sketch
+Owner: «да, нужно показывать его на всех деталях». Every kind with an allowance (elbows, reducers, rect-to-round, tees, crosses, offsets) marks where the allowance strip starts at each end with a thin section line (`seamRound`, `seamRect`: the near half of a ring, a section rectangle with its far edges dashed) and dimensions p once, at the outlet or the right end of the run. The strip length on the drawing is schematic (`P`). The legends add «p — припуск на кожному кінці».

@@ -89,11 +89,11 @@ export function isoLegend(kind: FittingKind, dict: Dictionary = uk): string[] {
     case "tap":
       return [main, l.tapLength, l.tapDuct];
     case "elbow":
-      return [main, roundMain ? l.centerRadius : l.innerRadius, l.angleNote];
+      return [main, roundMain ? l.centerRadius : l.innerRadius, l.angleNote, l.allowance];
     case "reducer":
-      return [main, roundSmall ? l.smallEndDiameter : l.smallEndSides, l.length];
+      return [main, roundSmall ? l.smallEndDiameter : l.smallEndSides, l.length, l.allowance];
     case "tee":
     case "cross":
-      return [main, roundSmall ? l.branchDiameter : l.branchSides];
+      return [main, roundSmall ? l.branchDiameter : l.branchSides, l.allowance];
   }
 }
