@@ -389,52 +389,53 @@ function reducer(s: Sketch, roundMain: boolean, roundSmall: boolean) {
   const r1 = 0.22;
   const [w1, h1] = [0.5, 0.36];
   if (roundMain) {
-    s.cylinder([0, 0, 0], [len2, 0, 0], mainR + 0.06, "opening", "face", r1);
     const R = mainR + 0.06;
+    // straight allowance strips at both ends, the cone between them
+    s.cylinder([0, 0, 0], [P, 0, 0], R);
+    s.cylinder([P, 0, 0], [len2 - P, 0, 0], R, "opening", "face", r1);
+    s.cylinder([len2 - P, 0, 0], [len2, 0, 0], r1);
     // the large end faces away: d₁ is taken across its outline, the extension lines carry the outline back past the end
     const d = R * Math.SQRT1_2;
     s.dim(...offset([[0, d, -d], [0, -d, d]], [-0.42, 0, 0]), sym.diameter, [-10, 5], "end");
     s.dim(...offset([[len2, 0, -r1], [len2, 0, r1]], [0, -r1 - 0.14, 0]), sym.smallDiameter, [10, 5], "start");
     s.dim([lower(0, R, 0), lower(len2, r1, 0)], lower(0, R), lower(len2, r1), sym.length, [-8, 20]);
     // allowance strips at both ends, p measured on the top line at the small end
-    const rAt = (x: number) => R + ((r1 - R) * x) / len2;
-    for (const x of [P, len2 - P]) s.seamRound([x, 0, 0], [0, 1, 0], [0, 0, 1], rAt(x));
-    s.dim(...offset([[len2 - P, 0, rAt(len2 - P)], [len2, 0, r1]], [0, 0, 0.2]), sym.allowance, [0, -8]);
+    s.dim(...offset([[len2 - P, 0, r1], [len2, 0, r1]], [0, 0, 0.2]), sym.allowance, [0, -8]);
     return;
   }
   const [W, H] = [0.9, 0.62];
   if (roundSmall) {
     // rect end at x = 0 turning into a round end at x = len2: outline is the hull of both ends
-    const rect: V3[] = [[0, -W / 2, -H / 2], [0, W / 2, -H / 2], [0, W / 2, H / 2], [0, -W / 2, H / 2]];
-    const circle = ring([len2, 0, 0], [0, 1, 0], [0, 0, 1], r1);
+    // straight rect strip 0..P, the transition P..len2 - P, a straight round strip to len2
+    s.prism("x", 0, P, W, H);
+    const rect = rectAt(P, W, H);
+    const circle = ring([len2 - P, 0, 0], [0, 1, 0], [0, 0, 1], r1);
     s.items.push({ type: "face", points: hull([...rect, ...circle].map(p)), tone: "face" });
     // seams from the three visible corners of the rect end to the round end
-    const seam = (corner: V3, angle: number) => s.edge(corner, [len2, r1 * Math.cos(angle), r1 * Math.sin(angle)]);
+    const seam = (corner: V3, angle: number) => s.edge(corner, [len2 - P, r1 * Math.cos(angle), r1 * Math.sin(angle)]);
     seam(rect[2], Math.PI / 4);
     seam(rect[1], -Math.PI / 4);
     seam(rect[3], (3 * Math.PI) / 4);
     s.edge(rect[2], rect[1]);
     s.edge(rect[2], rect[3]);
-    s.face(circle, "opening");
+    s.cylinder([len2 - P, 0, 0], [len2, 0, 0], r1);
     rectEnd(s, W, H);
     s.dim(...offset([[len2, 0, -r1], [len2, 0, r1]], [0, -r1 - 0.14, 0]), sym.smallDiameter, [10, 5], "start");
     // vertical extension lines down to one level: from the rect end's near corner and the round end's lowest point on screen
     const foot: V3 = [len2, r1 * 0.447, -r1 * 0.894];
     s.dim([[0, W / 2, -H / 2], foot], [0, W / 2, -H / 2 - 0.16], [len2, foot[1], -H / 2 - 0.16], sym.length, [-8, 20]);
-    s.seamRect(rectAt(P, W, H), [P, 0, 0]);
-    s.seamRound([len2 - P, 0, 0], [0, 1, 0], [0, 0, 1], r1);
     s.dim(...offset([[len2 - P, 0, r1], [len2, 0, r1]], [0, 0, 0.3]), sym.allowance, [0, -8]);
     return;
   }
-  s.prism("x", 0, len2, W, H, w1, h1);
+  s.prism("x", 0, P, W, H);
+  s.prism("x", P, len2 - P, W, H, w1, h1);
+  s.prism("x", len2 - P, len2, w1, h1);
   rectEnd(s, W, H);
   s.dim(...offset([[len2, -w1 / 2, -h1 / 2], [len2, w1 / 2, -h1 / 2]], [0.18, 0, 0]), sym.smallWidth, [10, 14], "start");
   s.dim(...offset([[len2, -w1 / 2, -h1 / 2], [len2, -w1 / 2, h1 / 2]], [0, -0.14, 0]), sym.smallHeight, [10, 5], "start");
   // vertical extension lines from both near lower corners down to one level
   s.dim([[0, W / 2, -H / 2], [len2, w1 / 2, -h1 / 2]], [0, W / 2, -H / 2 - 0.16], [len2, w1 / 2, -H / 2 - 0.16], sym.length, [-8, 20]);
-  const at = (x: number, a: number, b: number) => a + ((b - a) * x) / len2;
-  for (const x of [P, len2 - P]) s.seamRect(rectAt(x, at(x, W, w1), at(x, H, h1)), [x, 0, 0]);
-  const top = (x: number): V3 => [x, -at(x, W, w1) / 2, at(x, H, h1) / 2];
+  const top = (x: number): V3 => [x, -w1 / 2, h1 / 2];
   s.dim(...offset([top(len2 - P), top(len2)], [0, 0, 0.2]), sym.allowance, [0, -8]);
 }
 
