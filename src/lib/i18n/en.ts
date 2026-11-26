@@ -97,6 +97,7 @@ export const en: Dictionary = {
     tap: 'Taps',
     tee: 'Tees',
     cross: 'Crosses',
+    beta: 'Adapters, offsets (beta)',
   },
   removeItem: 'Delete',
   cloneItem: 'Clone',
@@ -180,6 +181,9 @@ export const en: Dictionary = {
     roundCrossRectBranches: { designation: 'CRX', name: 'Circular cross with rectangular branches' },
     rectCross: { designation: 'RX', name: 'Rectangular cross with rectangular branches' },
     rectCrossRoundBranches: { designation: 'RCX', name: 'Rectangular cross with circular branches' },
+    rectBox: { designation: 'RA', name: 'Rectangular adapter / box (beta)' },
+    roundOffset: { designation: 'CO', name: 'Circular offset (beta)' },
+    rectOffset: { designation: 'RO', name: 'Rectangular offset (beta)' },
   },
   fields: {
     diameter: `Diameter ${sym.diameter}, mm`,
@@ -197,6 +201,9 @@ export const en: Dictionary = {
     branchWidth: `Branch width ${sym.smallWidth} (along the axis), mm`,
     branchHeight: `Branch height ${sym.smallHeight}, mm`,
     maxPiece: 'Max piece length, mm (0 = no split)',
+    offset: `Axis offset ${sym.offset}, mm`,
+    ends: 'Closed ends (0, 1, 2)',
+    partitions: 'Partitions, pcs',
   },
   results: {
     title: 'Results by item',
@@ -280,6 +287,9 @@ export const en: Dictionary = {
     'input.unknownKey': 'Unexpected field',
     'input.invalid': 'Invalid data',
     'insulation.unknown': 'Unknown insulation material',
+    'box.ends': 'Closed ends must be 0, 1 or 2',
+    'box.partitions': 'Partitions: a whole number from 0',
+    'offset.negative': 'The offset cannot be negative',
     'quantity.invalid': 'A whole number, at least 1',
   },
   warnings: {
@@ -306,6 +316,9 @@ export const en: Dictionary = {
       length: 'Length of the fitting along its axis. A reducer may be left empty: then 300 mm.',
       quantity: 'How many identical fittings. The area totals are multiplied by it.',
       insulation: 'Insulation material for this fitting. The area is the outer surface of the layer.',
+      offset: 'How far the outlet axis is shifted from the inlet. On a rectangular offset the shift runs along side a₁. Beta: the walls follow the straight slant √(L² + H²).',
+      ends: 'How many ends of the box are closed by an a₁ × b₁ plate. A closed box (adapter) = 2. Add spigots and taps as separate CTap / RTap rows.',
+      partitions: 'Inner partitions (e.g. in a slot-diffuser adapter), each an a₁ × b₁ plate.',
     },
     settings: {
       thicknessTable: 'Which table picks the sheet thickness: ДБН В.2.5-67:2013 (annex Ц) or the engineer’s table.',

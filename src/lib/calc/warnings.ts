@@ -21,6 +21,8 @@ function rectEnds(f: Fitting): { w: number; h: number }[] {
     case 'rectTap':
     case 'rectElbow':
     case 'rectToRoundReducer':
+    case 'rectBox':
+    case 'rectOffset':
       return [{ w: f.width, h: f.height }];
     case 'rectTee':
     case 'rectCross':

@@ -21,7 +21,8 @@ export interface Mapping {
   lengthUnit: LengthUnit;
 }
 
-type SizeSlot = 'A' | 'B' | 'a' | 'b' | 'l' | 'R' | 'angle' | 'L';
+// H: the offset of an утка, read from the name only (ADR 0113)
+type SizeSlot = 'A' | 'B' | 'a' | 'b' | 'l' | 'R' | 'angle' | 'L' | 'H';
 
 /** Which form field each size column feeds, per kind. A column a kind has no field for is ignored (elbow «Довжина» is a computed value in the Excel). */
 const slots: Record<FittingKind, Partial<Record<SizeSlot, FieldKey>>> = {
@@ -45,6 +46,10 @@ const slots: Record<FittingKind, Partial<Record<SizeSlot, FieldKey>>> = {
   roundCrossRectBranches: { A: 'diameter', a: 'branchWidth', b: 'branchHeight', l: 'allowance' },
   rectCross: { A: 'width', B: 'height', a: 'branchWidth', b: 'branchHeight', l: 'allowance' },
   rectCrossRoundBranches: { A: 'width', B: 'height', a: 'branchDiameter', l: 'allowance' },
+  // BETA (ADR 0113): the template's «Адаптор» row has A, B and L; offsets take the offset from the name only
+  rectBox: { A: 'width', B: 'height', L: 'length' },
+  roundOffset: { A: 'diameter', l: 'allowance', L: 'length', H: 'offset' },
+  rectOffset: { A: 'width', B: 'height', l: 'allowance', L: 'length', H: 'offset' },
 };
 
 const text = (c: Cell | undefined): string => (c === null || c === undefined ? '' : String(c).trim());
@@ -265,7 +270,7 @@ export function importRows(table: Table, mapping: Mapping): ImportRow[] {
     const code = text(get(r, 'code'));
     const parsed = parseName(name);
     const cells: Partial<Record<SizeSlot, number>> = {};
-    for (const s of ['A', 'B', 'a', 'b', 'l', 'R', 'angle', 'L'] as SizeSlot[]) {
+    for (const s of ['A', 'B', 'a', 'b', 'l', 'R', 'angle', 'L'] as Exclude<SizeSlot, 'H'>[]) {
       const v = cellNumber(get(r, s));
       if (v !== undefined && v > 0) cells[s] = s === 'L' ? toMm(v) : v;
     }
@@ -277,6 +282,7 @@ export function importRows(table: Table, mapping: Mapping): ImportRow[] {
     const extra: Partial<Record<SizeSlot, number>> = {};
     if (parsed.angle !== undefined) extra.angle = parsed.angle;
     if (parsed.length !== undefined) extra.L = parsed.length;
+    if (parsed.offset !== undefined) extra.H = parsed.offset;
     const raw: RawSizes = { cells, sizes: parsed.sizes, extra };
     const qty = cellNumber(get(r, 'quantity'));
     const system = text(get(r, 'system')) || heading;
@@ -301,7 +307,7 @@ export function withKind(row: ImportRow, kind: FittingKind | undefined): ImportR
   if (!kind) return { ...row, kind: undefined, status: row.status === 'ok' ? 'unknown' : row.status, values: {} };
   const { cells, sizes, extra } = row.raw;
   // the angle in a name is only an angle on an elbow («ППК ..., тип 4» is not 4°)
-  const named = { ...(/Elbow$/.test(kind) ? extra : { L: extra.L }), ...nameSlots(kind, sizes) };
+  const named = { ...(/Elbow$/.test(kind) ? extra : /Offset$/.test(kind) ? { L: extra.L, H: extra.H } : { L: extra.L }), ...nameSlots(kind, sizes) };
   return { ...row, kind, status: 'ok', values: rowValues(kind, cells, named), conflicts: sizeConflicts(kind, cells, named) };
 }
 

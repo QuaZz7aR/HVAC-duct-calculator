@@ -14,10 +14,13 @@ export function insulated(f: Fitting, t: number): Fitting {
     case 'roundStraight':
     case 'roundCap':
     case 'roundTap':
+    case 'roundOffset':
       return { ...f, diameter: f.diameter + d };
     case 'rectStraight':
     case 'rectCap':
     case 'rectTap':
+    case 'rectBox':
+    case 'rectOffset':
       return { ...f, width: f.width + d, height: f.height + d };
     case 'roundElbow':
       // the centre-line radius is the same for the duct and its insulation

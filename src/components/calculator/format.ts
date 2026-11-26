@@ -19,7 +19,7 @@ const sizeSymbol = (key: FieldKey, s: Dictionary["symbols"]): string | undefined
     diameter: s.diameter, smallDiameter: s.smallDiameter, branchDiameter: s.smallDiameter,
     width: s.width, height: s.height, smallWidth: s.smallWidth, smallHeight: s.smallHeight,
     branchWidth: s.smallWidth, branchHeight: s.smallHeight,
-    length: s.length, centerRadius: s.radius, innerRadius: s.radius, angle: s.angle,
+    length: s.length, offset: s.offset, centerRadius: s.radius, innerRadius: s.radius, angle: s.angle,
   } as Partial<Record<FieldKey, string>>)[key];
 
 /** Short size line of a row for the results, e.g. "a₁×b₁ 400×200 · d₂ 250 · L 1000": tells cloned rows apart. Pairs a×b are joined; allowance and form-only fields are left out. */

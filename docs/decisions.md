@@ -120,6 +120,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0110](adr/0110-empty-start-state.md) | A new project starts empty (no example rows); empty-list hint | 2026-11-25 | Accepted |
 | [0111](adr/0111-no-flash-before-the-saved-project.md) | List and results stay invisible until the saved project is read | 2026-11-25 | Accepted; refined by [0112](adr/0112-pre-paint-project-and-mode.md) |
 | [0112](adr/0112-pre-paint-project-and-mode.md) | Pre-paint script: stored mode and saved rows on `<html>`, the list hidden only for a saved project | 2026-11-25 | Accepted |
+| [0113](adr/0113-adapters-boxes-and-offsets-beta.md) | Adapters / boxes (ПА) and offsets (ПУ, КУ) as a beta from open formulas; import by codes only | 2026-11-26 | Accepted (beta) |
 | [0095](adr/0095-numbering-by-systems.md) | «Нумерація»: positions «система-№», empty only or all again, preview first | 2026-11-24 | Accepted |
 | [0096](adr/0096-import-from-pdf.md) | Import from PDF: own text reader, columns from table borders or text ranges | 2026-11-24 | Accepted (thresholds `TODO(confirm)`) |
 | [0097](adr/0097-video-clips-in-the-help.md) | Short MP4 clip per help step, loaded only when the dialog opens | 2026-11-24 | Accepted |
@@ -158,6 +159,8 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `import/pdf.ts` layout | Word gap 0.2 font size, border must cross a third of the body lines, header lines within 2.2 font sizes: tuned on LibreOffice and Chrome PDFs of our samples only ([0096](adr/0096-import-from-pdf.md)). |
 | `import/pdf.ts` clipped cells | A clip box up to 20 font sizes high and wide is one cell; a wrapped fragment of 1-2 letters or digits joins without a space: tuned on one GridCraft PDF ([0099](adr/0099-pdf-clipped-cells-and-unicode-cmaps.md)). |
 | `import/pdf.ts` wrapped rows | Lines between two row borders join when the band has exactly one full line (3+ columns), lines within two font sizes: tuned on kyiv.pdf and order.pdf ([0100](adr/0100-pdf-wrapped-rows-between-row-borders.md)). |
+| `calc/sheet-area.ts` `rectBox`, `rectOffset`, `roundOffset` | Beta ([0113](adr/0113-adapters-boxes-and-offsets-beta.md)): box = closed plates a x b (ends 0-2) + partitions, no open side; box centre line = L; round offset is a smooth slanted tube, not segmented elbows; offset along side a. Prefill ends 2, partitions 0 (`form/fields.ts`). |
+| `import/recognize.ts` beta kinds | Codes ПА / ПУ / КУ only; the words «утка», «короб», «адаптер» wait for the owner (they change pinned import tests). |
 | `public/help/*.mp4` | Clip format and count are the agent's choice (MP4, one per step, uk + en) ([0097](adr/0097-video-clips-in-the-help.md)). |
 
 ## Deferred
@@ -171,7 +174,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 - Fire-resistant ducts (thickness at least 0.8 mm, ДБН п. 7.11.5) are not a mode.
 - Fix the Excel template (M9/M10/M12/M27-M30 on both sheets) and tell the engineer; a copy is ready.
 - UI: Russian/English dictionaries, list saved in this browser only ([0101](adr/0101-project-saved-in-the-browser.md); named projects and sync deferred), no per-system grouping.
-- Offsets, adapters: out of v1, see `CLAUDE.md`.
+- Offsets, adapters: in as a beta ([0113](adr/0113-adapters-boxes-and-offsets-beta.md)); open: slot-diffuser adapters with an open side, filter adapters, transitional adapters (620x160 / 720x160), a proper sketch of each, import by name words.
 - Insulation: order margin, roll size and count, foil / glue lines, insulation of dampers and silencers (not in the calculator).
 - Taps: subtracting the cut-out from the main duct (an option or a separate credit line) is not modelled; the main duct's thickness differs from the tap's, so it needs its own design.
 - Tees and crosses: branch flow and the branch's own pressure drop are not modelled (see [0021](adr/0021-tees-and-crosses.md)). A hard validation of the branch against the main duct has no source; only the `branch.larger` warning exists, plus the form-layer rejection of a non-positive area.

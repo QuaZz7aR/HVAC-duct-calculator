@@ -48,6 +48,18 @@ export function developedLength(f: Fitting): number {
     case 'rectCrossRoundBranches':
       // main run along the axis: branch size plus the connection allowance at both ends
       return branchLayout(f).runLength;
+    case 'rectBox':
+      // BETA, ADR 0113: the box length; the end plates and partitions are added in sheetArea
+      return mmToM(f.length);
+    case 'roundOffset':
+      // BETA, ADR 0113: straight slanted offset, the wall runs along the slant sqrt(L^2 + H^2); allowance strips at the counted ends
+      return offsetSlant(f) + allowanceLength(f);
+    case 'rectOffset':
+      // BETA, ADR 0113: area-equivalent length (wall area / perimeter): the two walls in the offset plane are flat parallelograms (width x L),
+      // the other two run along the slant sqrt(L^2 + H^2); allowance strips at the counted ends
+      return (
+        (mmToM(f.width) * mmToM(f.length) + mmToM(f.height) * offsetSlant(f)) / (mmToM(f.width) + mmToM(f.height)) + allowanceLength(f)
+      );
     default:
       return assertNever(f);
   }
@@ -98,6 +110,15 @@ export function sheetArea(f: Fitting): number {
         const b = branchLayout(f);
         return b.mainPerimeter * b.runLength + b.count * (b.branchPerimeter * b.collar - b.branchArea);
       }
+    case 'rectBox':
+      // BETA, ADR 0113 (engineer's template «Адаптор» 2(AB + AL + BL)): four walls + closed end plates + inner partitions, each plate width x height
+      return 2 * (mmToM(f.width) + mmToM(f.height)) * developedLength(f) + (f.ends + f.partitions) * mmToM(f.width) * mmToM(f.height);
+    case 'roundOffset':
+      // BETA, ADR 0113: slanted cylinder wall: circumference x developed length (the oblique end cuts are ignored)
+      return Math.PI * mmToM(f.diameter) * developedLength(f);
+    case 'rectOffset':
+      // BETA, ADR 0113: four walls: perimeter x area-equivalent developed length
+      return 2 * (mmToM(f.width) + mmToM(f.height)) * developedLength(f);
     default:
       return assertNever(f);
   }
@@ -140,9 +161,21 @@ export function centerlineLength(f: Fitting): number {
     case 'rectCrossRoundBranches':
       // TODO(confirm): flow path through the main run = the branch size along the axis, no allowance (the Excel has only the run length with allowance)
       return branchLayout(f).along;
+    case 'rectBox':
+      // TODO(confirm): a box is a chamber, the flow path is taken as its length
+      return mmToM(f.length);
+    case 'roundOffset':
+    case 'rectOffset':
+      // straight slanted axis
+      return offsetSlant(f);
     default:
       return assertNever(f);
   }
+}
+
+/** Slanted length of an offset, m: sqrt(L^2 + H^2). */
+function offsetSlant(f: { length: number; offset: number }): number {
+  return Math.hypot(mmToM(f.length), mmToM(f.offset));
 }
 
 type RectToRound = Extract<Fitting, { kind: 'rectToRoundReducer' }>;

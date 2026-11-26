@@ -6,7 +6,8 @@ export type FittingKind = Fitting['kind'];
 export type FieldKey =
   | 'diameter' | 'smallDiameter' | 'width' | 'height' | 'smallWidth' | 'smallHeight'
   | 'length' | 'centerRadius' | 'innerRadius' | 'angle' | 'allowance'
-  | 'branchDiameter' | 'branchWidth' | 'branchHeight' | 'maxPiece';
+  | 'branchDiameter' | 'branchWidth' | 'branchHeight' | 'maxPiece'
+  | 'offset' | 'ends' | 'partitions';
 
 export interface FieldDef {
   key: FieldKey;
@@ -32,7 +33,11 @@ export const kindOrder: FittingKind[] = [
   'roundTap', 'rectTap',
   'roundTee', 'roundTeeRectBranch', 'rectTee', 'rectTeeRoundBranch',
   'roundCross', 'roundCrossRectBranches', 'rectCross', 'rectCrossRoundBranches',
+  'rectBox', 'roundOffset', 'rectOffset',
 ];
+
+/** BETA kinds (ADR 0113): formulas from open sources, not yet confirmed by the engineer; the UI marks them. */
+export const betaKinds: ReadonlySet<FittingKind> = new Set<FittingKind>(['rectBox', 'roundOffset', 'rectOffset']);
 
 export const kindFields: Record<FittingKind, FieldDef[]> = {
   roundTee: [{ key: 'diameter' }, { key: 'branchDiameter' }, allowance],
@@ -56,6 +61,10 @@ export const kindFields: Record<FittingKind, FieldDef[]> = {
     { key: 'width' }, { key: 'height' }, { key: 'smallWidth' }, { key: 'smallHeight' }, reducerLength, allowance,
   ],
   rectToRoundReducer: [{ key: 'width' }, { key: 'height' }, { key: 'smallDiameter' }, reducerLength, allowance],
+  // TODO(confirm): a box with both end plates and no partitions as the prefill (the engineer's template «Адаптор» is a closed box)
+  rectBox: [{ key: 'width' }, { key: 'height' }, { key: 'length' }, { key: 'ends', initial: '2' }, { key: 'partitions', initial: '0' }],
+  roundOffset: [{ key: 'diameter' }, { key: 'length' }, { key: 'offset' }, allowance],
+  rectOffset: [{ key: 'width' }, { key: 'height' }, { key: 'length' }, { key: 'offset' }, allowance],
 };
 
 /** One form row; every value is the raw text the user typed. */
