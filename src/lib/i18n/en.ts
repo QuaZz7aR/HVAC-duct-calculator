@@ -320,7 +320,7 @@ export const en: Dictionary = {
       quantity: 'How many identical fittings. The area totals are multiplied by it.',
       insulation: 'Insulation material for this fitting. The area is the outer surface of the layer.',
       offset: 'How far the outlet axis is shifted from the inlet. On a rectangular offset the shift runs along side a₁. Beta: the walls follow the straight slant √(L² + H²).',
-      ends: 'How many ends of the box are closed by an a₁ × b₁ plate. A closed box (adapter) = 2. Spigots (taps) are not part of the box area: add each one as a separate CTap or RTap fitting.',
+      ends: 'How many ends of the box are closed by an a₁ × b₁ plate. A closed box (adapter) = 2.\n\nSpigots (taps) are not part of the box area: add each one as a separate CTap or RTap fitting.',
       partitions: 'Inner partitions (e.g. in a slot-diffuser adapter), each an a₁ × b₁ plate.',
     },
     settings: {

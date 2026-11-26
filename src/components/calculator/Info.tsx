@@ -53,7 +53,7 @@ export function Info({ text }: { text: string }) {
           role="note"
           style={pos}
           onClick={(e) => e.preventDefault()}
-          className="fixed z-50 block whitespace-normal rounded-md border border-line bg-panel p-3 text-left text-sm font-normal normal-case leading-snug tracking-normal text-foreground shadow-lg"
+          className="fixed z-50 block whitespace-pre-line rounded-md border border-line bg-panel p-3 text-left text-sm font-normal normal-case leading-snug tracking-normal text-foreground shadow-lg"
         >
           {subs(text)}
         </span>
