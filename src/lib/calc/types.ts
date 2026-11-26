@@ -62,7 +62,8 @@ export type Fitting =
   | { kind: 'rectCrossRoundBranches'; width: number; height: number; branchDiameter: number; allowance: number; allowanceCount?: AllowanceCount }
   // BETA (ADR 0113). Adapter / box (Excel «Адаптор»): rect box width x height x length; `ends` closed end plates (0 / 1 / 2),
   // `partitions` inner plates width x height (slot-diffuser adapters). Stubs and taps are separate rows (Квр, Пвр).
-  | { kind: 'rectBox'; width: number; height: number; length: number; ends: 0 | 1 | 2; partitions: number }
+  // `openFaces` (absent = 0): one a₁ x L wall left open, e.g. the slot of a slot-diffuser adapter (ADR 0116)
+  | { kind: 'rectBox'; width: number; height: number; length: number; ends: 0 | 1 | 2; partitions: number; openFaces?: 0 | 1 }
   // BETA (ADR 0113). Offsets («утка»): axial length `length`, shift `offset` of the axis. Rect: `width` is the side in the offset plane.
   | { kind: 'roundOffset'; diameter: number; length: number; offset: number; allowance: number; allowanceCount?: AllowanceCount }
   | { kind: 'rectOffset'; width: number; height: number; length: number; offset: number; allowance: number; allowanceCount?: AllowanceCount };

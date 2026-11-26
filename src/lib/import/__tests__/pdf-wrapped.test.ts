@@ -28,9 +28,9 @@ describe('wrapped cells in a PDF table', () => {
       ['3', 'ПВ 400х200 з сіткою', '3'],
     ]);
     const rows = importRows(t, guessMapping(t));
-    expect(rows.map((r) => [r.status, r.joined])).toEqual([['ok', undefined], ['unknown', 3], ['ok', 2]]);
+    expect(rows.map((r) => [r.status, r.joined])).toEqual([['ok', undefined], ['ok', 3], ['ok', 2]]);
     const form = toFormRows(rows, 1, defaultConfig);
-    expect(form.map((r) => r.joinedLines)).toEqual([undefined, 2]);
+    expect(form.map((r) => r.joinedLines)).toEqual([undefined, 3, 2]);
   });
   it('joins nothing without row borders, or where a band holds two full lines', () => {
     const plain = layoutTable(pieces, v(620, 740));

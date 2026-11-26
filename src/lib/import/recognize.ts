@@ -17,6 +17,10 @@ export interface NameParse {
   length?: number;
   /** Offset (утка) shift in mm («подъем на 120мм», «зміщення 100»), ADR 0113. */
   offset?: number;
+  /** Partitions of a box or adapter («6 перемычек», «3 перемички»), ADR 0115. */
+  partitions?: number;
+  /** A box under a slot diffuser («под щелевой диффузор»): one face is open (ADR 0116). */
+  openFace?: boolean;
 }
 
 type Family = 'straight' | 'elbow' | 'reducer' | 'cap' | 'tap' | 'tee' | 'cross' | 'offset' | 'box';
@@ -57,6 +61,9 @@ const words: [RegExp, Family][] = [
 // parts a name word never matches (ADR 0061); adapters, boxes and offsets are matched by their words since ADR 0113
 const notOurs = /дифуз|диффуз|решітк|решетк|клапан|шумоглуш/i;
 
+// flexible duct is out of scope for v1 (CLAUDE.md): never read as a straight (ADR 0115)
+const flexible = /гнучк|гибк|flex/i;
+
 // a hood over kitchen equipment is a cap by its metal: lid A x B plus a rim (ADR 0079); the name wins over a code such as ПП
 const hood = /зонт|парасольк|(?<!\p{L})hood/iu;
 
@@ -81,7 +88,19 @@ const toNum = (s: string) => Number(s.replace(',', '.'));
 export function parseName(name: string): NameParse {
   const sizes: NameSize[] = [];
   let rest = name;
-  for (const m of name.matchAll(sizeRe)) {
+  // a box written as three sizes («3010х95х220Н»): the longest is its length, the other two its cross-section (ADR 0115)
+  const box = new RegExp(String.raw`${num}\s*[xXхХ×*]\s*${num}\s*[xXхХ×*]\s*${num}`).exec(rest);
+  let boxLength: number | undefined;
+  if (box) {
+    const v = [box[1], box[2], box[3]].map(toNum);
+    const i = v.indexOf(Math.max(...v));
+    boxLength = v[i];
+    const [w, h] = v.filter((_, k) => k !== i);
+    sizes.push({ w, h });
+    rest = rest.replace(box[0], ' ');
+  }
+  const src = rest;
+  for (const m of src.matchAll(sizeRe)) {
     if (m[1] !== undefined) sizes.push({ d: toNum(m[1]) });
     else if (m[2] !== undefined) sizes.push({ w: toNum(m[2]), h: toNum(m[3]) });
     // a bare number after a diameter and a slash is a second diameter («Д200/160»)
@@ -89,8 +108,12 @@ export function parseName(name: string): NameParse {
     rest = rest.replace(m[0], ' ');
   }
   const out: NameParse = { sizes };
+  if (/(щел|щіл|slot)\S*\s+(диффуз|дифуз|diffus)/iu.test(name)) out.openFace = true;
+  if (boxLength !== undefined) out.length = boxLength;
+  const parts = /(\d+)\s*(?:перемыч|перемич|перегород|partition)/iu.exec(rest);
+  if (parts) { out.partitions = Number(parts[1]); rest = rest.replace(parts[0], ' '); }
   const length = new RegExp(String.raw`(?:^|[\s,(])[lLлЛ]\s*=?\s*${num}\s*(?:мм|mm)?`).exec(rest);
-  if (length) { out.length = toNum(length[1]); rest = rest.replace(length[0], ' '); }
+  if (length && out.length === undefined) { out.length = toNum(length[1]); rest = rest.replace(length[0], ' '); }
   const shift = new RegExp(String.raw`(?:подъ[её]м|підйом|підйому|смещени[ея]|зміщення|offset)\s*(?:на\s*)?=?\s*${num}`, 'iu').exec(rest);
   if (shift) { out.offset = toNum(shift[1]); rest = rest.replace(shift[0], ' '); }
   // an angle with its sign, or a bare common elbow angle («КО 90 Д150»); another bare number is a type or a count, not an angle
@@ -137,11 +160,14 @@ const isFamily = (k: FittingKind | Family): k is Family => !/^(round|rect)/.test
  */
 export function recognizeKind(code: string | undefined, name: string | undefined, sizes: NameSize[]): FittingKind | undefined {
   if (name && hood.test(name)) return byShape('cap', sizes);
+  if ((code && codeOf(code) === undefined && /^(ГВ|ГНВ)$/i.test(code.trim())) || (name && flexible.test(name))) return undefined;
   const fromCode = code ? codeOf(code) : undefined;
   if (fromCode && !isFamily(fromCode)) return fromCode;
   if (fromCode) return byShape(fromCode, sizes);
   if (!name) return undefined;
-  if (notOurs.test(name)) return undefined;
+  // an adapter «под щелевой диффузор» is a box; a diffuser or grille alone is not ours (ADR 0115)
+  const boxFirst = name.split(/[\s,;()]+/).slice(0, 4).some((t) => /^(короб|адаптер|адаптор|plenum|adapter)/.test(t.toLowerCase()));
+  if (notOurs.test(name) && !boxFirst) return undefined;
   // an adapter or box names its taps later («Адаптер ..., 2 врізки»): the first family word decides
   const tokens = name.split(/[\s,;()]+/).filter(Boolean);
   // the first token may be a code («КО 90 Д150»); a code anywhere else is too risky (a «ПП» inside a description)

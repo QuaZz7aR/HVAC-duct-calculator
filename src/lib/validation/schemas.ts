@@ -51,6 +51,7 @@ export function createSchemas(config: CalcConfig) {
         length: size(),
         ends: z.union([z.literal(0), z.literal(1), z.literal(2)], { error: 'box.ends' }),
         partitions: z.number({ error: typeError('field.invalid') }).int({ error: 'box.partitions' }).gte(0, { error: 'box.partitions' }),
+        openFaces: z.union([z.literal(0), z.literal(1)], { error: 'box.openFaces' }).optional(),
       }),
       obj({
         kind: z.literal('roundOffset'),
