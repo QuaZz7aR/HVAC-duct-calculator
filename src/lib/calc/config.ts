@@ -100,6 +100,8 @@ export interface CalcConfig {
   tap: TapConfig;
   /** Longest straight piece the shop makes, mm, form default only (ADR 0045); 0 = no split. Area never depends on it. */
   straightPiece: { roundMm: number; rectMm: number };
+  /** Form prefill of the casing length of dampers and check valves, mm (ADR 0120); not a core default. */
+  valve: { damperMm: number; checkValveMm: number };
   thickness: ThicknessTable;
   wasteFactor: WasteFactorTable;
   warnings: WarningConfig;
@@ -172,6 +174,8 @@ export const defaultConfig: CalcConfig = {
   tap: { ringWidthMm: 50 },
   // TODO(confirm): no norm (ДБН В.2.5-67 sets no piece length); 3 m spiral round and 1.25 m rect (sheet width) are what the engineer's orders use (2026-11-12)
   straightPiece: { roundMm: 3000, rectMm: 1250 },
+  // TODO(confirm): typical casing length of a damper and a check valve (catalogue units are about 200-300 mm long)
+  valve: { damperMm: 200, checkValveMm: 200 },
   thickness: dbnThickness,
   wasteFactor: {
     version: 'placeholder-2', // 2: `default` became the user's seam allowance

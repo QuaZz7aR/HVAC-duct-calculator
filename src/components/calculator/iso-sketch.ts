@@ -309,6 +309,22 @@ function straight(s: Sketch, round: boolean, cap: boolean) {
   }
 }
 
+/** The blade of a damper or check valve inside its casing (hidden outline at mid-length) and the spindle above it. */
+function valveBlade(s: Sketch, round: boolean) {
+  const x = len / 2;
+  const top = round ? mainR : rectH / 2;
+  if (round) {
+    const n = 24;
+    const at = (i: number): V3 => [x, mainR * 0.92 * Math.cos((2 * Math.PI * i) / n), mainR * 0.92 * Math.sin((2 * Math.PI * i) / n)];
+    for (let i = 0; i < n; i++) s.edge(at(i), at(i + 1), true);
+  } else {
+    const [w, h] = [rectW * 0.46, rectH * 0.46];
+    const q: V3[] = [[x, -w, -h], [x, w, -h], [x, w, h], [x, -w, h]];
+    q.forEach((a, i) => s.edge(a, q[(i + 1) % 4], true));
+  }
+  s.edge([x, 0, top], [x, 0, top + 0.16]);
+}
+
 function tap(s: Sketch, round: boolean) {
   const [mw, md, mh, l] = [1.5, 0.9, 0.4, 0.45];
   s.solid(
@@ -568,6 +584,10 @@ export function isoDrawing(kind: FittingKind): IsoDrawing {
     case "straight":
     case "cap":
       straight(s, roundMain, shape === "cap");
+      break;
+    case "valve":
+      straight(s, roundMain, false);
+      valveBlade(s, roundMain);
       break;
     case "box":
       box(s);

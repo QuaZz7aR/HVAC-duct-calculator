@@ -13,6 +13,12 @@ export type AllowanceCount = 0 | 1 | 2;
 export type Fitting =
   | { kind: 'roundStraight'; diameter: number; length: number }
   | { kind: 'rectStraight'; width: number; height: number; length: number }
+  // Dampers and check valves (ADR 0120): a bought or shop-made unit, counted by pieces; only its casing is a short duct
+  // `length` long (form prefill `config.valve`, TODO(confirm)), so metal and insulation are those of a straight of that length.
+  | { kind: 'roundDamper'; diameter: number; length: number }
+  | { kind: 'rectDamper'; width: number; height: number; length: number }
+  | { kind: 'roundCheckValve'; diameter: number; length: number }
+  | { kind: 'rectCheckValve'; width: number; height: number; length: number }
   | { kind: 'roundCap'; diameter: number; length: number }
   | { kind: 'rectCap'; width: number; height: number; length: number }
   // Standalone branch-in collar (Excel Квр, Пвр): a short stub inserted into a cut-out of a main duct; `length` is the stub length (default 100 mm in the form).

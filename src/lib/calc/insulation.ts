@@ -12,11 +12,15 @@ export function insulated(f: Fitting, t: number): Fitting {
   const d = 2 * t;
   switch (f.kind) {
     case 'roundStraight':
+    case 'roundDamper':
+    case 'roundCheckValve':
     case 'roundCap':
     case 'roundTap':
     case 'roundOffset':
       return { ...f, diameter: f.diameter + d };
     case 'rectStraight':
+    case 'rectDamper':
+    case 'rectCheckValve':
     case 'rectCap':
     case 'rectTap':
     case 'rectBox':

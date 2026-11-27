@@ -7,7 +7,11 @@ import { degToRad, mmToM } from './units';
 export function developedLength(f: Fitting): number {
   switch (f.kind) {
     case 'roundStraight':
+    case 'roundDamper':
+    case 'roundCheckValve':
     case 'rectStraight':
+    case 'rectDamper':
+    case 'rectCheckValve':
     case 'roundCap':
     case 'rectCap':
     case 'roundTap':
@@ -70,6 +74,8 @@ export function developedLength(f: Fitting): number {
 export function sheetArea(f: Fitting): number {
   switch (f.kind) {
     case 'roundStraight':
+    case 'roundDamper':
+    case 'roundCheckValve':
       // cylinder wall: circumference x developed length
       return Math.PI * mmToM(f.diameter) * developedLength(f);
     case 'roundTap':
@@ -77,6 +83,8 @@ export function sheetArea(f: Fitting): number {
       return Math.PI * mmToM(f.diameter) * developedLength(f)
         + (f.mainDiameter ? roundSaddle(mmToM(f.mainDiameter) / 2, mmToM(f.diameter) / 2) : 0);
     case 'rectStraight':
+    case 'rectDamper':
+    case 'rectCheckValve':
       // four walls: perimeter x developed length
       return 2 * (mmToM(f.width) + mmToM(f.height)) * developedLength(f);
     case 'rectTap':
@@ -137,7 +145,11 @@ export function sheetArea(f: Fitting): number {
 export function centerlineLength(f: Fitting): number {
   switch (f.kind) {
     case 'roundStraight':
+    case 'roundDamper':
+    case 'roundCheckValve':
     case 'rectStraight':
+    case 'rectDamper':
+    case 'rectCheckValve':
       return mmToM(f.length);
     case 'roundCap':
     case 'rectCap':

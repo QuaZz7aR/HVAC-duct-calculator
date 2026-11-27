@@ -17,6 +17,8 @@ export interface FittingWarning {
 function rectEnds(f: Fitting): { w: number; h: number }[] {
   switch (f.kind) {
     case 'rectStraight':
+    case 'rectDamper':
+    case 'rectCheckValve':
     case 'rectCap':
     case 'rectTap':
     case 'rectElbow':

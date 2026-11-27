@@ -33,6 +33,8 @@ export function thickness(size: ThicknessSize, config: CalcConfig): number {
 export function thicknessSize(f: Fitting): ThicknessSize {
   switch (f.kind) {
     case 'roundStraight':
+    case 'roundDamper':
+    case 'roundCheckValve':
     case 'roundCap':
     case 'roundTap':
     case 'roundElbow':
@@ -45,6 +47,8 @@ export function thicknessSize(f: Fitting): ThicknessSize {
       // the larger side of either end decides, so a "small" end that is wider on one side still counts
       return { shape: 'rect', width: Math.max(f.width, f.smallWidth), height: Math.max(f.height, f.smallHeight) };
     case 'rectStraight':
+    case 'rectDamper':
+    case 'rectCheckValve':
     case 'rectCap':
     case 'rectTap':
     case 'rectElbow':

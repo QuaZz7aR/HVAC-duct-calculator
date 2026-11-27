@@ -25,12 +25,16 @@ const angle: FieldDef = { key: 'angle', initial: '90' };
 // TODO(confirm): the 100 mm tap length is a form prefill only (Excel Квр / Пвр column J; ВСН 353-86 п. 1.5 / 2.5: h = 100 mm), not a core default.
 const tapLength: FieldDef = { key: 'length', initial: '100' };
 const maxPiece = (mm: number): FieldDef => ({ key: 'maxPiece', formOnly: true, initial: String(mm) });
+// TODO(confirm): casing length prefill of dampers and check valves (ADR 0120), config.valve
+const damperLength: FieldDef = { key: 'length', initial: String(defaultConfig.valve.damperMm) };
+const checkValveLength: FieldDef = { key: 'length', initial: String(defaultConfig.valve.checkValveMm) };
 const reducerLength: FieldDef = { key: 'length', optional: true };
 
 export const kindOrder: FittingKind[] = [
   'roundStraight', 'rectStraight', 'roundElbow', 'rectElbow',
   'roundReducer', 'rectReducer', 'rectToRoundReducer', 'roundCap', 'rectCap',
   'roundTap', 'rectTap',
+  'roundDamper', 'rectDamper', 'roundCheckValve', 'rectCheckValve',
   'roundTee', 'roundTeeRectBranch', 'rectTee', 'rectTeeRoundBranch',
   'roundCross', 'roundCrossRectBranches', 'rectCross', 'rectCrossRoundBranches',
   'rectBox', 'roundOffset', 'rectOffset',
@@ -54,6 +58,10 @@ export const kindFields: Record<FittingKind, FieldDef[]> = {
   rectCap: [{ key: 'width' }, { key: 'height' }, { key: 'length' }],
   roundTap: [{ key: 'diameter' }, tapLength],
   rectTap: [{ key: 'width' }, { key: 'height' }, tapLength],
+  roundDamper: [{ key: 'diameter' }, damperLength],
+  rectDamper: [{ key: 'width' }, { key: 'height' }, damperLength],
+  roundCheckValve: [{ key: 'diameter' }, checkValveLength],
+  rectCheckValve: [{ key: 'width' }, { key: 'height' }, checkValveLength],
   roundElbow: [{ key: 'diameter' }, { key: 'centerRadius' }, angle, allowance],
   rectElbow: [{ key: 'width' }, { key: 'height' }, { key: 'innerRadius' }, angle, allowance],
   roundReducer: [{ key: 'diameter' }, { key: 'smallDiameter' }, reducerLength, allowance],

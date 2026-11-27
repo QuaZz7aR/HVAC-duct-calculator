@@ -2,7 +2,7 @@
 
 **English** · [Українська](README.uk.md)
 
-A web calculator for sheet-metal ductwork. You list the duct fittings of a ventilation system (straight ducts, elbows, reducers, tees, crosses, caps, branch-in collars) with their sizes, and it returns the sheet-metal area of every item, the metal thickness by the Ukrainian norm, a metal list grouped by thickness with the number of sheets to order, the insulation area and a cost estimate from your own prices.
+A web calculator for sheet-metal ductwork. You list the duct fittings of a ventilation system (straight ducts, elbows, reducers, tees, crosses, caps, branch-in collars, dampers and check valves) with their sizes, and it returns the sheet-metal area of every item, the metal thickness by the Ukrainian norm, a metal list grouped by thickness with the number of sheets to order, the insulation area and a cost estimate from your own prices.
 
 **Live:** https://hvac-duct-calculator-rho.vercel.app
 
@@ -40,7 +40,7 @@ On a phone the side panel becomes a column of round buttons at the screen edge, 
 
 22 kinds (3 of them beta), named by the designations a Ukrainian spec uses.
 
-In the English interface the same kinds have short English codes (C = circular, R = rectangular): CD, RD ducts; CE, RE elbows; CR, RR, RC reducers; CTap, RTap collars; CT, CRT, RT, RCT tees; CX, CRX, RX, RCX crosses; RA adapter / box, CO, RO offsets.
+In the English interface the same kinds have short English codes (C = circular, R = rectangular): CD, RD ducts; CE, RE elbows; CR, RR, RC reducers; CTap, RTap collars; CDM, RDM dampers; CCV, RCV check valves; CT, CRT, RT, RCT tees; CX, CRX, RX, RCX crosses; RA adapter / box, CO, RO offsets.
 
 | Group | Kinds |
 |---|---|
@@ -49,6 +49,7 @@ In the English interface the same kinds have short English codes (C = circular, 
 | Reducers | round (КП), rectangular (ПП), rectangular to round (ППК) |
 | Caps | round, rectangular |
 | Branch-in collars | round (Квр), rectangular (Пвр) |
+| Dampers and check valves | round damper (КДК), rectangular damper (ПДК), round check valve (КЗК), rectangular check valve (ПЗК): the casing as a short duct (200 mm by default), counted by pieces |
 | Tees | round (КТ), round with a rectangular branch (КПТ), rectangular (ПТ), rectangular with a round branch (ПКТ) |
 | Beta | adapter / box (ПА), round offset (КУ), rectangular offset (ПУ): formulas from open sources, not yet confirmed by the engineer |
 | Crosses | round with round branches (ККХ), round with rectangular branches (КПХ), rectangular with rectangular branches (ППХ), rectangular with round branches (ПКХ) |
