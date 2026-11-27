@@ -10,6 +10,7 @@ import { defaultValues, presetRow } from "@/lib/form/defaults";
 import { type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
 import { toFormRows, type ImportRow } from "@/lib/import/mapping";
 import { parseProject, projectKey, serializeProject } from "@/lib/form/project-store";
+import { addEquipment, newEquipment, type EquipmentOutcome, type EquipmentRow } from "@/lib/form/equipment";
 
 /**
  * The page shows areas only; pressure losses are hidden for now (docs/decisions.md). The core still needs a flow and
@@ -50,9 +51,11 @@ export function useCalculator() {
   const [settings, setSettings] = useState<SettingsText>(() => defaultSettings());
   const built = useMemo(() => buildConfig(settings), [settings]);
 
+  // equipment (ADR 0120): its own rows, insulation only; added to the insulation list and the total
+  const [equipment, setEquipment] = useState<EquipmentRow[]>([]);
   const calc = useMemo(
-    () => calculate(rows.map((r) => ({ ...r, flow: hiddenLossInputs.flow, zeta: hiddenLossInputs.zeta })), hiddenLossInputs.air, built.config),
-    [rows, built.config],
+    () => addEquipment(calculate(rows.map((r) => ({ ...r, flow: hiddenLossInputs.flow, zeta: hiddenLossInputs.zeta })), hiddenLossInputs.air, built.config), equipment, built.config),
+    [rows, equipment, built.config],
   );
   // prices stay keyed by thickness / material, so a line that leaves the list and comes back keeps its price
   const [prices, setPrices] = useState<PriceText>(emptyPrices);
@@ -72,6 +75,7 @@ export function useCalculator() {
       setRows(saved.rows);
       setSettings(saved.settings);
       setPrices(saved.prices);
+      setEquipment(saved.equipment ?? []);
     }
   }
   // the saved rows are on screen: lift the pre-paint hiding of the list (ADR 0112)
@@ -80,23 +84,34 @@ export function useCalculator() {
   }, [loaded]);
   useEffect(() => {
     // ids stay unique after a load or an import
-    nextId.current = Math.max(nextId.current, ...rows.map((r) => r.id + 1));
+    nextId.current = Math.max(nextId.current, ...rows.map((r) => r.id + 1), ...equipment.map((e) => e.id + 1));
     if (!loaded) return;
     const t = setTimeout(() => {
       try {
-        localStorage.setItem(projectKey, serializeProject({ rows, settings, prices }));
+        localStorage.setItem(projectKey, serializeProject({ rows, settings, prices, equipment }));
       } catch {
         // storage blocked or full: the page keeps working without saving
       }
     }, 300);
     return () => clearTimeout(t);
-  }, [loaded, rows, settings, prices]);
+  }, [loaded, rows, settings, prices, equipment]);
 
   const outcomes = useMemo(
     () => new Map<number, RowOutcome>(calc.rows.map((r) => [r.ok ? r.result.id : r.id, r])),
     [calc],
   );
   const outcome = (id: number) => outcomes.get(id);
+  const equipmentOutcomes = useMemo(
+    () => new Map<number, EquipmentOutcome>((calc.equipment ?? []).map((o) => [o.ok ? o.result.id : o.id, o])),
+    [calc],
+  );
+  const equipmentOutcome = (id: number) => equipmentOutcomes.get(id);
+  const addEquipmentRow = () => {
+    const id = nextId.current++;
+    setEquipment((es) => [...es, newEquipment(id, built.config)]);
+  };
+  const updateEquipment = (id: number, patch: Partial<EquipmentRow>) => setEquipment((es) => es.map((e) => (e.id === id ? { ...e, ...patch } : e)));
+  const removeEquipment = (id: number) => setEquipment((es) => es.filter((e) => e.id !== id));
 
   const update = (id: number, patch: Partial<FormRow>) =>
     setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch, preset: false } : r)));
@@ -147,5 +162,5 @@ export function useCalculator() {
   // a card or a whole section (its ids) takes the place of the target row
   const dropRows = (ids: number[], targetId: number) => setRows((rs) => moveBlock(rs, ids, targetId));
 
-  return { loaded, rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, numberRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice };
+  return { equipment, equipmentOutcome, addEquipmentRow, updateEquipment, removeEquipment, loaded, rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, numberRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice };
 }

@@ -18,6 +18,7 @@ import { SettingsPanel } from "./calculator/SettingsPanel";
 import { ResultsTable } from "./calculator/ResultsTable";
 import { SheetList } from "./calculator/SheetList";
 import { InsulationList } from "./calculator/InsulationList";
+import { EquipmentList } from "./calculator/EquipmentList";
 import { KindRail } from "./calculator/KindPalette";
 import { Totals } from "./calculator/Totals";
 import { PhoneActions } from "./calculator/PhoneActions";
@@ -38,9 +39,9 @@ export function Calculator() {
 
 function CalculatorPage() {
   const { dict } = useI18n();
-  const { loaded, rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, numberRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice } = useCalculator();
+  const { equipment, equipmentOutcome, addEquipmentRow, updateEquipment, removeEquipment, loaded, rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, numberRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice } = useCalculator();
 
-  const exportProps = { rows, outcome, calc, pricing: costs, settings };
+  const exportProps = { rows, outcome, calc, pricing: costs, settings, equipment };
   const { mode } = useMode();
   const view = useCardView(rows);
   const [twoColumns, setTwoColumns] = useState(false);
@@ -99,6 +100,10 @@ function CalculatorPage() {
           onMove={moveRow}
           onDrop={dropRows}
         />
+        </div>
+        {/* equipment (ADR 0120): apart from the fittings, insulation only, so advanced mode like the insulation */}
+        <div className="adv-only print-hide">
+          <EquipmentList rows={equipment} outcome={equipmentOutcome} onAdd={addEquipmentRow} onPatch={updateEquipment} onRemove={removeEquipment} />
         </div>
         <ExportBar {...exportProps} />
         <ResultsTable rows={rows} outcome={outcome} calc={calc} />

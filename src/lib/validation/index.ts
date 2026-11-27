@@ -3,6 +3,7 @@ export {
   airInputSchema,
   createSchemas,
   ductSectionSchema,
+  equipmentItemSchema,
   fittingSchema,
   sheetListItemSchema,
   sheetListSchema,

@@ -52,6 +52,12 @@
   pointer-events: none;
 }
 
+/* equipment (ADR 0120): insulation only, so a dashed neutral frame sets it apart from the fittings */
+.equipment-block {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--muted) 45%, transparent);
+}
+
 /* single fittings: framed like a section, in their own colour (ADR 0091) */
 .singles-frame {
   border-color: color-mix(in srgb, var(--single) 35%, transparent);

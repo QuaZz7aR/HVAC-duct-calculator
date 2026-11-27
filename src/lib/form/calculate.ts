@@ -14,6 +14,7 @@ import { airInputSchema, createSchemas, validate } from '../validation';
 import { hasAllowance, isTap, kindFields, saddleKinds, type FormRow } from './fields';
 import type { FormIssue } from './messages';
 import { splitLength, type Pieces } from './pieces';
+import type { EquipmentOutcome } from './equipment';
 
 /** Raw text -> number. Accepts a decimal comma; empty -> undefined; anything else non-numeric -> NaN. */
 export function parseNumber(text: string | undefined): number | undefined {
@@ -56,6 +57,8 @@ export interface Calculation {
   totalInsulationArea: number; // m2, all materials
   totalPressureDrop: number; // Pa, times quantity; rows with unavailable losses are left out
   skipped: number; // rows left out because of errors
+  equipment?: EquipmentOutcome[]; // equipment rows (ADR 0120), added by `addEquipment`; their insulation is in the list and the total above
+  equipmentSkipped?: number; // equipment rows left out because of errors
 }
 
 /** Form text -> validated core fitting plus the section inputs. */

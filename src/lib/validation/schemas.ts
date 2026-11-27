@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { defaultConfig, type CalcConfig } from '../calc/config';
 import type { DuctSection, Fitting, SheetListItem } from '../calc/types';
+import type { Equipment } from '../calc/equipment';
 import type { ErrorCode } from './codes';
 
 /** Boundary units: mm, degrees, m3/h, C, Pa. Zod `error` params carry stable codes, not text. */
@@ -218,7 +219,16 @@ export function createSchemas(config: CalcConfig) {
   const sheetListItem = obj({ fitting, quantity });
   const sheetList = z.array(sheetListItem, { error: 'field.invalid' });
 
-  return { fitting, ductSection, airInput, sheetListItem, sheetList };
+  // equipment (ADR 0120): casing sizes and the duct openings on it; insulation only
+  const opening = z.discriminatedUnion(
+    'shape',
+    [obj({ shape: z.literal('round'), diameter: size() }), obj({ shape: z.literal('rect'), width: size(), height: size() })],
+    { error: 'field.invalid' },
+  );
+  const equipment = obj({ length: size(), width: size(), height: size(), openings: z.array(opening, { error: 'field.invalid' }) });
+  const equipmentItem = obj({ equipment, quantity });
+
+  return { fitting, ductSection, airInput, sheetListItem, sheetList, equipmentItem };
 }
 
 export const {
@@ -227,6 +237,7 @@ export const {
   airInput: airInputSchema,
   sheetListItem: sheetListItemSchema,
   sheetList: sheetListSchema,
+  equipmentItem: equipmentItemSchema,
 } = createSchemas(defaultConfig);
 
 export type AirInput = z.infer<typeof airInputSchema>;
@@ -236,6 +247,8 @@ type Mutual<A, B> = [A] extends [B] ? ([B] extends [A] ? true : never) : never;
 const _fittingMatches: Mutual<z.infer<typeof fittingSchema>, Fitting> = true;
 const _sectionMatches: Mutual<z.infer<typeof ductSectionSchema>, DuctSection> = true;
 const _itemMatches: Mutual<z.infer<typeof sheetListItemSchema>, SheetListItem> = true;
+const _equipmentMatches: Mutual<z.infer<typeof equipmentItemSchema>['equipment'], Equipment> = true;
+void _equipmentMatches;
 void _fittingMatches;
 void _itemMatches;
 void _sectionMatches;
