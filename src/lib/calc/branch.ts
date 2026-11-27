@@ -1,4 +1,5 @@
 import type { Fitting } from './types';
+import { rectSaddle, roundSaddle } from './saddle';
 import { mmToM } from './units';
 
 export type TeeCross = Extract<
@@ -28,5 +29,10 @@ export function branchLayout(f: TeeCross) {
     : mmToM(f.branchWidth) * mmToM(f.branchHeight);
   const along = roundBranch ? mmToM(f.branchDiameter) : mmToM(f.branchWidth);
   // the allowance is the extra wall at each counted end of the run (`allowanceCount`, default 2) AND the length of each branch collar
-  return { count, mainPerimeter, mainArea, branchPerimeter, branchArea, along, collar: allowance, runLength: along + (f.allowanceCount ?? 2) * allowance };
+  // the saddle of each branch on a round main, when chosen (ADR 0118); 0 on a flat wall
+  const R = round ? mmToM(f.diameter) / 2 : 0;
+  const saddle = round && 'saddle' in f && f.saddle === 1
+    ? (roundBranch ? roundSaddle(R, mmToM(f.branchDiameter) / 2) : rectSaddle(R, mmToM(f.branchWidth), mmToM(f.branchHeight)))
+    : 0;
+  return { saddle, count, mainPerimeter, mainArea, branchPerimeter, branchArea, along, collar: allowance, runLength: along + (f.allowanceCount ?? 2) * allowance };
 }

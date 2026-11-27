@@ -17,8 +17,9 @@ export type Fitting =
   | { kind: 'rectCap'; width: number; height: number; length: number }
   // Standalone branch-in collar (Excel Квр, Пвр): a short stub inserted into a cut-out of a main duct; `length` is the stub length (default 100 mm in the form).
   // The cut-out in the main duct is NOT subtracted here (owner decision 2026-10-19).
-  | { kind: 'roundTap'; diameter: number; length: number }
-  | { kind: 'rectTap'; width: number; height: number; length: number }
+  // `mainDiameter` (absent = a flat wall): the tap sits on a round main and gets its saddle (ADR 0118); rect taps: width along the main
+  | { kind: 'roundTap'; diameter: number; length: number; mainDiameter?: number }
+  | { kind: 'rectTap'; width: number; height: number; length: number; mainDiameter?: number }
   | { kind: 'roundElbow'; diameter: number; centerRadius: number; angle: number; allowance: number; allowanceCount?: AllowanceCount }
   | {
       kind: 'rectElbow';
@@ -52,12 +53,12 @@ export type Fitting =
   // Tees and crosses (Excel КТ, КПТ, ПТ, ПКТ / КККр, КПКр, ПККр, ППКр): main run + one branch (tee) or two opposite branches (cross).
   // Main kind first, then the branch kind. `branchWidth` / `branchDiameter` is the branch size ALONG the main axis (the Excel column E);
   // the main run is that size + 2 x allowance long. `allowance` is also the branch collar length.
-  | { kind: 'roundTee'; diameter: number; branchDiameter: number; allowance: number; allowanceCount?: AllowanceCount }
-  | { kind: 'roundTeeRectBranch'; diameter: number; branchWidth: number; branchHeight: number; allowance: number; allowanceCount?: AllowanceCount }
+  | { kind: 'roundTee'; diameter: number; branchDiameter: number; allowance: number; allowanceCount?: AllowanceCount; saddle?: 0 | 1 }
+  | { kind: 'roundTeeRectBranch'; diameter: number; branchWidth: number; branchHeight: number; allowance: number; allowanceCount?: AllowanceCount; saddle?: 0 | 1 }
   | { kind: 'rectTee'; width: number; height: number; branchWidth: number; branchHeight: number; allowance: number; allowanceCount?: AllowanceCount }
   | { kind: 'rectTeeRoundBranch'; width: number; height: number; branchDiameter: number; allowance: number; allowanceCount?: AllowanceCount }
-  | { kind: 'roundCross'; diameter: number; branchDiameter: number; allowance: number; allowanceCount?: AllowanceCount }
-  | { kind: 'roundCrossRectBranches'; diameter: number; branchWidth: number; branchHeight: number; allowance: number; allowanceCount?: AllowanceCount }
+  | { kind: 'roundCross'; diameter: number; branchDiameter: number; allowance: number; allowanceCount?: AllowanceCount; saddle?: 0 | 1 }
+  | { kind: 'roundCrossRectBranches'; diameter: number; branchWidth: number; branchHeight: number; allowance: number; allowanceCount?: AllowanceCount; saddle?: 0 | 1 }
   | { kind: 'rectCross'; width: number; height: number; branchWidth: number; branchHeight: number; allowance: number; allowanceCount?: AllowanceCount }
   | { kind: 'rectCrossRoundBranches'; width: number; height: number; branchDiameter: number; allowance: number; allowanceCount?: AllowanceCount }
   // BETA (ADR 0113). Adapter / box (Excel «Адаптор»): rect box width x height x length; `ends` closed end plates (0 / 1 / 2),

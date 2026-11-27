@@ -11,7 +11,7 @@ import { thickness, thicknessSize } from '../calc/thickness';
 import { fittingWarnings, type FittingWarning } from '../calc/warnings';
 import type { Fitting, PressureDrop } from '../calc/types';
 import { airInputSchema, createSchemas, validate } from '../validation';
-import { hasAllowance, kindFields, type FormRow } from './fields';
+import { hasAllowance, isTap, kindFields, saddleKinds, type FormRow } from './fields';
 import type { FormIssue } from './messages';
 import { splitLength, type Pieces } from './pieces';
 
@@ -78,6 +78,12 @@ function parseRow(row: FormRow, schemas: ReturnType<typeof createSchemas>, confi
   // the number of allowances is a choice, not typed text; an empty choice leaves the core default (2)
   const count = row.allowanceCount ?? '';
   if (hasAllowance(row.kind) && count !== '') raw.allowanceCount = Number(count);
+  // the saddle on a round main (ADR 0118): a tap takes the main diameter, a round-main tee or cross the on / off choice
+  const saddle = (row.saddle ?? '').trim();
+  if (saddle !== '' && saddleKinds.has(row.kind)) {
+    if (isTap(row.kind)) raw.mainDiameter = parseNumber(saddle);
+    else raw.saddle = saddle === '1' ? 1 : 0;
+  }
   // fitting and quantity go through the sheet-list item schema; its issues for the fitting carry a leading 'fitting' path segment
   // an empty quantity is NaN here so it reports quantity.invalid, as before, not the schema's generic field.required
   const item = validate(schemas.sheetListItem, { fitting: raw, quantity: parseNumber(row.quantity) ?? NaN });

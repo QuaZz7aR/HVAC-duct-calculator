@@ -19,6 +19,9 @@ const allowance = () => z.number({ error: typeError('field.invalid') }).gte(0, {
 const allowanceCount = () =>
   z.union([z.literal(0), z.literal(1), z.literal(2)], { error: 'allowanceCount.invalid' }).optional();
 
+// Saddle of the branches on a round main (ADR 0118); absent = off.
+const saddle = () => z.union([z.literal(0), z.literal(1)], { error: 'saddle.invalid' }).optional();
+
 export function createSchemas(config: CalcConfig) {
   const angle = z
     .number({ error: typeError('field.invalid') })
@@ -41,8 +44,8 @@ export function createSchemas(config: CalcConfig) {
       obj({ kind: z.literal('rectStraight'), width: size(), height: size(), length: size() }),
       obj({ kind: z.literal('roundCap'), diameter: size(), length: size() }),
       obj({ kind: z.literal('rectCap'), width: size(), height: size(), length: size() }),
-      obj({ kind: z.literal('roundTap'), diameter: size(), length: size() }),
-      obj({ kind: z.literal('rectTap'), width: size(), height: size(), length: size() }),
+      obj({ kind: z.literal('roundTap'), diameter: size(), length: size(), mainDiameter: size().optional() }),
+      obj({ kind: z.literal('rectTap'), width: size(), height: size(), length: size(), mainDiameter: size().optional() }),
       // BETA, ADR 0113: adapter / box and offsets
       obj({
         kind: z.literal('rectBox'),
@@ -50,7 +53,7 @@ export function createSchemas(config: CalcConfig) {
         height: size(),
         length: size(),
         ends: z.union([z.literal(0), z.literal(1), z.literal(2)], { error: 'box.ends' }),
-        partitions: z.number({ error: typeError('field.invalid') }).int({ error: 'box.partitions' }).gte(0, { error: 'box.partitions' }),
+        partitions: z.number({ error: typeError('field.invalid') }).int({ error: 'box.partitions' }).gte(0, { error: 'box.partitions' }).default(0),
         openFaces: z.union([z.literal(0), z.literal(1)], { error: 'box.openFaces' }).optional(),
       }),
       obj({
@@ -125,7 +128,7 @@ export function createSchemas(config: CalcConfig) {
         allowanceCount: allowanceCount(),
       }),
       // Tees and crosses: main run + branch size along the axis; allowance is also the collar length.
-      obj({ kind: z.literal('roundTee'), diameter: size(), branchDiameter: size(), allowance: allowance(), allowanceCount: allowanceCount() }),
+      obj({ kind: z.literal('roundTee'), diameter: size(), branchDiameter: size(), allowance: allowance(), allowanceCount: allowanceCount(), saddle: saddle() }),
       obj({
         kind: z.literal('roundTeeRectBranch'),
         diameter: size(),
@@ -133,6 +136,7 @@ export function createSchemas(config: CalcConfig) {
         branchHeight: size(),
         allowance: allowance(),
         allowanceCount: allowanceCount(),
+        saddle: saddle(),
       }),
       obj({
         kind: z.literal('rectTee'),
@@ -151,7 +155,7 @@ export function createSchemas(config: CalcConfig) {
         allowance: allowance(),
         allowanceCount: allowanceCount(),
       }),
-      obj({ kind: z.literal('roundCross'), diameter: size(), branchDiameter: size(), allowance: allowance(), allowanceCount: allowanceCount() }),
+      obj({ kind: z.literal('roundCross'), diameter: size(), branchDiameter: size(), allowance: allowance(), allowanceCount: allowanceCount(), saddle: saddle() }),
       obj({
         kind: z.literal('roundCrossRectBranches'),
         diameter: size(),
@@ -159,6 +163,7 @@ export function createSchemas(config: CalcConfig) {
         branchHeight: size(),
         allowance: allowance(),
         allowanceCount: allowanceCount(),
+        saddle: saddle(),
       }),
       obj({
         kind: z.literal('rectCross'),

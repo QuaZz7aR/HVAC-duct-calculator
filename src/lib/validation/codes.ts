@@ -22,6 +22,7 @@ export const errorCodes = [
   'box.ends',
   'box.partitions',
   'box.openFaces',
+  'saddle.invalid',
   'offset.negative',
 ] as const;
 
