@@ -43,7 +43,7 @@ function parseRow(v: unknown): FormRow | undefined {
   const saved = textMap(v.values);
   const values = Object.fromEntries(kindFields[kind].map((f) => [f.key, saved[f.key] ?? f.initial ?? ''])) as FormRow['values'];
   const row: FormRow = { id: v.id, kind, values, quantity: str(v.quantity) ?? '1', flow: '', zeta: '' };
-  const opt = (k: 'allowanceCount' | 'insulation' | 'position' | 'saddle') => {
+  const opt = (k: 'allowanceCount' | 'insulation' | 'position' | 'saddle' | 'steel') => {
     const s = str(v[k]);
     if (s !== undefined) row[k] = s;
   };
@@ -51,6 +51,7 @@ function parseRow(v: unknown): FormRow | undefined {
   opt('insulation');
   opt('position');
   opt('saddle');
+  opt('steel');
   if (Array.isArray(v.manual)) row.manual = v.manual.filter((k): k is FieldKey => typeof k === 'string' && keys.has(k));
   if (v.preset === true) row.preset = true;
   if (v.noSizes === true) row.noSizes = true;

@@ -127,6 +127,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0117](adr/0117-brick-red-accent.md) | «Акцент» choice: blue (default) or brick red; errors turn orange with the red accent | 2026-11-26 | Accepted |
 | [0118](adr/0118-saddle-on-a-round-main-and-no-partitions.md) | Saddle of a branch on a round main as an option (taps: main Ø, round-main tees/crosses: on/off); box partitions not counted by the form | 2026-11-27 | Accepted |
 | [0119](adr/0119-placeholders-in-empty-fields.md) | Placeholders in empty optional fields (reducer length «300 (рекомендовано)», tap main Ø «пласка стінка»); `reducer.tooShort` names 150 mm | 2026-11-27 | Accepted |
+| [0120](adr/0120-steel-type.md) | Steel type per row (galvanized default, stainless, black, pre-painted; advanced mode); metal list, sheet count and price per steel and thickness; same thickness table for all | 2026-11-27 | Accepted |
 | [0095](adr/0095-numbering-by-systems.md) | «Нумерація»: positions «система-№», empty only or all again, preview first | 2026-11-24 | Accepted |
 | [0096](adr/0096-import-from-pdf.md) | Import from PDF: own text reader, columns from table borders or text ranges | 2026-11-24 | Accepted (thresholds `TODO(confirm)`) |
 | [0097](adr/0097-video-clips-in-the-help.md) | Short MP4 clip per help step, loaded only when the dialog opens | 2026-11-24 | Accepted |
@@ -170,6 +171,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `public/help/*.mp4` | Clip format and count are the agent's choice (MP4, one per step, uk + en) ([0097](adr/0097-video-clips-in-the-help.md)). |
 
 | `calc/saddle.ts`, `sheet-area.ts` | Saddle option ([0118](adr/0118-saddle-on-a-round-main-and-no-partitions.md)): the cut-out on the round main stays the flat branch section. |
+- Steel type thickness ([0120](adr/0120-steel-type.md), `form/steel.ts`): stainless and black steel use the same thickness table as galvanized; a separate table needs a source.
 
 ## Deferred
 - `npm audit`: 5 high findings, one chain (`braces` <- `micromatch` <- `fast-glob` <- `@next/eslint-plugin-next` <- `eslint-config-next`), dev tooling only, nothing ships to the browser or the server. No non-breaking fix exists: `npm audit fix --force` would downgrade `eslint-config-next` to 14.2.35 (Next 16 here). Wait for a `eslint-config-next` release that updates `fast-glob`/`micromatch`; do not run `npm audit fix`.

@@ -1,3 +1,4 @@
+import { toSteel } from "@/lib/form/steel";
 import type { FieldKey } from "@/lib/form/fields";
 import type { FittingWarning } from "@/lib/calc/warnings";
 import { issueMessage, warningMessage, type FormIssue } from "@/lib/form/messages";
@@ -9,7 +10,12 @@ function fieldLabel(issue: FormIssue, dict: Dictionary, fmt: (n: number, digits?
   if (key === "quantity") return dict.quantity;
   if (key === "seamPercent") return dict.settings.seamPercent;
   if (key === "marginPercent") return dict.settings.marginPercent;
-  if (key === "metalPrice") return dict.price.metalLabel(fmt(Number(issue.path[1]), 2));
+  if (key === "metalPrice") {
+    // the key is "0.5" or "stainless:0.5" (priceKey, ADR 0120)
+    const [steel, t] = String(issue.path[1]).includes(":") ? String(issue.path[1]).split(":") : [undefined, String(issue.path[1])];
+    const name = steel ? `${dict.steel.types[toSteel(steel)]} ` : "";
+    return dict.price.metalLabel(name + fmt(Number(t), 2));
+  }
   if (key === "insulationPrice") {
     const code = String(issue.path[1]);
     return dict.price.insulationLabel(dict.insulation.materials[code] ?? code);

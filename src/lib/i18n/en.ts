@@ -266,8 +266,14 @@ export const en: Dictionary = {
     empty: 'Pick insulation in a fitting card to see the area.',
     note: 'Beta: outer surface area of the insulation (each cross-section size + 2 layer thicknesses), elbows with the cutting coefficient, end caps the end plate only. No order margin.',
   },
+  steel: {
+    field: 'Steel',
+    info: 'Steel type of this part. The sheet list and the price are kept apart for each type. The thickness uses the same table for all for now.',
+    types: { galvanized: 'Galvanized', stainless: 'Stainless', black: 'Black (carbon)', painted: 'Pre-painted' },
+  },
   sheetList: {
     title: 'Sheet metal by thickness',
+    steel: 'Steel',
     thickness: 'Thickness, mm',
     area: 'Metal consumption, m²',
     orderArea: 'To order, m²',

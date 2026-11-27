@@ -1,3 +1,4 @@
+import { steelTypes, toSteel } from "@/lib/form/steel";
 import { defaultConfig } from "@/lib/calc/config";
 import { ChevronIcon, CloneIcon, TrashIcon } from "./ViewIcons";
 import { autoKey, isAuto } from "@/lib/form/auto-defaults";
@@ -93,7 +94,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
   // the (авто) hint or the reset link sits after the label, so reserve room for the longer one on the suggested field
   // a hidden field with an error stays visible in the simple mode, so it can be fixed (ADR 0082)
   const hasIssue = (key: string) => !!outcome && !outcome.ok && outcome.issues.some((i) => i.path.includes(key));
-  const labels = [dict.order.position, ...kindFields[row.kind].map((f) => fieldLabel(f) + (autoKey(row.kind) === f.key ? ` ${dict.autoValue.length > dict.resetAuto.length ? `(${dict.autoValue})` : dict.resetAuto}` : "")), ...(hasAllowance(row.kind) ? [dict.allowanceCount.field] : []), ...(saddleKinds.has(row.kind) ? [isTap(row.kind) ? dict.saddle.tapField : dict.saddle.teeField] : []), dict.quantity, dict.insulation.field];
+  const labels = [dict.order.position, ...kindFields[row.kind].map((f) => fieldLabel(f) + (autoKey(row.kind) === f.key ? ` ${dict.autoValue.length > dict.resetAuto.length ? `(${dict.autoValue})` : dict.resetAuto}` : "")), ...(hasAllowance(row.kind) ? [dict.allowanceCount.field] : []), ...(saddleKinds.has(row.kind) ? [isTap(row.kind) ? dict.saddle.tapField : dict.saddle.teeField] : []), dict.quantity, dict.insulation.field, dict.steel.field];
   if (collapsed) {
     // one compact tile: number, kind and the typed values; the whole tile expands the card
     const summary = [...kindFields[row.kind].map((f) => row.values[f.key] ?? ""), row.quantity].map((v) => v || "–").join(" · ");
@@ -236,6 +237,14 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
             <option value="" className="bg-panel text-foreground">{dict.insulation.none}</option>
             {defaultConfig.insulation.materials.map((m) => (
               <option key={m.code} value={m.code} className="bg-panel text-foreground">{dict.insulation.materials[m.code] ?? m.code}</option>
+            ))}
+          </select>
+        </label>
+        <label className="adv-only flex flex-col justify-end">
+          <span className={labelClass}>{dict.steel.field}<Info text={dict.steel.info} /></span>
+          <select className={selectClass} value={toSteel(row.steel)} onChange={(e) => onPatch({ steel: e.target.value })}>
+            {steelTypes.map((t) => (
+              <option key={t} value={t} className="bg-panel text-foreground">{dict.steel.types[t]}</option>
             ))}
           </select>
         </label>

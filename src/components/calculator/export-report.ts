@@ -69,17 +69,21 @@ export function reportSheets(input: ReportInput, dict: Dictionary): XSheet[] {
   spec.push([], [dict.results.consumptionNote]);
 
   const metalPriced = pricing.metal.some((c) => c !== undefined);
+  // a steel column only when some line is not galvanized (ADR 0120); otherwise the sheet is as before
+  const mixed = calc.sheetList.some((l) => l.steel !== undefined && l.steel !== 'galvanized');
+  const steelCol = (l?: (typeof calc.sheetList)[number]): XCell[] => (mixed ? [l ? dict.steel.types[l.steel ?? 'galvanized'] : null] : []);
   const metal: XCell[][] = [[b(dict.sheetList.title)], [d.sheetSize(w, h) + "; " + d.margin(settings.marginPercent)], [], [
     b(dict.sheetList.thickness), b(dict.sheetList.area), b(dict.sheetList.orderArea), b(dict.sheetList.sheets),
     ...(metalPriced ? [b(dict.price.cost)] : []),
   ]];
-  calc.sheetList.forEach((l, i) => metal.push([n(l.thicknessMm, 2), n(l.area), n(l.orderArea), n(l.sheets, 0), ...(metalPriced ? [pricing.metal[i] === undefined ? null : n(pricing.metal[i]!, 2)] : [])]));
-  metal.push([b(dict.totals.title), b(calc.totalMetalConsumption), b(calc.totalMetalAreaToOrder), b(calc.sheetList.reduce((s, l) => s + l.sheets, 0), 0),
+  if (mixed) metal[metal.length - 1].unshift(b(dict.sheetList.steel));
+  calc.sheetList.forEach((l, i) => metal.push([...steelCol(l), n(l.thicknessMm, 2), n(l.area), n(l.orderArea), n(l.sheets, 0), ...(metalPriced ? [pricing.metal[i] === undefined ? null : n(pricing.metal[i]!, 2)] : [])]));
+  metal.push([b(dict.totals.title), ...(mixed ? [null] : []), b(calc.totalMetalConsumption), b(calc.totalMetalAreaToOrder), b(calc.sheetList.reduce((s, l) => s + l.sheets, 0), 0),
     ...(metalPriced ? [cost(pricing.metalTotal, metalLines)] : [])], [], [dict.sheetList.note]);
 
   const sheets: XSheet[] = [
     { name: d.sheets.spec, rows: spec, widths: [8, 40, 22, 7, 12, 14, 14, 14, 14, ...(insulated ? [12] : []), 20] },
-    { name: d.sheets.metal, rows: metal, widths: [16, 20, 16, 12, 14] },
+    { name: d.sheets.metal, rows: metal, widths: mixed ? [24, 16, 20, 16, 12, 14] : [16, 20, 16, 12, 14] },
   ];
   if (insulated) {
     const priced = pricing.insulation.some((c) => c !== undefined);
