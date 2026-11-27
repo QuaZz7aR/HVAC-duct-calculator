@@ -89,7 +89,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
     </>
   );
   const fieldLabel = (f: (typeof kindFields)[FittingKind][number]) =>
-    `${dict.fields[f.key]}${f.optional ? ` (${dict.optional}: ${defaultConfig.reducerLengthMm})` : ""}`;
+    `${dict.fields[f.key]}${f.optional ? ` (${dict.optional})` : ""}`;
   // the (авто) hint or the reset link sits after the label, so reserve room for the longer one on the suggested field
   // a hidden field with an error stays visible in the simple mode, so it can be fixed (ADR 0082)
   const hasIssue = (key: string) => !!outcome && !outcome.ok && outcome.issues.some((i) => i.path.includes(key));
@@ -195,6 +195,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
             <TextField
               label={fieldLabel(f)}
               value={row.values[f.key] ?? ""}
+              placeholder={f.optional ? dict.recommendedValue(defaultConfig.reducerLengthMm) : undefined}
               onChange={(v) => onValueChange(f.key, v)}
               hint={hint}
               action={action}
@@ -216,7 +217,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
         )}
         {saddleKinds.has(row.kind) && isTap(row.kind) && (
           <div className={hasIssue("mainDiameter") ? "contents" : "contents adv-only"}>
-            <TextField label={dict.saddle.tapField} info={dict.saddle.tapInfo} inputMode="numeric" value={row.saddle ?? ""} onChange={(saddle) => onPatch({ saddle })} />
+            <TextField label={dict.saddle.tapField} info={dict.saddle.tapInfo} inputMode="numeric" value={row.saddle ?? ""} placeholder={dict.saddle.tapPlaceholder} onChange={(saddle) => onPatch({ saddle })} />
           </div>
         )}
         {saddleKinds.has(row.kind) && !isTap(row.kind) && (

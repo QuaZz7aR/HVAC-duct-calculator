@@ -125,6 +125,7 @@ export const en: Dictionary = {
   kind: 'Type',
   quantity: `Quantity ${sym.quantity}, pcs`,
   optional: 'optional',
+  recommendedValue: (v: number) => `${v} (recommended)`,
   sketch: {
     diameter: 'D',
     rect: 'W × H',
@@ -243,7 +244,7 @@ export const en: Dictionary = {
     metalLabel: (t: string) => `Metal price ${t} mm`,
     insulationLabel: (m: string) => `Price: ${m}`,
   },
-  saddle: { tapField: 'Main Ø (empty = flat)', teeField: 'Saddle on a round main', tapInfo: 'Diameter of the round duct the tap goes into. The stub then follows the curve of the pipe (a saddle) and the area is a little larger. Empty = a tap into a flat wall (rect duct).', teeInfo: 'Yes: the branch follows the curve of the round main (a saddle), a slightly larger but more exact area. No: as most tables and calculators count it.', off: 'No', on: 'Yes' },
+  saddle: { tapField: 'Main Ø', tapPlaceholder: 'flat wall', teeField: 'Saddle on a round main', tapInfo: 'Diameter of the round duct the tap goes into. The stub then follows the curve of the pipe (a saddle) and the area is a little larger. Empty = a tap into a flat wall (rect duct).', teeInfo: 'Yes: the branch follows the curve of the round main (a saddle), a slightly larger but more exact area. No: as most tables and calculators count it.', off: 'No', on: 'Yes' },
   allowanceCount: {
     field: 'Number of allowances',
     options: { 2: '2 (both ends)', 1: '1 (one end)', 0: '0 (no allowance)' },
@@ -282,7 +283,7 @@ export const en: Dictionary = {
     'allowance.negative': 'Cannot be negative',
     'allowanceCount.invalid': 'Number of allowances: 0, 1 or 2',
     'angle.outOfRange': 'The angle must be greater than 0° and not greater than 180°',
-    'reducer.tooShort': 'The reducer is shorter than the minimum allowed',
+    'reducer.tooShort': 'A reducer shorter than 150 mm is not made. Enter 150 mm or more (300 recommended).',
     'reducer.noSizeChange': 'Both ends of the reducer have the same size',
     'flow.nonPositive': 'Airflow must be greater than zero',
     'coefficient.negative': 'Cannot be negative',
