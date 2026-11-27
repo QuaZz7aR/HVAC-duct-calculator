@@ -10,6 +10,7 @@ function fieldLabel(issue: FormIssue, dict: Dictionary, fmt: (n: number, digits?
   if (key === "seamPercent") return dict.settings.seamPercent;
   if (key === "marginPercent") return dict.settings.marginPercent;
   if (key === "metalPrice") return dict.price.metalLabel(fmt(Number(issue.path[1]), 2));
+  if (key === "claddingPrice") return dict.price.claddingLabel;
   if (key === "insulationPrice") {
     const code = String(issue.path[1]);
     return dict.price.insulationLabel(dict.insulation.materials[code] ?? code);

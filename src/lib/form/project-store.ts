@@ -43,12 +43,13 @@ function parseRow(v: unknown): FormRow | undefined {
   const saved = textMap(v.values);
   const values = Object.fromEntries(kindFields[kind].map((f) => [f.key, saved[f.key] ?? f.initial ?? ''])) as FormRow['values'];
   const row: FormRow = { id: v.id, kind, values, quantity: str(v.quantity) ?? '1', flow: '', zeta: '' };
-  const opt = (k: 'allowanceCount' | 'insulation' | 'position' | 'saddle') => {
+  const opt = (k: 'allowanceCount' | 'insulation' | 'cladding' | 'position' | 'saddle') => {
     const s = str(v[k]);
     if (s !== undefined) row[k] = s;
   };
   opt('allowanceCount');
   opt('insulation');
+  opt('cladding');
   opt('position');
   opt('saddle');
   if (Array.isArray(v.manual)) row.manual = v.manual.filter((k): k is FieldKey => typeof k === 'string' && keys.has(k));
@@ -100,6 +101,6 @@ export function parseProject(text: string | null | undefined): SavedProject | un
       rows.push(row);
     }
   }
-  const prices = isObj(data.prices) ? { metal: textMap(data.prices.metal), insulation: textMap(data.prices.insulation) } : emptyPrices();
+  const prices = isObj(data.prices) ? { metal: textMap(data.prices.metal), insulation: textMap(data.prices.insulation), ...(typeof data.prices.cladding === 'string' ? { cladding: data.prices.cladding } : {}) } : emptyPrices();
   return { rows, settings: parseSettings(data.settings), prices };
 }

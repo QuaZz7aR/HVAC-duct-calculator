@@ -4,7 +4,7 @@ import { assembleSection } from '../calc/section';
 import { centerlineLength } from '../calc/sheet-area';
 import { metalArea } from '../calc/waste-factor';
 import { consumptionDiffers, metalConsumption } from '../calc/consumption';
-import { insulationArea, insulationList, type InsulationGroup, type InsulationItem } from '../calc/insulation';
+import { claddingArea, insulationArea, insulationList, type InsulationGroup, type InsulationItem } from '../calc/insulation';
 import { orderArea, orderList, type OrderLine } from '../calc/sheet-count';
 import { sheetList } from '../calc/sheet-list';
 import { thickness, thicknessSize } from '../calc/thickness';
@@ -35,6 +35,7 @@ export interface RowResult {
   metalConsumptionTotal: number; // m2, times quantity; the order, the sheet list and the price use this
   consumptionDiffers: boolean; // true when the consumption rule changes this row (a short reducer, a tee or cross)
   insulation: { code: string; area: number; areaTotal: number } | null; // m2 one piece and times quantity; null = not insulated
+  cladding: { area: number; areaTotal: number } | null; // m2 one piece and times quantity, over the insulation (ADR 0120); null = none
   centerlineLength: number; // m
   pressureDrop: PressureDrop; // all NaN when `lossesAvailable` is false
   totalLoss: number; // Pa, friction + local, one piece; NaN when `lossesAvailable` is false
@@ -54,6 +55,7 @@ export interface Calculation {
   totalMetalAreaToOrder: number; // m2, the metal consumption plus the order margin (config.order.marginPercent)
   insulationList: InsulationGroup[]; // m2 per material, times quantity
   totalInsulationArea: number; // m2, all materials
+  totalCladdingArea: number; // m2, cladding over the insulation of all rows (ADR 0120)
   totalPressureDrop: number; // Pa, times quantity; rows with unavailable losses are left out
   skipped: number; // rows left out because of errors
 }
@@ -103,9 +105,12 @@ function parseRow(row: FormRow, schemas: ReturnType<typeof createSchemas>, confi
   const code = row.insulation ?? '';
   const material = code === '' ? null : (config.insulation.materials.find((m) => m.code === code) ?? null);
   if (code !== '' && !material) issues.push({ code: 'insulation.unknown', path: ['insulation'] });
+  // cladding sits on the insulation layer, so it needs one
+  const clad = row.cladding === '1';
+  if (clad && code === '') issues.push({ code: 'cladding.noInsulation', path: ['cladding'] });
 
   if (issues.length > 0 || !item.ok) return { ok: false as const, issues };
-  return { ok: true as const, fitting: item.value.fitting, quantity: item.value.quantity, flow: flow!, zeta, material, maxPiece };
+  return { ok: true as const, fitting: item.value.fitting, quantity: item.value.quantity, flow: flow!, zeta, material, clad, maxPiece };
 }
 
 export function calculate(
@@ -124,6 +129,7 @@ export function calculate(
   const valid: { fitting: Fitting; quantity: number }[] = [];
   const insulatedItems: InsulationItem[] = [];
   let totalPressureDrop = 0;
+  let totalCladdingArea = 0;
   for (const row of rows) {
     const p = parseRow(row, schemas, config);
     if (!p.ok) {
@@ -146,6 +152,7 @@ export function calculate(
           totalLoss = sum;
         }
         const ins = p.material ? insulationArea(p.fitting, p.material.thicknessMm, config) : NaN;
+        const cl = p.material && p.clad ? claddingArea(p.fitting, p.material.thicknessMm, config) : NaN;
         result = {
           id: row.id,
           fitting: p.fitting,
@@ -157,6 +164,7 @@ export function calculate(
           metalConsumptionTotal: used * p.quantity,
           consumptionDiffers: consumptionDiffers(p.fitting, config),
           insulation: p.material ? { code: p.material.code, area: ins, areaTotal: ins * p.quantity } : null,
+          cladding: p.material && p.clad ? { area: cl, areaTotal: cl * p.quantity } : null,
           centerlineLength: centerlineLength(p.fitting),
           pressureDrop,
           totalLoss,
@@ -172,6 +180,9 @@ export function calculate(
         if (result.insulation && !(Number.isFinite(result.insulation.areaTotal) && result.insulation.area > 0)) {
           throw new Error('not a valid insulation area');
         }
+        if (result.cladding && !(Number.isFinite(result.cladding.areaTotal) && result.cladding.area > 0)) {
+          throw new Error('not a valid cladding area');
+        }
       } catch {
         outcomes.push({ ok: false, id: row.id, issues: [{ code: 'input.invalid', path: [] }] });
         continue;
@@ -179,6 +190,7 @@ export function calculate(
       outcomes.push({ ok: true, result });
       valid.push({ fitting: p.fitting, quantity: p.quantity });
       if (p.material) insulatedItems.push({ fitting: p.fitting, quantity: p.quantity, material: p.material });
+      if (result.cladding) totalCladdingArea += result.cladding.areaTotal;
       if (result.lossesAvailable) totalPressureDrop += p.quantity * result.totalLoss;
     }
   }
@@ -196,6 +208,7 @@ export function calculate(
     totalMetalAreaToOrder: orderArea(totalMetalConsumption, config.order.marginPercent),
     insulationList: insulation,
     totalInsulationArea: insulation.reduce((sum, g) => sum + g.area, 0),
+    totalCladdingArea,
     totalPressureDrop,
     // rows blocked only by invalid air carry no issues of their own and are not counted
     skipped: outcomes.filter((o) => !o.ok && o.issues.length > 0).length,

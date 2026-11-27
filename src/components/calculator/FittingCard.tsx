@@ -93,7 +93,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
   // the (авто) hint or the reset link sits after the label, so reserve room for the longer one on the suggested field
   // a hidden field with an error stays visible in the simple mode, so it can be fixed (ADR 0082)
   const hasIssue = (key: string) => !!outcome && !outcome.ok && outcome.issues.some((i) => i.path.includes(key));
-  const labels = [dict.order.position, ...kindFields[row.kind].map((f) => fieldLabel(f) + (autoKey(row.kind) === f.key ? ` ${dict.autoValue.length > dict.resetAuto.length ? `(${dict.autoValue})` : dict.resetAuto}` : "")), ...(hasAllowance(row.kind) ? [dict.allowanceCount.field] : []), ...(saddleKinds.has(row.kind) ? [isTap(row.kind) ? dict.saddle.tapField : dict.saddle.teeField] : []), dict.quantity, dict.insulation.field];
+  const labels = [dict.order.position, ...kindFields[row.kind].map((f) => fieldLabel(f) + (autoKey(row.kind) === f.key ? ` ${dict.autoValue.length > dict.resetAuto.length ? `(${dict.autoValue})` : dict.resetAuto}` : "")), ...(hasAllowance(row.kind) ? [dict.allowanceCount.field] : []), ...(saddleKinds.has(row.kind) ? [isTap(row.kind) ? dict.saddle.tapField : dict.saddle.teeField] : []), dict.quantity, dict.insulation.field, ...(row.insulation || row.cladding === "1" ? [dict.insulation.cladding.field] : [])];
   if (collapsed) {
     // one compact tile: number, kind and the typed values; the whole tile expands the card
     const summary = [...kindFields[row.kind].map((f) => row.values[f.key] ?? ""), row.quantity].map((v) => v || "–").join(" · ");
@@ -239,6 +239,15 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
             ))}
           </select>
         </label>
+        {(row.insulation || row.cladding === "1") && (
+          <label className={`${hasIssue("cladding") ? "" : "adv-only "}col-span-2 flex flex-col justify-end sm:col-span-1`}>
+            <span className={labelClass}>{dict.insulation.cladding.field}<Info text={dict.insulation.cladding.info} /></span>
+            <select className={selectClass} value={row.cladding === "1" ? "1" : ""} onChange={(e) => onPatch({ cladding: e.target.value })}>
+              <option value="" className="bg-panel text-foreground">{dict.insulation.cladding.off}</option>
+              <option value="1" className="bg-panel text-foreground">{dict.insulation.cladding.on}</option>
+            </select>
+          </label>
+        )}
       </div>
       {showSketch && <div className="hidden sm:block">{sketch}</div>}
       {outcome && !outcome.ok && <ErrorList issues={outcome.issues} />}

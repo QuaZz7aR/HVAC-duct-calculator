@@ -6,6 +6,8 @@ import type { FormIssue } from './messages';
 export interface PriceText {
   metal: Record<string, string>;
   insulation: Record<string, string>;
+  /** Cladding over the insulation (ADR 0120), one price for all rows; absent = no price. */
+  cladding?: string;
 }
 
 export const emptyPrices = (): PriceText => ({ metal: {}, insulation: {} });
@@ -18,7 +20,9 @@ export interface Pricing {
   insulation: (number | undefined)[]; // UAH per material line, on the computed area
   metalTotal: CostTotal;
   insulationTotal: CostTotal;
-  total: CostTotal; // metal + insulation
+  cladding: number | undefined; // UAH, on the cladding area; undefined = no cladding or no price
+  claddingLines: number; // 1 when there is cladding, else 0 (one priced line)
+  total: CostTotal; // metal + insulation + cladding
   issues: FormIssue[];
 }
 
@@ -39,7 +43,7 @@ function price(text: string | undefined, path: (string | number)[], issues: Form
  * Costs of the calculated lists. Metal is priced on the area to order (what is bought, the order margin included);
  * insulation on its computed area (the order margin is for metal only, ADR 0038).
  */
-export function pricing(calc: Pick<Calculation, 'sheetList' | 'insulationList'>, text: PriceText): Pricing {
+export function pricing(calc: Pick<Calculation, 'sheetList' | 'insulationList'> & Partial<Pick<Calculation, 'totalCladdingArea'>>, text: PriceText): Pricing {
   const issues: FormIssue[] = [];
   const metal = calc.sheetList.map((l) => {
     const key = priceKey(l.thicknessMm);
@@ -50,14 +54,20 @@ export function pricing(calc: Pick<Calculation, 'sheetList' | 'insulationList'>,
   );
   const metalTotal = costTotal(metal);
   const insulationTotal = costTotal(insulation);
+  const claddingArea = calc.totalCladdingArea ?? 0;
+  const claddingLines = claddingArea > 0 ? 1 : 0;
+  const cladding = claddingLines ? lineCost(claddingArea, price(text.cladding, ['claddingPrice'], issues)) : undefined;
+  const claddingTotal = costTotal(claddingLines ? [cladding] : []);
   return {
     metal,
     insulation,
     metalTotal,
     insulationTotal,
+    cladding,
+    claddingLines,
     total: {
-      total: metalTotal.total + insulationTotal.total,
-      unpriced: metalTotal.unpriced + insulationTotal.unpriced,
+      total: metalTotal.total + insulationTotal.total + claddingTotal.total,
+      unpriced: metalTotal.unpriced + insulationTotal.unpriced + claddingTotal.unpriced,
     },
     issues,
   };

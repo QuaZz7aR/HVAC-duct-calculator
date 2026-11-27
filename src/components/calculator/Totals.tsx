@@ -24,6 +24,8 @@ export function Totals({ calc, pricing, priceIssues, settings, onSettings }: Pro
   const { dict, fmt } = useI18n();
   const metalLines = pricing.metal.length;
   const insulationLines = pricing.insulation.length;
+  const claddingLines = pricing.claddingLines;
+  const allLines = metalLines + insulationLines + claddingLines;
   return (
     <section className={cardClass} aria-labelledby="totals-title">
       <h2 id="totals-title" className="mb-3 font-medium">{dict.totals.title}</h2>
@@ -36,11 +38,13 @@ export function Totals({ calc, pricing, priceIssues, settings, onSettings }: Pro
         <div className="flex justify-between"><dt>{dict.totals.metalConsumption}</dt><dd className="tabular-nums font-medium">{fmt(calc.totalMetalConsumption)}</dd></div>
         <div className="flex justify-between"><dt>{dict.totals.metalAreaToOrder}</dt><dd className="tabular-nums font-medium">{fmt(calc.totalMetalAreaToOrder)}</dd></div>
         <div className="adv-only flex justify-between"><dt>{dict.totals.insulationArea}</dt><dd className="tabular-nums font-medium">{fmt(calc.totalInsulationArea)}</dd></div>
+        {calc.totalCladdingArea > 0 && <div className="adv-only flex justify-between"><dt>{dict.totals.claddingArea}</dt><dd className="tabular-nums font-medium">{fmt(calc.totalCladdingArea)}</dd></div>}
         <div className="adv-only flex justify-between border-t border-line pt-1"><dt>{dict.totals.metalCost}</dt><dd className="tabular-nums font-medium">{money(pricing.metalTotal, metalLines, dict.totals.noPrice, fmt)}</dd></div>
         <div className="adv-only flex justify-between"><dt>{dict.totals.insulationCost}</dt><dd className="tabular-nums font-medium">{money(pricing.insulationTotal, insulationLines, dict.totals.noPrice, fmt)}</dd></div>
-        <div className="adv-only flex justify-between"><dt className="font-medium">{dict.totals.totalCost}</dt><dd className="tabular-nums font-semibold">{money(pricing.total, metalLines + insulationLines, dict.totals.noPrice, fmt)}</dd></div>
+        {claddingLines > 0 && <div className="adv-only flex justify-between"><dt>{dict.totals.claddingCost}</dt><dd className="tabular-nums font-medium">{pricing.cladding === undefined ? dict.totals.noPrice : fmt(pricing.cladding, 2)}</dd></div>}
+        <div className="adv-only flex justify-between"><dt className="font-medium">{dict.totals.totalCost}</dt><dd className="tabular-nums font-semibold">{money(pricing.total, allLines, dict.totals.noPrice, fmt)}</dd></div>
       </dl>
-      {pricing.total.unpriced > 0 && pricing.total.unpriced < metalLines + insulationLines && (
+      {pricing.total.unpriced > 0 && pricing.total.unpriced < allLines && (
         <p className={`adv-only mt-2 text-xs ${mutedClass}`}>{dict.totals.unpriced(pricing.total.unpriced)}</p>
       )}
       <ErrorList issues={priceIssues} />

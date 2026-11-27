@@ -106,6 +106,12 @@ export interface CalcConfig {
   order: OrderConfig;
   elbowRadius: ElbowRadiusConfig;
   insulation: InsulationConfig;
+  cladding: CladdingConfig;
+}
+
+/** Cladding over the insulation of outdoor ducts (ADR 0120): the overlap on top of the outer surface of the layer. */
+export interface CladdingConfig {
+  overlapPercent: number; // extra sheet for the seams and overlaps of the cladding, % of the outer surface; 0 = none
 }
 
 /**
@@ -217,6 +223,10 @@ export const defaultConfig: CalcConfig = {
       { code: 'mf30', thicknessMm: 30 }, // мінеральна вата фольгована 30 мм
       { code: 'mf50', thicknessMm: 50 },
     ],
+  },
+  cladding: {
+    // TODO(confirm): no source for the overlap of cladding sheets yet; 0 = the outer surface of the insulation only
+    overlapPercent: 0,
   },
   order: {
     // engineer (2026-10-19): the 20 % is "probably the margin for ordering metal"
