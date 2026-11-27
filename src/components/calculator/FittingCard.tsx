@@ -2,7 +2,7 @@ import { defaultConfig } from "@/lib/calc/config";
 import { ChevronIcon, CloneIcon, TrashIcon } from "./ViewIcons";
 import { autoKey, isAuto } from "@/lib/form/auto-defaults";
 import { fieldColumns, isLongLabel } from "@/lib/form/layout";
-import { hasAllowance, isTap, kindFields, saddleKinds, type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
+import { hasAllowance, isTap, kindFields, noInsulation, saddleKinds, type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
 import type { RowOutcome } from "@/lib/form/calculate";
 import { useI18n } from "@/components/i18n";
 import { kindTitle } from "./format";
@@ -230,15 +230,17 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
           </label>
         )}
         <TextField label={dict.quantity} info={dict.help.fields.quantity} inputMode="numeric" value={row.quantity} onChange={(quantity) => onPatch({ quantity })} />
-        <label className={`${hasIssue("insulation") ? "" : "adv-only "}col-span-2 flex flex-col justify-end sm:col-span-1`}>
-          <span className={labelClass}>{dict.insulation.field}<Info text={dict.help.fields.insulation} /></span>
-          <select className={selectClass} value={row.insulation ?? ""} onChange={(e) => onPatch({ insulation: e.target.value })}>
-            <option value="" className="bg-panel text-foreground">{dict.insulation.none}</option>
-            {defaultConfig.insulation.materials.map((m) => (
-              <option key={m.code} value={m.code} className="bg-panel text-foreground">{dict.insulation.materials[m.code] ?? m.code}</option>
-            ))}
-          </select>
-        </label>
+        {!noInsulation.has(row.kind) && (
+          <label className={`${hasIssue("insulation") ? "" : "adv-only "}col-span-2 flex flex-col justify-end sm:col-span-1`}>
+            <span className={labelClass}>{dict.insulation.field}<Info text={dict.help.fields.insulation} /></span>
+            <select className={selectClass} value={row.insulation ?? ""} onChange={(e) => onPatch({ insulation: e.target.value })}>
+              <option value="" className="bg-panel text-foreground">{dict.insulation.none}</option>
+              {defaultConfig.insulation.materials.map((m) => (
+                <option key={m.code} value={m.code} className="bg-panel text-foreground">{dict.insulation.materials[m.code] ?? m.code}</option>
+              ))}
+            </select>
+          </label>
+        )}
       </div>
       {showSketch && <div className="hidden sm:block">{sketch}</div>}
       {outcome && !outcome.ok && <ErrorList issues={outcome.issues} />}

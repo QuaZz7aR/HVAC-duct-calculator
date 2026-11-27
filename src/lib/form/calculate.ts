@@ -11,7 +11,7 @@ import { thickness, thicknessSize } from '../calc/thickness';
 import { fittingWarnings, type FittingWarning } from '../calc/warnings';
 import type { Fitting, PressureDrop } from '../calc/types';
 import { airInputSchema, createSchemas, validate } from '../validation';
-import { hasAllowance, isTap, kindFields, saddleKinds, type FormRow } from './fields';
+import { hasAllowance, isTap, kindFields, noInsulation, saddleKinds, type FormRow } from './fields';
 import type { FormIssue } from './messages';
 import { splitLength, type Pieces } from './pieces';
 
@@ -100,7 +100,8 @@ function parseRow(row: FormRow, schemas: ReturnType<typeof createSchemas>, confi
   if (Number.isNaN(zeta)) issues.push({ code: 'size.notFinite', path: ['zeta'] });
   else if (zeta < 0) issues.push({ code: 'coefficient.negative', path: ['zeta'] });
 
-  const code = row.insulation ?? '';
+  // a hood is never insulated (ADR 0120): a material left from a kind change is ignored
+  const code = noInsulation.has(row.kind) ? '' : (row.insulation ?? '');
   const material = code === '' ? null : (config.insulation.materials.find((m) => m.code === code) ?? null);
   if (code !== '' && !material) issues.push({ code: 'insulation.unknown', path: ['insulation'] });
 

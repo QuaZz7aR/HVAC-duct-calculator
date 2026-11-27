@@ -38,9 +38,9 @@ On a phone the side panel becomes a column of round buttons at the screen edge, 
 
 ## Supported fittings
 
-22 kinds (3 of them beta), named by the designations a Ukrainian spec uses.
+24 kinds (5 of them beta), named by the designations a Ukrainian spec uses.
 
-In the English interface the same kinds have short English codes (C = circular, R = rectangular): CD, RD ducts; CE, RE elbows; CR, RR, RC reducers; CTap, RTap collars; CT, CRT, RT, RCT tees; CX, CRX, RX, RCX crosses; RA adapter / box, CO, RO offsets.
+In the English interface the same kinds have short English codes (C = circular, R = rectangular): CD, RD ducts; CE, RE elbows; CR, RR, RC reducers; CTap, RTap collars; CT, CRT, RT, RCT tees; CX, CRX, RX, RCX crosses; RA adapter / box, CO, RO offsets; RH, RHC exhaust hoods.
 
 | Group | Kinds |
 |---|---|
@@ -50,7 +50,7 @@ In the English interface the same kinds have short English codes (C = circular, 
 | Caps | round, rectangular |
 | Branch-in collars | round (Квр), rectangular (Пвр) |
 | Tees | round (КТ), round with a rectangular branch (КПТ), rectangular (ПТ), rectangular with a round branch (ПКТ) |
-| Beta | adapter / box (ПА), round offset (КУ), rectangular offset (ПУ): formulas from open sources, not yet confirmed by the engineer |
+| Beta | adapter / box (ПА), round offset (КУ), rectangular offset (ПУ), exhaust hood with a rectangular (ЗнП) or round (ЗнК) stub, not insulated: formulas from open sources, not yet confirmed by the engineer |
 | Crosses | round with round branches (ККХ), round with rectangular branches (КПХ), rectangular with rectangular branches (ППХ), rectangular with round branches (ПКХ) |
 
 Tees and crosses subtract the branch openings from the main duct; thickness follows the main duct.

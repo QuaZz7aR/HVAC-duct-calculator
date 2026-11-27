@@ -7,7 +7,7 @@ export type FieldKey =
   | 'diameter' | 'smallDiameter' | 'width' | 'height' | 'smallWidth' | 'smallHeight'
   | 'length' | 'centerRadius' | 'innerRadius' | 'angle' | 'allowance'
   | 'branchDiameter' | 'branchWidth' | 'branchHeight' | 'maxPiece'
-  | 'offset' | 'ends' | 'partitions' | 'openFaces';
+  | 'offset' | 'ends' | 'partitions' | 'openFaces' | 'skirt';
 
 export interface FieldDef {
   key: FieldKey;
@@ -25,6 +25,7 @@ const angle: FieldDef = { key: 'angle', initial: '90' };
 // TODO(confirm): the 100 mm tap length is a form prefill only (Excel Квр / Пвр column J; ВСН 353-86 п. 1.5 / 2.5: h = 100 mm), not a core default.
 const tapLength: FieldDef = { key: 'length', initial: '100' };
 const maxPiece = (mm: number): FieldDef => ({ key: 'maxPiece', formOnly: true, initial: String(mm) });
+const skirt: FieldDef = { key: 'skirt', initial: '0' };
 const reducerLength: FieldDef = { key: 'length', optional: true };
 
 export const kindOrder: FittingKind[] = [
@@ -33,11 +34,14 @@ export const kindOrder: FittingKind[] = [
   'roundTap', 'rectTap',
   'roundTee', 'roundTeeRectBranch', 'rectTee', 'rectTeeRoundBranch',
   'roundCross', 'roundCrossRectBranches', 'rectCross', 'rectCrossRoundBranches',
-  'rectBox', 'roundOffset', 'rectOffset',
+  'rectBox', 'roundOffset', 'rectOffset', 'rectHood', 'rectHoodRoundStub',
 ];
 
 /** BETA kinds (ADR 0113): formulas from open sources, not yet confirmed by the engineer; the UI marks them. */
-export const betaKinds: ReadonlySet<FittingKind> = new Set<FittingKind>(['rectBox', 'roundOffset', 'rectOffset']);
+export const betaKinds: ReadonlySet<FittingKind> = new Set<FittingKind>(['rectBox', 'roundOffset', 'rectOffset', 'rectHood', 'rectHoodRoundStub']);
+
+/** Kinds that are never insulated (a hood hangs in the room, ADR 0120): the card has no insulation choice and a stored one is ignored. */
+export const noInsulation: ReadonlySet<FittingKind> = new Set<FittingKind>(['rectHood', 'rectHoodRoundStub']);
 
 export const kindFields: Record<FittingKind, FieldDef[]> = {
   roundTee: [{ key: 'diameter' }, { key: 'branchDiameter' }, allowance],
@@ -65,6 +69,9 @@ export const kindFields: Record<FittingKind, FieldDef[]> = {
   rectBox: [{ key: 'width' }, { key: 'height' }, { key: 'length' }, { key: 'ends', initial: '2' }, { key: 'openFaces', initial: '0' }],
   roundOffset: [{ key: 'diameter' }, { key: 'length' }, { key: 'offset' }, allowance],
   rectOffset: [{ key: 'width' }, { key: 'height' }, { key: 'length' }, { key: 'offset' }, allowance],
+  // BETA, ADR 0120. TODO(confirm): no rim as the prefill
+  rectHood: [{ key: 'width' }, { key: 'height' }, { key: 'smallWidth' }, { key: 'smallHeight' }, { key: 'length' }, skirt, allowance],
+  rectHoodRoundStub: [{ key: 'width' }, { key: 'height' }, { key: 'smallDiameter' }, { key: 'length' }, skirt, allowance],
 };
 
 /** One form row; every value is the raw text the user typed. */

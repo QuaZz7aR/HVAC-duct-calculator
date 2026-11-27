@@ -40,6 +40,10 @@ export function insulated(f: Fitting, t: number): Fitting {
     case 'roundTeeRectBranch':
     case 'roundCrossRectBranches':
       return { ...f, diameter: f.diameter + d, branchWidth: f.branchWidth + d, branchHeight: f.branchHeight + d };
+    case 'rectHood':
+    case 'rectHoodRoundStub':
+      // BETA, ADR 0120: a hood hangs in the room and is not insulated; the form never asks for it
+      throw new Error(`a hood is not insulated: ${f.kind}`);
     case 'rectTee':
     case 'rectCross':
       return { ...f, width: f.width + d, height: f.height + d, branchWidth: f.branchWidth + d, branchHeight: f.branchHeight + d };

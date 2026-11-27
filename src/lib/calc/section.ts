@@ -40,7 +40,10 @@ function openings(f: Fitting): Opening[] {
     case 'rectReducer':
       return [rectOpening(f.width, f.height), rectOpening(f.smallWidth, f.smallHeight)];
     case 'rectToRoundReducer':
+    case 'rectHoodRoundStub':
       return [rectOpening(f.width, f.height), roundOpening(f.smallDiameter)];
+    case 'rectHood':
+      return [rectOpening(f.width, f.height), rectOpening(f.smallWidth, f.smallHeight)];
     case 'roundTee':
     case 'roundTeeRectBranch':
     case 'roundCross':
