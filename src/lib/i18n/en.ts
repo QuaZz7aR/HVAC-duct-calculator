@@ -283,7 +283,7 @@ export const en: Dictionary = {
     'allowance.negative': 'Cannot be negative',
     'allowanceCount.invalid': 'Number of allowances: 0, 1 or 2',
     'angle.outOfRange': 'The angle must be greater than 0° and not greater than 180°',
-    'reducer.tooShort': 'A reducer shorter than 150 mm is not made. Enter 150 mm or more (300 recommended).',
+    'reducer.tooShort': 'The reducer is shorter than 150 mm. Enter 150 mm or more (300 recommended).',
     'reducer.noSizeChange': 'Both ends of the reducer have the same size',
     'flow.nonPositive': 'Airflow must be greater than zero',
     'coefficient.negative': 'Cannot be negative',
