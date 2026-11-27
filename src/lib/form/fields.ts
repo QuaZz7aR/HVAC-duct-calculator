@@ -81,6 +81,8 @@ export interface FormRow {
   saddle?: string;
   /** Insulation material code (config.insulation.materials); empty or absent = not insulated. */
   insulation?: string;
+  /** Steel type (`steelTypes` in steel.ts, ADR 0120); empty or absent = galvanized. */
+  steel?: string;
   /** Auto-filled fields (see auto-defaults.ts) that the user has typed over; they stop following the size. */
   manual?: FieldKey[];
   /** Position label typed by the user (П1, В2); empty or absent = the list number (ADR 0049). */

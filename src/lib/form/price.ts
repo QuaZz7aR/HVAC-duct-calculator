@@ -1,6 +1,7 @@
 import { costTotal, lineCost, type CostTotal } from '../calc/price';
 import { parseNumber, type Calculation } from './calculate';
 import type { FormIssue } from './messages';
+import type { SteelType } from './steel';
 
 /** Raw price inputs, UAH per m2: metal by sheet thickness (key `priceKey`), insulation by material code. Empty = no price. */
 export interface PriceText {
@@ -10,8 +11,9 @@ export interface PriceText {
 
 export const emptyPrices = (): PriceText => ({ metal: {}, insulation: {} });
 
-/** Key of a metal price: the thickness as plain text, e.g. "0.5". */
-export const priceKey = (thicknessMm: number) => String(thicknessMm);
+/** Key of a metal price: the thickness as plain text, e.g. "0.5"; another steel than galvanized is a prefix, "stainless:0.5" (ADR 0120). */
+export const priceKey = (thicknessMm: number, steel?: SteelType) =>
+  steel === undefined || steel === 'galvanized' ? String(thicknessMm) : `${steel}:${thicknessMm}`;
 
 export interface Pricing {
   metal: (number | undefined)[]; // UAH per sheet-list line, on the area to order (margin included)
@@ -39,10 +41,10 @@ function price(text: string | undefined, path: (string | number)[], issues: Form
  * Costs of the calculated lists. Metal is priced on the area to order (what is bought, the order margin included);
  * insulation on its computed area (the order margin is for metal only, ADR 0038).
  */
-export function pricing(calc: Pick<Calculation, 'sheetList' | 'insulationList'>, text: PriceText): Pricing {
+export function pricing(calc: { sheetList: { thicknessMm: number; orderArea: number; steel?: SteelType }[]; insulationList: Calculation['insulationList'] }, text: PriceText): Pricing {
   const issues: FormIssue[] = [];
   const metal = calc.sheetList.map((l) => {
-    const key = priceKey(l.thicknessMm);
+    const key = priceKey(l.thicknessMm, l.steel);
     return lineCost(l.orderArea, price(text.metal[key], ['metalPrice', key], issues));
   });
   const insulation = calc.insulationList.map((g) =>

@@ -5,7 +5,7 @@ import { centerlineLength } from '../calc/sheet-area';
 import { metalArea } from '../calc/waste-factor';
 import { consumptionDiffers, metalConsumption } from '../calc/consumption';
 import { insulationArea, insulationList, type InsulationGroup, type InsulationItem } from '../calc/insulation';
-import { orderArea, orderList, type OrderLine } from '../calc/sheet-count';
+import { orderArea, orderList } from '../calc/sheet-count';
 import { sheetList } from '../calc/sheet-list';
 import { thickness, thicknessSize } from '../calc/thickness';
 import { fittingWarnings, type FittingWarning } from '../calc/warnings';
@@ -14,6 +14,7 @@ import { airInputSchema, createSchemas, validate } from '../validation';
 import { hasAllowance, isTap, kindFields, saddleKinds, type FormRow } from './fields';
 import type { FormIssue } from './messages';
 import { splitLength, type Pieces } from './pieces';
+import { steelTypes, toSteel, type SteelLine, type SteelType } from './steel';
 
 /** Raw text -> number. Accepts a decimal comma; empty -> undefined; anything else non-numeric -> NaN. */
 export function parseNumber(text: string | undefined): number | undefined {
@@ -29,6 +30,7 @@ export interface RowResult {
   fitting: Fitting;
   quantity: number;
   thicknessMm: number;
+  steel: SteelType; // ADR 0120, galvanized by default
   metalArea: number; // m2, one piece, waste factor included
   metalAreaTotal: number; // m2, times quantity
   metalConsumption: number; // m2, one piece, waste factor included: reducers at least the minimum length, tees without cut-outs (ADR 0042)
@@ -48,7 +50,7 @@ export type RowOutcome = { ok: true; result: RowResult } | { ok: false; id: numb
 export interface Calculation {
   air: { ok: true } | { ok: false; issues: FormIssue[] };
   rows: RowOutcome[];
-  sheetList: OrderLine[]; // per thickness, by metal consumption: consumption, consumption with the order margin, whole sheets
+  sheetList: SteelLine[]; // per steel (steelTypes order), then thickness, by metal consumption: consumption, consumption with the order margin, whole sheets
   totalMetalArea: number; // m2, times quantity, the actual area
   totalMetalConsumption: number; // m2, times quantity, the metal consumption (ADR 0042)
   totalMetalAreaToOrder: number; // m2, the metal consumption plus the order margin (config.order.marginPercent)
@@ -121,7 +123,7 @@ export function calculate(
 
   const schemas = createSchemas(config);
   const outcomes: RowOutcome[] = [];
-  const valid: { fitting: Fitting; quantity: number }[] = [];
+  const valid: { fitting: Fitting; quantity: number; steel: SteelType }[] = [];
   const insulatedItems: InsulationItem[] = [];
   let totalPressureDrop = 0;
   for (const row of rows) {
@@ -151,6 +153,7 @@ export function calculate(
           fitting: p.fitting,
           quantity: p.quantity,
           thicknessMm: thickness(thicknessSize(p.fitting), config),
+          steel: toSteel(row.steel),
           metalArea: area,
           metalAreaTotal: area * p.quantity,
           metalConsumption: used,
@@ -177,20 +180,26 @@ export function calculate(
         continue;
       }
       outcomes.push({ ok: true, result });
-      valid.push({ fitting: p.fitting, quantity: p.quantity });
+      valid.push({ fitting: p.fitting, quantity: p.quantity, steel: result.steel });
       if (p.material) insulatedItems.push({ fitting: p.fitting, quantity: p.quantity, material: p.material });
       if (result.lossesAvailable) totalPressureDrop += p.quantity * result.totalLoss;
     }
   }
 
-  const groups = sheetList(valid, config, metalConsumption);
-  const totalMetalConsumption = groups.reduce((sum, g) => sum + g.area, 0);
+  // one sheet list per steel, in steelTypes order; galvanized lines carry no steel so older projects read the same
+  const lines: SteelLine[] = steelTypes.flatMap((steel) => {
+    const items = valid.filter((v) => v.steel === steel);
+    if (items.length === 0) return [];
+    const list = orderList(sheetList(items, config, metalConsumption), config.order);
+    return steel === 'galvanized' ? list : list.map((l) => ({ ...l, steel }));
+  });
+  const totalMetalConsumption = lines.reduce((sum, g) => sum + g.area, 0);
   const totalMetalArea = valid.reduce((sum, v) => sum + v.quantity * metalArea(v.fitting, config), 0);
   const insulation = insulationList(insulatedItems, config);
   return {
     air: air.ok ? { ok: true } : { ok: false, issues: air.issues },
     rows: outcomes,
-    sheetList: orderList(groups, config.order),
+    sheetList: lines,
     totalMetalArea,
     totalMetalConsumption,
     totalMetalAreaToOrder: orderArea(totalMetalConsumption, config.order.marginPercent),
