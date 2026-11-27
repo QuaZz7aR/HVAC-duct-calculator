@@ -1,7 +1,7 @@
 import type { FittingKind } from "@/lib/form/fields";
 import { uk, type Dictionary } from "@/lib/i18n/uk";
 
-export type SketchShape = "straight" | "cap" | "tap" | "elbow" | "reducer" | "tee" | "cross" | "box" | "offset";
+export type SketchShape = "straight" | "cap" | "tap" | "elbow" | "reducer" | "tee" | "cross" | "box" | "offset" | "valve";
 
 export interface SketchSpec {
   shape: SketchShape;
@@ -19,6 +19,11 @@ export const sketchSpecs: Record<FittingKind, SketchSpec> = {
   rectCap: { shape: "cap", roundMain: false },
   roundTap: { shape: "tap", roundMain: true },
   rectTap: { shape: "tap", roundMain: false },
+  // dampers and check valves: the casing with the blade (ADR 0120)
+  roundDamper: { shape: "valve", roundMain: true },
+  rectDamper: { shape: "valve", roundMain: false },
+  roundCheckValve: { shape: "valve", roundMain: true },
+  rectCheckValve: { shape: "valve", roundMain: false },
   roundElbow: { shape: "elbow", roundMain: true },
   rectElbow: { shape: "elbow", roundMain: false },
   roundReducer: { shape: "reducer", roundMain: true, roundSmall: true },
@@ -47,6 +52,7 @@ export function sketchLegend(kind: FittingKind, dict: Dictionary = uk): string[]
   switch (shape) {
     case "straight":
     case "cap":
+    case "valve":
     case "box":
       return [main, l.length];
     case "offset":
@@ -81,6 +87,7 @@ export function isoLegend(kind: FittingKind, dict: Dictionary = uk): string[] {
   switch (shape) {
     case "straight":
     case "cap":
+    case "valve":
       return [main, l.length];
     case "box":
       return [main, l.length, l.boxPlates];

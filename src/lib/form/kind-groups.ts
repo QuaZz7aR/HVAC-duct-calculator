@@ -1,15 +1,16 @@
 import { uk, type Dictionary } from '../i18n/uk';
 import type { FittingKind, FormRow } from './fields';
 
-export type KindGroupId = 'straight' | 'elbow' | 'reducer' | 'cap' | 'tap' | 'tee' | 'cross' | 'beta';
+export type KindGroupId = 'straight' | 'elbow' | 'reducer' | 'cap' | 'tap' | 'valve' | 'tee' | 'cross' | 'beta';
 
-/** The kinds as the side panel lists them: eight groups (the last, BETA, ADR 0113), each in the order of `kindOrder`. */
+/** The kinds as the side panel lists them: nine groups (the last, BETA, ADR 0113), each in the order of `kindOrder`. */
 export const kindGroups: { id: KindGroupId; kinds: FittingKind[] }[] = [
   { id: 'straight', kinds: ['roundStraight', 'rectStraight'] },
   { id: 'elbow', kinds: ['roundElbow', 'rectElbow'] },
   { id: 'reducer', kinds: ['roundReducer', 'rectReducer', 'rectToRoundReducer'] },
   { id: 'cap', kinds: ['roundCap', 'rectCap'] },
   { id: 'tap', kinds: ['roundTap', 'rectTap'] },
+  { id: 'valve', kinds: ['roundDamper', 'rectDamper', 'roundCheckValve', 'rectCheckValve'] },
   { id: 'tee', kinds: ['roundTee', 'roundTeeRectBranch', 'rectTee', 'rectTeeRoundBranch'] },
   { id: 'cross', kinds: ['roundCross', 'roundCrossRectBranches', 'rectCross', 'rectCrossRoundBranches'] },
   { id: 'beta', kinds: ['rectBox', 'roundOffset', 'rectOffset'] },

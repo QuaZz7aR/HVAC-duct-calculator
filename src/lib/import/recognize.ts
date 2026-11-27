@@ -23,7 +23,7 @@ export interface NameParse {
   openFace?: boolean;
 }
 
-type Family = 'straight' | 'elbow' | 'reducer' | 'cap' | 'tap' | 'tee' | 'cross' | 'offset' | 'box';
+type Family = 'straight' | 'elbow' | 'reducer' | 'cap' | 'tap' | 'tee' | 'cross' | 'offset' | 'box' | 'damper' | 'checkValve';
 
 // codes, compared in upper case; the engineer's Excel first, then this site's designations (uk and en)
 const codes: Record<string, FittingKind | Family> = {
@@ -33,6 +33,9 @@ const codes: Record<string, FittingKind | Family> = {
   'КП': 'roundReducer', 'ПП': 'rectReducer', 'ППК': 'rectToRoundReducer', 'ПКП': 'rectToRoundReducer',
   'КЗ': 'roundCap', 'ПЗ': 'rectCap',
   'КВР': 'roundTap', 'ПВР': 'rectTap',
+  // dampers and check valves (ADR 0120)
+  'КДК': 'roundDamper', 'ПДК': 'rectDamper', 'КЗК': 'roundCheckValve', 'ПЗК': 'rectCheckValve',
+  CDM: 'roundDamper', RDM: 'rectDamper', CCV: 'roundCheckValve', RCV: 'rectCheckValve',
   'КТ': 'roundTee', 'КПТ': 'roundTeeRectBranch', 'ПТ': 'rectTee', 'ПКТ': 'rectTeeRoundBranch',
   'ККХ': 'roundCross', 'КККР': 'roundCross', 'ККР': 'roundCross',
   'КПХ': 'roundCrossRectBranches', 'КПКР': 'roundCrossRectBranches',
@@ -55,11 +58,16 @@ const words: [RegExp, Family][] = [
   [/^(трійник|тройник|tee)/, 'tee'],
   [/^(хрестовин|крестовин|cross)/, 'cross'],
   [/^(утк|offset)/, 'offset'],
+  [/^(дросел|дроссел|damper)/, 'damper'],
+  [/^(зворотн|обратн|check)/, 'checkValve'],
   [/^(короб|адаптер|адаптор|plenum|adapter)/, 'box'],
 ];
 
 // parts a name word never matches (ADR 0061); adapters, boxes and offsets are matched by their words since ADR 0113
 const notOurs = /дифуз|диффуз|решітк|решетк|клапан|шумоглуш/i;
+
+// a damper or a check valve is ours although it is a «клапан» (ADR 0120); a fire or air valve is not
+const ourValve = /дросел|дроссел|damper|(зворотн|обратн)\S*[\s-]+клапан|клапан\S*[\s-]+(зворотн|обратн)|check\s+valve/iu;
 
 // flexible duct is out of scope for v1 (CLAUDE.md): never read as a straight (ADR 0115)
 const flexible = /гнучк|гибк|flex/i;
@@ -138,6 +146,8 @@ function byShape(family: Family, sizes: NameSize[]): FittingKind | undefined {
     case 'tap': return isRound(main) ? 'roundTap' : 'rectTap';
     case 'offset': return isRound(main) ? 'roundOffset' : 'rectOffset';
     case 'box': return isRound(main) ? undefined : 'rectBox';
+    case 'damper': return isRound(main) ? 'roundDamper' : 'rectDamper';
+    case 'checkValve': return isRound(main) ? 'roundCheckValve' : 'rectCheckValve';
     case 'reducer':
       if (!other) return undefined;
       if (isRound(main) && isRound(other)) return 'roundReducer';
@@ -167,7 +177,7 @@ export function recognizeKind(code: string | undefined, name: string | undefined
   if (!name) return undefined;
   // an adapter «под щелевой диффузор» is a box; a diffuser or grille alone is not ours (ADR 0115)
   const boxFirst = name.split(/[\s,;()]+/).slice(0, 4).some((t) => /^(короб|адаптер|адаптор|plenum|adapter)/.test(t.toLowerCase()));
-  if (notOurs.test(name) && !boxFirst) return undefined;
+  if (notOurs.test(name) && !boxFirst && !ourValve.test(name)) return undefined;
   // an adapter or box names its taps later («Адаптер ..., 2 врізки»): the first family word decides
   const tokens = name.split(/[\s,;()]+/).filter(Boolean);
   // the first token may be a code («КО 90 Д150»); a code anywhere else is too risky (a «ПП» inside a description)

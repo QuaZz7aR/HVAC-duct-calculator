@@ -42,6 +42,10 @@ export function createSchemas(config: CalcConfig) {
     [
       obj({ kind: z.literal('roundStraight'), diameter: size(), length: size() }),
       obj({ kind: z.literal('rectStraight'), width: size(), height: size(), length: size() }),
+      obj({ kind: z.literal('roundDamper'), diameter: size(), length: size() }),
+      obj({ kind: z.literal('rectDamper'), width: size(), height: size(), length: size() }),
+      obj({ kind: z.literal('roundCheckValve'), diameter: size(), length: size() }),
+      obj({ kind: z.literal('rectCheckValve'), width: size(), height: size(), length: size() }),
       obj({ kind: z.literal('roundCap'), diameter: size(), length: size() }),
       obj({ kind: z.literal('rectCap'), width: size(), height: size(), length: size() }),
       obj({ kind: z.literal('roundTap'), diameter: size(), length: size(), mainDiameter: size().optional() }),

@@ -128,6 +128,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0118](adr/0118-saddle-on-a-round-main-and-no-partitions.md) | Saddle of a branch on a round main as an option (taps: main Ø, round-main tees/crosses: on/off); box partitions not counted by the form | 2026-11-27 | Accepted |
 | [0119](adr/0119-placeholders-in-empty-fields.md) | Placeholders in empty optional fields (reducer length «300 (рекомендовано)», tap main Ø «пласка стінка»); `reducer.tooShort` names 150 mm | 2026-11-27 | Accepted |
 | [0095](adr/0095-numbering-by-systems.md) | «Нумерація»: positions «система-№», empty only or all again, preview first | 2026-11-24 | Accepted |
+| [0120](adr/0120-dampers-and-check-valves.md) | Dampers and check valves (КДК, ПДК, КЗК, ПЗК): the casing counts as a short straight, group «Клапани», import by codes and words | 2026-11-27 | Accepted (casing length `TODO(confirm)`) |
 | [0096](adr/0096-import-from-pdf.md) | Import from PDF: own text reader, columns from table borders or text ranges | 2026-11-24 | Accepted (thresholds `TODO(confirm)`) |
 | [0097](adr/0097-video-clips-in-the-help.md) | Short MP4 clip per help step, loaded only when the dialog opens | 2026-11-24 | Accepted |
 | [0098](adr/0098-icon-only-card-buttons.md) | Icon-only fold, clone and remove buttons in cards and sections (text in `title` / `aria-label`) | 2026-11-24 | Accepted |
@@ -167,6 +168,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `import/pdf.ts` wrapped rows | Lines between two row borders join when the band has exactly one full line (3+ columns), lines within two font sizes: tuned on kyiv.pdf and order.pdf ([0100](adr/0100-pdf-wrapped-rows-between-row-borders.md)). |
 | `calc/sheet-area.ts` `rectBox`, `rectOffset`, `roundOffset` | Beta ([0113](adr/0113-adapters-boxes-and-offsets-beta.md)): box = closed plates a x b (ends 0-2) + partitions; open a x L face 0 / 1 under a slot diffuser ([0116](adr/0116-open-face-of-a-box.md)); partitions not counted by the form ([0118](adr/0118-saddle-on-a-round-main-and-no-partitions.md)); box centre line = L; round offset is a smooth slanted tube, not segmented elbows; offset along side a. Prefill ends 2, partitions 0 (`form/fields.ts`). |
 | `import/recognize.ts` beta kinds | Codes ПА / ПУ / КУ only; the words «утка», «короб», «адаптер» wait for the owner (they change pinned import tests). |
+| `calc/config.ts` valve | Casing length prefill of dampers and check valves 200 mm, not a norm; whether a bought unit should count its casing metal at all ([0120](adr/0120-dampers-and-check-valves.md)). |
 | `public/help/*.mp4` | Clip format and count are the agent's choice (MP4, one per step, uk + en) ([0097](adr/0097-video-clips-in-the-help.md)). |
 
 | `calc/saddle.ts`, `sheet-area.ts` | Saddle option ([0118](adr/0118-saddle-on-a-round-main-and-no-partitions.md)): the cut-out on the round main stays the flat branch section. |

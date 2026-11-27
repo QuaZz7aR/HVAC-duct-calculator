@@ -35,6 +35,10 @@ const slots: Record<FittingKind, Partial<Record<SizeSlot, FieldKey>>> = {
   rectReducer: { A: 'width', B: 'height', a: 'smallWidth', b: 'smallHeight', l: 'allowance', L: 'length' },
   rectToRoundReducer: { A: 'width', B: 'height', a: 'smallDiameter', l: 'allowance', L: 'length' },
   roundCap: { A: 'diameter', L: 'length' },
+  roundDamper: { A: 'diameter', L: 'length' },
+  rectDamper: { A: 'width', B: 'height', L: 'length' },
+  roundCheckValve: { A: 'diameter', L: 'length' },
+  rectCheckValve: { A: 'width', B: 'height', L: 'length' },
   rectCap: { A: 'width', B: 'height', L: 'length' },
   // the Excel's l of a tap is the width of the ring (config.tap), its L the stub length
   roundTap: { A: 'diameter', L: 'length' },

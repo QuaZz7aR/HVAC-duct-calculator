@@ -23,12 +23,16 @@ export interface SectionResult {
 function openings(f: Fitting): Opening[] {
   switch (f.kind) {
     case 'roundStraight':
+    case 'roundDamper':
+    case 'roundCheckValve':
     case 'roundCap':
     case 'roundTap':
     case 'roundElbow':
     case 'roundOffset':
       return [roundOpening(f.diameter)];
     case 'rectStraight':
+    case 'rectDamper':
+    case 'rectCheckValve':
     case 'rectCap':
     case 'rectTap':
     case 'rectElbow':

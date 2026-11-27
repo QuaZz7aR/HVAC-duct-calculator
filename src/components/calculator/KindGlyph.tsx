@@ -18,6 +18,8 @@ export function KindGlyph({ kind, className }: { kind: FittingKind; className?: 
     tee: <path d="M4 16H15V4H25V16H36V26H4Z" />,
     // main run with a branch on each side
     cross: <path d="M15 2H25V10H36V18H25V26H15V18H4V10H15Z" />,
+    // casing with the blade across it and its spindle on top
+    valve: <><path d="M6 9h28v10H6z" /><path d="M16 21L24 7M20 9V3" />{end}</>,
     // closed box with a partition
     box: <><path d="M6 7h28v14H6z" /><path d="M20 7v14" strokeDasharray="2 2" /></>,
     // duct whose outlet axis is shifted
