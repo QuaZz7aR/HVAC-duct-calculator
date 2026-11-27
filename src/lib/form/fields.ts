@@ -81,6 +81,8 @@ export interface FormRow {
   saddle?: string;
   /** Insulation material code (config.insulation.materials); empty or absent = not insulated. */
   insulation?: string;
+  /** Cladding over the insulation, for outdoor ducts (ADR 0120): '1' = on, empty or absent = off. Needs an insulation material. */
+  cladding?: string;
   /** Auto-filled fields (see auto-defaults.ts) that the user has typed over; they stop following the size. */
   manual?: FieldKey[];
   /** Position label typed by the user (П1, В2); empty or absent = the list number (ADR 0049). */

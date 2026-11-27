@@ -59,10 +59,13 @@ export function reportSheets(input: ReportInput, dict: Dictionary): XSheet[] {
     [dict.totals.metalConsumption, b(calc.totalMetalConsumption)],
     [dict.totals.metalAreaToOrder, b(calc.totalMetalAreaToOrder)]);
   if (insulated) spec.push([dict.totals.insulationArea, b(calc.totalInsulationArea)]);
-  if (pricing.total.unpriced < metalLines + insLines) {
+  const clad = pricing.claddingLines;
+  if (clad) spec.push([dict.totals.claddingArea, b(calc.totalCladdingArea)]);
+  if (pricing.total.unpriced < metalLines + insLines + clad) {
     spec.push([dict.totals.metalCost, cost(pricing.metalTotal, metalLines)]);
     if (insulated) spec.push([dict.totals.insulationCost, cost(pricing.insulationTotal, insLines)]);
-    spec.push([b(dict.totals.totalCost), cost(pricing.total, metalLines + insLines)]);
+    if (clad) spec.push([dict.totals.claddingCost, pricing.cladding === undefined ? null : n(pricing.cladding, 2)]);
+    spec.push([b(dict.totals.totalCost), cost(pricing.total, metalLines + insLines + clad)]);
     if (pricing.total.unpriced > 0) spec.push([dict.totals.unpriced(pricing.total.unpriced)]);
   }
   if (calc.skipped > 0) spec.push([], [dict.results.skipped(calc.skipped)]);
@@ -89,6 +92,9 @@ export function reportSheets(input: ReportInput, dict: Dictionary): XSheet[] {
       ...(priced ? [pricing.insulation[i] === undefined ? null : n(pricing.insulation[i]!, 2)] : []),
     ]));
     ins.push([b(dict.totals.title), b(calc.totalInsulationArea), ...(priced ? [cost(pricing.insulationTotal, insLines)] : [])], [], [dict.insulation.note]);
+    if (calc.totalCladdingArea > 0) {
+      ins.push([], [b(dict.insulation.cladding.title)], [dict.insulation.cladding.area, n(calc.totalCladdingArea), ...(pricing.cladding === undefined ? [] : [n(pricing.cladding, 2)])], [dict.insulation.cladding.note]);
+    }
     sheets.push({ name: d.sheets.insulation, rows: ins, widths: [36, 14, 14] });
   }
   return sheets;

@@ -38,7 +38,7 @@ export function Calculator() {
 
 function CalculatorPage() {
   const { dict } = useI18n();
-  const { loaded, rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, numberRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice } = useCalculator();
+  const { loaded, rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, numberRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice, setCladdingPrice } = useCalculator();
 
   const exportProps = { rows, outcome, calc, pricing: costs, settings };
   const { mode } = useMode();
@@ -107,7 +107,7 @@ function CalculatorPage() {
           <Totals calc={calc} pricing={costs} priceIssues={costs.issues} settings={settings} onSettings={setSettings} />
           <SheetList groups={calc.sheetList} prices={prices.metal} costs={costs.metal} onPrice={setMetalPrice} settings={settings} onSettings={setSettings} />
           <div className="adv-only min-w-0">
-          <InsulationList groups={calc.insulationList} prices={prices.insulation} costs={costs.insulation} onPrice={setInsulationPrice} />
+          <InsulationList groups={calc.insulationList} prices={prices.insulation} costs={costs.insulation} onPrice={setInsulationPrice} cladding={{ area: calc.totalCladdingArea, price: prices.cladding ?? "", cost: costs.cladding, onPrice: setCladdingPrice }} />
           </div>
         </div>
         </div>

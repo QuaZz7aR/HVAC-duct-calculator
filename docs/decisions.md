@@ -127,6 +127,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0117](adr/0117-brick-red-accent.md) | «Акцент» choice: blue (default) or brick red; errors turn orange with the red accent | 2026-11-26 | Accepted |
 | [0118](adr/0118-saddle-on-a-round-main-and-no-partitions.md) | Saddle of a branch on a round main as an option (taps: main Ø, round-main tees/crosses: on/off); box partitions not counted by the form | 2026-11-27 | Accepted |
 | [0119](adr/0119-placeholders-in-empty-fields.md) | Placeholders in empty optional fields (reducer length «300 (рекомендовано)», tap main Ø «пласка стінка»); `reducer.tooShort` names 150 mm | 2026-11-27 | Accepted |
+| [0120](adr/0120-cladding-over-insulation.md) | Cladding over the insulation of outdoor ducts (beta): per-row Так / Ні, area = outer surface of the insulation, one priced line | 2026-11-27 | Accepted (overlap `TODO(confirm)`) |
 | [0095](adr/0095-numbering-by-systems.md) | «Нумерація»: positions «система-№», empty only or all again, preview first | 2026-11-24 | Accepted |
 | [0096](adr/0096-import-from-pdf.md) | Import from PDF: own text reader, columns from table borders or text ranges | 2026-11-24 | Accepted (thresholds `TODO(confirm)`) |
 | [0097](adr/0097-video-clips-in-the-help.md) | Short MP4 clip per help step, loaded only when the dialog opens | 2026-11-24 | Accepted |
@@ -160,6 +161,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `calc/section.ts` | Reducer friction by the mean diameter and mean-velocity `Pd`: both from the engineer (2026-10-19, 2026-10-16). Caps have no friction because their centerline is 0. |
 | `calc/config.ts` elbowRadius | 1.0 D (round centre line) and 0.5 W (rect inner) are common practice, not a norm; form suggestion only. |
 | `calc/config.ts` insulation, `calc/insulation.ts` | The six materials are the Excel's list (practice, not a norm). Insulation of elbows takes the metal cutting coefficient (as the Excel); caps take the end plate only; crosses by geometry, not the Excel's metal x 1.2. Beta, owner 2026-11-03; questions in the 2026-10-23 letter ([0037](adr/0037-insulation-area-beta.md)). |
+| `calc/config.ts` cladding, `calc/insulation.ts` `claddingArea` | Cladding overlap `overlapPercent` = 0 (no source); cladding area = the outer surface of the insulation ([0120](adr/0120-cladding-over-insulation.md)). |
 | `calc/config.ts` warnings | `elbowInnerRadiusFactor` 2 is preliminary; the aspect ratio threshold 3 comes from the engineer's "2.5-3". |
 | `form/order.ts` `numberBySystems` | Agent's overnight choices, to review: separator «-», default scope «лише порожні», no undo after «Пронумерувати» ([0095](adr/0095-numbering-by-systems.md)). |
 | `import/pdf.ts` layout | Word gap 0.2 font size, border must cross a third of the body lines, header lines within 2.2 font sizes: tuned on LibreOffice and Chrome PDFs of our samples only ([0096](adr/0096-import-from-pdf.md)). |

@@ -19,6 +19,7 @@ export const errorCodes = [
   'input.unknownKey',
   'input.invalid',
   'insulation.unknown',
+  'cladding.noInsulation',
   'box.ends',
   'box.partitions',
   'box.openFaces',

@@ -76,6 +76,14 @@ export function insulationArea(f: Fitting, t: number, config: CalcConfig): numbe
   }
 }
 
+/**
+ * Cladding of one piece in m2 (outdoor ducts, ADR 0120): a sheet over the insulation, so the same outer surface of the layer
+ * (`insulationArea`, one geometry for both) plus the configured overlap.
+ */
+export function claddingArea(f: Fitting, t: number, config: CalcConfig): number {
+  return insulationArea(f, t, config) * (1 + config.cladding.overlapPercent / 100);
+}
+
 /** One insulation line of the input: a fitting, how many, and its material. */
 export interface InsulationItem extends SheetListItem {
   material: InsulationMaterial;

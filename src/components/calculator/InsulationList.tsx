@@ -10,9 +10,10 @@ interface Props {
   prices: Record<string, string>;
   costs: Pricing["insulation"];
   onPrice: (code: string, value: string) => void;
+  cladding: { area: number; price: string; cost: number | undefined; onPrice: (value: string) => void };
 }
 
-export function InsulationList({ groups, prices, costs, onPrice }: Props) {
+export function InsulationList({ groups, prices, costs, onPrice, cladding }: Props) {
   const { dict, fmt } = useI18n();
   return (
     <section className={`min-w-0 ${cardClass}`} aria-labelledby="insulation-title">
@@ -69,6 +70,18 @@ export function InsulationList({ groups, prices, costs, onPrice }: Props) {
         </>
       )}
       <p className={`mt-2 text-xs ${mutedClass}`}>{dict.insulation.note}</p>
+      {cladding.area > 0 && (
+        // cladding over the insulation of outdoor ducts, one line (ADR 0120)
+        <div className="mt-4 border-t border-line pt-3">
+          <h3 className="mb-2 text-sm font-medium">{dict.insulation.cladding.title}</h3>
+          <dl className="space-y-1 text-sm">
+            <div className="flex justify-between gap-2"><dt className={mutedClass}>{dict.insulation.cladding.area}</dt><dd className="tabular-nums">{fmt(cladding.area)}</dd></div>
+            <div className="flex items-center justify-between gap-2"><dt className={mutedClass}>{dict.price.perM2}<Info text={dict.help.columns.price} /></dt><dd><PriceInput label={dict.price.claddingLabel} value={cladding.price} onChange={cladding.onPrice} /></dd></div>
+            <div className="flex justify-between gap-2"><dt className={mutedClass}>{dict.price.cost}</dt><dd className="tabular-nums font-medium">{cladding.cost === undefined ? dict.totals.noPrice : fmt(cladding.cost, 2)}</dd></div>
+          </dl>
+          <p className={`mt-2 text-xs ${mutedClass}`}>{dict.insulation.cladding.note}</p>
+        </div>
+      )}
     </section>
   );
 }

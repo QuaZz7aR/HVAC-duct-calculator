@@ -58,6 +58,7 @@ export function useCalculator() {
   const [prices, setPrices] = useState<PriceText>(emptyPrices);
   const costs = useMemo(() => pricing(calc, prices), [calc, prices]);
   const setMetalPrice = (key: string, value: string) => setPrices((p) => ({ ...p, metal: { ...p.metal, [key]: value } }));
+  const setCladdingPrice = (value: string) => setPrices((p) => ({ ...p, cladding: value }));
   const setInsulationPrice = (code: string, value: string) =>
     setPrices((p) => ({ ...p, insulation: { ...p.insulation, [code]: value } }));
 
@@ -147,5 +148,5 @@ export function useCalculator() {
   // a card or a whole section (its ids) takes the place of the target row
   const dropRows = (ids: number[], targetId: number) => setRows((rs) => moveBlock(rs, ids, targetId));
 
-  return { loaded, rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, numberRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice };
+  return { loaded, rows, settings, setSettings, settingsIssues: built.issues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, numberRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice, setCladdingPrice };
 }
