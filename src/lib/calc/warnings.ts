@@ -23,6 +23,9 @@ function rectEnds(f: Fitting): { w: number; h: number }[] {
     case 'rectToRoundReducer':
     case 'rectBox':
     case 'rectOffset':
+    case 'rectHood':
+    case 'rectHoodRoundStub':
+      // a hood: the bottom only, its stub is a plain duct size
       return [{ w: f.width, h: f.height }];
     case 'rectTee':
     case 'rectCross':

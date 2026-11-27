@@ -24,6 +24,7 @@ export const errorCodes = [
   'box.openFaces',
   'saddle.invalid',
   'offset.negative',
+  'skirt.negative',
 ] as const;
 
 export type ErrorCode = (typeof errorCodes)[number];

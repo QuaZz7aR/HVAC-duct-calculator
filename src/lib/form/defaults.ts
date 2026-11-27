@@ -26,6 +26,8 @@ const defaultSizes: Record<FittingKind, FormRow['values']> = {
   rectBox: { width: '600', height: '300', length: '500' },
   roundOffset: { diameter: '200', length: '500', offset: '200' },
   rectOffset: { width: '400', height: '200', length: '500', offset: '200' },
+  rectHood: { width: '1000', height: '800', smallWidth: '300', smallHeight: '200', length: '400' },
+  rectHoodRoundStub: { width: '1000', height: '800', smallDiameter: '250', length: '400' },
 };
 
 /** Prefills of the kind plus its default sizes. */

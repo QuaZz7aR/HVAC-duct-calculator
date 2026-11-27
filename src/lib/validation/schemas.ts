@@ -73,6 +73,28 @@ export function createSchemas(config: CalcConfig) {
         allowance: allowance(),
         allowanceCount: allowanceCount(),
       }),
+      // BETA, ADR 0120: exhaust hoods; `length` is the height of the pyramid, `skirt` the rim under it
+      obj({
+        kind: z.literal('rectHood'),
+        width: size(),
+        height: size(),
+        smallWidth: size(),
+        smallHeight: size(),
+        length: size(),
+        skirt: z.number({ error: typeError('field.invalid') }).gte(0, { error: 'skirt.negative' }).default(0),
+        allowance: allowance(),
+        allowanceCount: allowanceCount(),
+      }),
+      obj({
+        kind: z.literal('rectHoodRoundStub'),
+        width: size(),
+        height: size(),
+        smallDiameter: size(),
+        length: size(),
+        skirt: z.number({ error: typeError('field.invalid') }).gte(0, { error: 'skirt.negative' }).default(0),
+        allowance: allowance(),
+        allowanceCount: allowanceCount(),
+      }),
       obj({
         kind: z.literal('roundElbow'),
         diameter: size(),

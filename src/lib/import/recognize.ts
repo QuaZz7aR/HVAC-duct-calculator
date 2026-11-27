@@ -42,6 +42,8 @@ const codes: Record<string, FittingKind | Family> = {
   RC: 'rectToRoundReducer', CTAP: 'roundTap', RTAP: 'rectTap', CAP: 'cap', CT: 'roundTee', CRT: 'roundTeeRectBranch',
   // BETA kinds (ADR 0113)
   'ПА': 'rectBox', 'КУ': 'roundOffset', 'ПУ': 'rectOffset', RA: 'rectBox', CO: 'roundOffset', RO: 'rectOffset',
+  // BETA hoods (ADR 0120): by these codes only; a «зонт» in a name alone stays a cap (ADR 0079)
+  'ЗНП': 'rectHood', 'ЗНК': 'rectHoodRoundStub', RH: 'rectHood', RHC: 'rectHoodRoundStub',
   RT: 'rectTee', RCT: 'rectTeeRoundBranch', CX: 'roundCross', CRX: 'roundCrossRectBranches', RX: 'rectCross', RCX: 'rectCrossRoundBranches',
 };
 
@@ -159,6 +161,8 @@ const isFamily = (k: FittingKind | Family): k is Family => !/^(round|rect)/.test
  * the name is resolved by the sizes. Undefined when nothing is recognised: the row is shown for a manual choice.
  */
 export function recognizeKind(code: string | undefined, name: string | undefined, sizes: NameSize[]): FittingKind | undefined {
+  const hoodCode = code ? codeOf(code) : undefined;
+  if (hoodCode === 'rectHood' || hoodCode === 'rectHoodRoundStub') return hoodCode;
   if (name && hood.test(name)) return byShape('cap', sizes);
   if ((code && codeOf(code) === undefined && /^(ГВ|ГНВ)$/i.test(code.trim())) || (name && flexible.test(name))) return undefined;
   const fromCode = code ? codeOf(code) : undefined;

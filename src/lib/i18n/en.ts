@@ -189,6 +189,8 @@ export const en: Dictionary = {
     rectBox: { designation: 'RA', name: 'Rectangular adapter / box (beta)' },
     roundOffset: { designation: 'CO', name: 'Circular offset (beta)' },
     rectOffset: { designation: 'RO', name: 'Rectangular offset (beta)' },
+    rectHood: { designation: 'RH', name: 'Exhaust hood (beta)' },
+    rectHoodRoundStub: { designation: 'RHC', name: 'Exhaust hood, circular outlet (beta)' },
   },
   fields: {
     diameter: `Diameter ${sym.diameter}, mm`,
@@ -210,6 +212,7 @@ export const en: Dictionary = {
     ends: 'Closed ends (0, 1, 2)',
     partitions: 'Partitions, pcs',
     openFaces: 'Open face for a diffuser (0, 1)',
+    skirt: 'Bottom rim, mm (0 = no rim)',
   },
   results: {
     title: 'Results by item',
@@ -299,6 +302,7 @@ export const en: Dictionary = {
     'box.openFaces': 'Open face: 0 or 1',
     'saddle.invalid': 'Saddle: 0 or 1',
     'offset.negative': 'The offset cannot be negative',
+    'skirt.negative': 'The rim cannot be negative',
     'quantity.invalid': 'A whole number, at least 1',
   },
   warnings: {
@@ -328,6 +332,7 @@ export const en: Dictionary = {
       offset: 'How far the outlet axis is shifted from the inlet. On a rectangular offset the shift runs along side a₁. Beta: the walls follow the straight slant √(L² + H²).',
       ends: 'How many ends of the box are closed by an a₁ × b₁ plate. A closed box (adapter) = 2.\nSpigots (taps) are not part of the box area: add each one as a separate CTap or RTap fitting.',
       openFaces: 'One a₁ × L wall is left out of the area: the slot for a diffuser. Set by the import when the name mentions a slot diffuser. Preliminary rule (beta).',
+      skirt: 'A vertical rim along the bottom edge of the hood. Rim area = bottom perimeter × its height.\nA hood is not insulated.',
     },
     settings: {
       thicknessTable: 'Which table picks the sheet thickness: ДБН В.2.5-67:2013 (annex Ц) or the engineer’s table.',

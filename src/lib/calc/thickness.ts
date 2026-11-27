@@ -51,6 +51,9 @@ export function thicknessSize(f: Fitting): ThicknessSize {
     case 'rectToRoundReducer':
     case 'rectBox':
     case 'rectOffset':
+    case 'rectHood':
+    case 'rectHoodRoundStub':
+      // a hood: by its bottom, the larger end (TODO(confirm), as reducers by the larger end)
       return { shape: 'rect', width: f.width, height: f.height };
     case 'roundTee':
     case 'roundTeeRectBranch':

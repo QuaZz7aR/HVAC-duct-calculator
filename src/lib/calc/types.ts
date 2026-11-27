@@ -67,7 +67,11 @@ export type Fitting =
   | { kind: 'rectBox'; width: number; height: number; length: number; ends: 0 | 1 | 2; partitions: number; openFaces?: 0 | 1 }
   // BETA (ADR 0113). Offsets («утка»): axial length `length`, shift `offset` of the axis. Rect: `width` is the side in the offset plane.
   | { kind: 'roundOffset'; diameter: number; length: number; offset: number; allowance: number; allowanceCount?: AllowanceCount }
-  | { kind: 'rectOffset'; width: number; height: number; length: number; offset: number; allowance: number; allowanceCount?: AllowanceCount };
+  | { kind: 'rectOffset'; width: number; height: number; length: number; offset: number; allowance: number; allowanceCount?: AllowanceCount }
+  // BETA (ADR 0120). Exhaust hood («зонт»): a pyramid from the open rect bottom width x height up to the stub (rect or round) over the height `length`,
+  // `skirt` = vertical rim under the bottom edge (0 = none). Not insulated. Allowance strips at the counted ends, like a reducer.
+  | { kind: 'rectHood'; width: number; height: number; smallWidth: number; smallHeight: number; length: number; skirt: number; allowance: number; allowanceCount?: AllowanceCount }
+  | { kind: 'rectHoodRoundStub'; width: number; height: number; smallDiameter: number; length: number; skirt: number; allowance: number; allowanceCount?: AllowanceCount };
 
 export interface AirConditions {
   density: number; // kg/m3

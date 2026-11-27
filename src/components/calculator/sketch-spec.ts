@@ -36,6 +36,9 @@ export const sketchSpecs: Record<FittingKind, SketchSpec> = {
   rectBox: { shape: "box", roundMain: false },
   roundOffset: { shape: "offset", roundMain: true },
   rectOffset: { shape: "offset", roundMain: false },
+  // BETA (ADR 0120): a hood is drawn as the reducer it is geometrically
+  rectHood: { shape: "reducer", roundMain: false, roundSmall: false },
+  rectHoodRoundStub: { shape: "reducer", roundMain: false, roundSmall: true },
 };
 
 /** The letters a sketch uses, each with what it stands for, in the wording of the input fields. */

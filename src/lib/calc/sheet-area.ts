@@ -20,20 +20,16 @@ export function developedLength(f: Fitting): number {
       // bend arc along the center radius plus the connection allowance at each counted end
       return centerlineLength(f) + allowanceLength(f);
     case 'rectToRoundReducer':
+    case 'rectHoodRoundStub':
       // Area-equivalent length (transition area / mean perimeter), like rectReducer; allowance strips at the counted ends.
+      // A hood with a round stub (BETA, ADR 0120) is the same transition; its rim is added in sheetArea.
       return rectToRoundArea(f) / rectToRoundMeanPerimeter(f) + allowanceLength(f);
-    case 'rectReducer': {
+    case 'rectReducer':
+    case 'rectHood':
       // Area-equivalent length (total face area / mean perimeter), NOT a physical edge length: there is no single slant.
       // Top/bottom trapezoids slope by (H - h) / 2, side trapezoids by (W - w) / 2; allowance strips at the counted ends.
-      const W = mmToM(f.width);
-      const H = mmToM(f.height);
-      const w = mmToM(f.smallWidth);
-      const h = mmToM(f.smallHeight);
-      const L = mmToM(f.length);
-      const topBottom = (W + w) * Math.sqrt(L ** 2 + ((H - h) / 2) ** 2);
-      const sides = (H + h) * Math.sqrt(L ** 2 + ((W - w) / 2) ** 2);
-      return (topBottom + sides) / (W + H + w + h) + allowanceLength(f);
-    }
+      // A hood (BETA, ADR 0120) is the same pyramid frustum standing on its open bottom; its rim is added in sheetArea.
+      return rectFrustumArea(f) / rectFrustumPerimeter(f) + allowanceLength(f);
     case 'roundReducer': {
       // cone generatrix (slant height) plus the connection allowance at each counted end
       const slant = Math.sqrt(mmToM(f.length) ** 2 + ((mmToM(f.diameter) - mmToM(f.smallDiameter)) / 2) ** 2);
@@ -100,7 +96,13 @@ export function sheetArea(f: Fitting): number {
       return rectToRoundMeanPerimeter(f) * developedLength(f);
     case 'rectReducer':
       // four trapezoid faces + allowance strips: mean perimeter x area-equivalent developed length
-      return (mmToM(f.width) + mmToM(f.height) + mmToM(f.smallWidth) + mmToM(f.smallHeight)) * developedLength(f);
+      return rectFrustumPerimeter(f) * developedLength(f);
+    case 'rectHood':
+      // BETA, ADR 0120: four trapezoid faces + allowance strips, plus the vertical rim: bottom perimeter x skirt (the bottom stays open)
+      return rectFrustumPerimeter(f) * developedLength(f) + hoodRim(f);
+    case 'rectHoodRoundStub':
+      // BETA, ADR 0120: rect-to-round transition + allowance strips, plus the vertical rim (the bottom stays open)
+      return rectToRoundMeanPerimeter(f) * developedLength(f) + hoodRim(f);
     case 'roundReducer':
       // frustum surface: mean circumference x developed length (cone wall + allowance strips at both ends)
       return (Math.PI * (mmToM(f.diameter) + mmToM(f.smallDiameter)) / 2) * developedLength(f);
@@ -177,6 +179,10 @@ export function centerlineLength(f: Fitting): number {
     case 'rectOffset':
       // straight slanted axis
       return offsetSlant(f);
+    case 'rectHood':
+    case 'rectHoodRoundStub':
+      // TODO(confirm): air path through a hood = its height, the rim left out
+      return mmToM(f.length);
     default:
       return assertNever(f);
   }
@@ -187,7 +193,30 @@ function offsetSlant(f: { length: number; offset: number }): number {
   return Math.hypot(mmToM(f.length), mmToM(f.offset));
 }
 
-type RectToRound = Extract<Fitting, { kind: 'rectToRoundReducer' }>;
+/** A rect end to a round end over the axial length `length` (rect-to-round reducer, hood with a round stub). */
+type RectToRound = { width: number; height: number; smallDiameter: number; length: number };
+/** A rect end to a smaller rect end over the axial length `length` (rect reducer, hood). */
+type RectFrustum = { width: number; height: number; smallWidth: number; smallHeight: number; length: number };
+
+/** Mean perimeter of a rect frustum (half the sum of both end perimeters), m. */
+function rectFrustumPerimeter(f: RectFrustum): number {
+  return mmToM(f.width) + mmToM(f.height) + mmToM(f.smallWidth) + mmToM(f.smallHeight);
+}
+
+/** Four trapezoid faces of a rect frustum without allowance, m2: each face = (sum of its parallel sides) / 2 x its own slant height. */
+function rectFrustumArea(f: RectFrustum): number {
+  const W = mmToM(f.width);
+  const H = mmToM(f.height);
+  const w = mmToM(f.smallWidth);
+  const h = mmToM(f.smallHeight);
+  const L = mmToM(f.length);
+  return (W + w) * Math.sqrt(L ** 2 + ((H - h) / 2) ** 2) + (H + h) * Math.sqrt(L ** 2 + ((W - w) / 2) ** 2);
+}
+
+/** Vertical rim of a hood, m2: bottom perimeter x rim height. */
+function hoodRim(f: { width: number; height: number; skirt: number }): number {
+  return 2 * (mmToM(f.width) + mmToM(f.height)) * mmToM(f.skirt);
+}
 
 /** Mean of the rect and round end perimeters, m. */
 function rectToRoundMeanPerimeter(f: RectToRound): number {

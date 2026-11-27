@@ -12,7 +12,7 @@ export const kindGroups: { id: KindGroupId; kinds: FittingKind[] }[] = [
   { id: 'tap', kinds: ['roundTap', 'rectTap'] },
   { id: 'tee', kinds: ['roundTee', 'roundTeeRectBranch', 'rectTee', 'rectTeeRoundBranch'] },
   { id: 'cross', kinds: ['roundCross', 'roundCrossRectBranches', 'rectCross', 'rectCrossRoundBranches'] },
-  { id: 'beta', kinds: ['rectBox', 'roundOffset', 'rectOffset'] },
+  { id: 'beta', kinds: ['rectBox', 'roundOffset', 'rectOffset', 'rectHood', 'rectHoodRoundStub'] },
 ];
 
 /** The kinds the phone shows as quick buttons above the list. */

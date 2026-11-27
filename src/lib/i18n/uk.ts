@@ -210,6 +210,8 @@ export const uk = {
     rectBox: { designation: 'ПА', name: 'Адаптер / короб прямокутний (бета)' },
     roundOffset: { designation: 'КУ', name: 'Утка кругла (бета)' },
     rectOffset: { designation: 'ПУ', name: 'Утка прямокутна (бета)' },
+    rectHood: { designation: 'ЗнП', name: 'Зонт витяжний (бета)' },
+    rectHoodRoundStub: { designation: 'ЗнК', name: 'Зонт витяжний, круглий патрубок (бета)' },
   } satisfies Record<FittingKind, { designation: string; name: string }>,
   fields: {
     diameter: `Діаметр ${sym.diameter}, мм`,
@@ -231,6 +233,7 @@ export const uk = {
     ends: 'Глухих торців (0, 1, 2)',
     partitions: 'Перемичок, шт.',
     openFaces: 'Відкрита грань під дифузор (0, 1)',
+    skirt: 'Борт знизу, мм (0 — без борту)',
   },
   results: {
     title: 'Результати по позиціях',
@@ -321,6 +324,7 @@ export const uk = {
     'box.openFaces': 'Відкрита грань: 0 або 1',
     'saddle.invalid': 'Сідло: 0 або 1',
     'offset.negative': 'Зміщення не може бути від’ємним',
+    'skirt.negative': 'Борт не може бути від’ємним',
     'quantity.invalid': 'Ціле число, не менше 1',
   } satisfies Record<FormIssueCode, string>,
   // non-blocking advice next to a row; numbers come from the warning, thresholds from config
@@ -352,6 +356,7 @@ export const uk = {
       offset: 'Наскільки зміщена вісь на виході відносно входу. У прямокутної утки зміщення йде вздовж сторони a₁. Бета: стінки рахуються по прямому похилу √(L² + H²).',
       ends: 'Скільки торців короба закриті листом a₁ × b₁. Закрита коробка (адаптер) = 2.\nПатрубки (врізки) у площу короба не входять: додайте кожен окремою деталлю Квр або Пвр.',
       openFaces: 'Одна стінка a₁ × L не входить у площу: щілина під дифузор. Ставиться сама при імпорті, якщо в назві є «щілинний дифузор». Правило попереднє (бета).',
+      skirt: 'Вертикальний борт по низу зонта, висотою від краю. Площа борту = периметр низу × висота.\nЗонт не утеплюється.',
     },
     settings: {
       thicknessTable: 'За якою таблицею обирається товщина металу: ДБН В.2.5-67:2013 (додаток Ц) або таблиця інженера.',

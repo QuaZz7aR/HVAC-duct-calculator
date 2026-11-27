@@ -52,6 +52,9 @@ const slots: Record<FittingKind, Partial<Record<SizeSlot, FieldKey>>> = {
   rectBox: { A: 'width', B: 'height', L: 'length', P: 'partitions', O: 'openFaces' },
   roundOffset: { A: 'diameter', l: 'allowance', L: 'length', H: 'offset' },
   rectOffset: { A: 'width', B: 'height', l: 'allowance', L: 'length', H: 'offset' },
+  // BETA (ADR 0120): L is the height of the hood, the rim is not in the files
+  rectHood: { A: 'width', B: 'height', a: 'smallWidth', b: 'smallHeight', l: 'allowance', L: 'length' },
+  rectHoodRoundStub: { A: 'width', B: 'height', a: 'smallDiameter', l: 'allowance', L: 'length' },
 };
 
 const text = (c: Cell | undefined): string => (c === null || c === undefined ? '' : String(c).trim());
