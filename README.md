@@ -24,6 +24,7 @@ The interface is in Ukrainian by default, with an English version: the УКР / 
 - **Help with video.** «Як користуватися» beside the title (a round «?» on a phone) walks through six steps, seven on a phone, each with a short clip of the real interface.
 - **Export.** Download the results as an Excel file (specification with totals, metal list by thickness, insulation list) or print them / save as PDF.
 - **Saved in your browser.** The list, its order and positions, the settings and the prices are kept in this browser between visits (nothing is sent anywhere); «Delete all» starts over.
+- **Suggestions.** «Suggest an idea» at the bottom of the page sends a short note to the author by e-mail (only what you type there is sent).
 - **Simple and advanced mode.** The simple mode (default) shows only sizes, quantity and the metal figures; the advanced mode adds the calculation settings, allowances, insulation and prices. The choice is remembered in the browser; hidden values still count.
 - **Start.** A new project opens empty: add fittings from the side panel or import a specification; the project is kept in your browser.
 - **Sketches.** Each fitting card shows a thumbnail of its isometric sketch; a click opens the full sketch with the dimension letters used in the form.
@@ -96,6 +97,8 @@ npm test           # unit tests (Vitest)
 npm run typecheck
 npm run lint
 ```
+
+The suggestions form needs `RESEND_API_KEY` and `FEEDBACK_TO` in the environment (a free [Resend](https://resend.com) key and the address that receives the letters); without them it is simply hidden.
 
 ## Roadmap
 

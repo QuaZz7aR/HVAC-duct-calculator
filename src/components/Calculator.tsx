@@ -20,23 +20,25 @@ import { SheetList } from "./calculator/SheetList";
 import { InsulationList } from "./calculator/InsulationList";
 import { KindRail } from "./calculator/KindPalette";
 import { Totals } from "./calculator/Totals";
+import { FeedbackButton } from "./calculator/FeedbackDialog";
 import { PhoneActions } from "./calculator/PhoneActions";
 import { useCalculator } from "./calculator/useCalculator";
 import { useCardView } from "./calculator/useCardView";
 
-export function Calculator() {
+/** `feedback`: the server has the mail settings, so the suggestions form is shown (ADR 0120). */
+export function Calculator({ feedback = false }: { feedback?: boolean }) {
   return (
     <I18nProvider>
       <ThemeProvider>
       <ModeProvider>
-        <CalculatorPage />
+        <CalculatorPage feedback={feedback} />
       </ModeProvider>
       </ThemeProvider>
     </I18nProvider>
   );
 }
 
-function CalculatorPage() {
+function CalculatorPage({ feedback }: { feedback: boolean }) {
   const { dict } = useI18n();
   const { loaded, rows, settings, setSettings, settingsIssues, calc, outcome, update, setKind, setValue, resetValue, addRow, countOf, lastAddedId, cloneRow, importRows, clearRows, numberRows, removeRow, moveRow, dropRows, prices, costs, setMetalPrice, setInsulationPrice } = useCalculator();
 
@@ -112,7 +114,10 @@ function CalculatorPage() {
         </div>
         </div>
 
-        <footer className="text-xs text-muted">{dict.footer}</footer>
+        <footer className="space-y-3 text-xs text-muted">
+          {feedback && <FeedbackButton />}
+          <p>{dict.footer}</p>
+        </footer>
       </main>
       <div className="print-hide contents"><PhoneActions view={view} hasRows={rows.length > 0} count={countOf} onAdd={addRow} /></div>
     </div>
