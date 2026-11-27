@@ -304,7 +304,7 @@ export const en: Dictionary = {
   warnings: {
     title: 'Warnings',
     'aspect.high': (value: string, limit: string) =>
-      `Aspect ratio ${value} (from ${limit}): this is not done in practice, check the sizes and the sheet thickness.`,
+      `The sides are in a ratio of ${value}:1. Preferably below ${limit}:1: check the sizes.`,
     'aspect.excessive': (value: string, limit: string) =>
       `Aspect ratio ${value} exceeds ${limit} (DBN V.2.5-67:2013, annex Ts). Better change the sizes.`,
     'size.overLimit': (value: string, limit: string) =>

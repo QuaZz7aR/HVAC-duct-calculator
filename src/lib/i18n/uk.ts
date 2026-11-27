@@ -327,7 +327,7 @@ export const uk = {
   warnings: {
     title: 'Попередження',
     'aspect.high': (value: string, limit: string) =>
-      `Співвідношення сторін ${value} (від ${limit}): на практиці так не роблять, перевірте розміри та товщину металу.`,
+      `Сторони відносяться як ${value}:1. Бажано менше ${limit}:1: перевірте розміри.`,
     'aspect.excessive': (value: string, limit: string) =>
       `Співвідношення сторін ${value} перевищує ${limit} (ДБН В.2.5-67:2013, додаток Ц). Розміри краще змінити.`,
     'size.overLimit': (value: string, limit: string) =>
