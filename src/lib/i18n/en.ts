@@ -438,5 +438,27 @@ export const en: Dictionary = {
       mode: '«Replace» removes the current cards, «Append» keeps them. Parts are added in file order.',
     },
   },
+  // suggestions form (ADR 0120): the letter goes to the site owner
+  feedback: {
+    button: 'Suggest an idea',
+    title: 'Your suggestion',
+    intro: 'Tell us what is missing or inconvenient. The letter goes to the author of the site.',
+    message: 'Suggestion',
+    messagePlaceholder: 'For example: add dampers',
+    contact: 'Your e-mail or phone',
+    contactPlaceholder: 'so we can reply',
+    send: 'Send',
+    sending: 'Sending…',
+    close: 'Close',
+    sent: 'Thank you! Your suggestion was sent.',
+    errors: {
+      invalid: 'Write at least a few words (up to 4000 characters).',
+      spam: 'Could not send. Please try again.',
+      tooFast: 'Wait a few seconds and send again.',
+      tooMany: 'Too many messages. Try again in 10 minutes.',
+      disabled: 'The form is unavailable for now.',
+      failed: 'Could not send. Please try later.',
+    },
+  },
   footer: 'Calculated by a method checked against a practising engineer’s Excel. Cutting coefficients are preliminary; the thickness table is chosen in the calculation settings.',
 };
