@@ -2,6 +2,7 @@ import { kindFields, type FieldKey, type FittingKind, type FormRow } from './fie
 import { defaultConfig } from '../calc/config';
 import { defaultSettings, sheetKey, thicknessTables, type SettingsText } from './settings';
 import { emptyPrices, type PriceText } from './price';
+import { externalCode } from './calculate';
 
 /** localStorage key of the saved project (ADR 0101). */
 export const projectKey = 'project';
@@ -49,6 +50,9 @@ function parseRow(v: unknown): FormRow | undefined {
   };
   opt('allowanceCount');
   opt('insulation');
+  // ADR 0120: a saved material code becomes its thickness («Зовнішній утеплювач N мм»)
+  const legacy = row.insulation && defaultConfig.insulation.materials.find((m) => m.code === row.insulation);
+  if (legacy) row.insulation = String(legacy.thicknessMm);
   opt('position');
   opt('saddle');
   if (Array.isArray(v.manual)) row.manual = v.manual.filter((k): k is FieldKey => typeof k === 'string' && keys.has(k));
@@ -100,6 +104,17 @@ export function parseProject(text: string | null | undefined): SavedProject | un
       rows.push(row);
     }
   }
-  const prices = isObj(data.prices) ? { metal: textMap(data.prices.metal), insulation: textMap(data.prices.insulation) } : emptyPrices();
+  const prices = isObj(data.prices) ? { metal: textMap(data.prices.metal), insulation: legacyPrices(textMap(data.prices.insulation)) } : emptyPrices();
   return { rows, settings: parseSettings(data.settings), prices };
+}
+
+/** ADR 0120: prices saved by material code move to the thickness line; the first price of a thickness wins. */
+function legacyPrices(map: Record<string, string>): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [code, text] of Object.entries(map)) {
+    const m = defaultConfig.insulation.materials.find((x) => x.code === code);
+    const key = m ? externalCode(m.thicknessMm) : code;
+    if (!(key in out) || !m) out[key] = text;
+  }
+  return out;
 }

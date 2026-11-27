@@ -4,6 +4,7 @@ import { useI18n } from "@/components/i18n";
 import { PriceInput } from "./PriceInput";
 import { cardClass, mutedClass } from "./styles";
 import { Info } from "./Info";
+import { insulationName } from "./format";
 
 interface Props {
   groups: Calculation["insulationList"];
@@ -24,7 +25,7 @@ export function InsulationList({ groups, prices, costs, onPrice }: Props) {
         {/* phone: one block per material, label beside value (ADR 0058) */}
         <ul className="space-y-2 sm:hidden">
           {groups.map((g, i) => {
-            const name = dict.insulation.materials[g.code] ?? g.code;
+            const name = insulationName(g.code, dict);
             const cost = costs[i];
             return (
               <li key={g.code} className="rounded-md border border-line p-2 text-sm">
@@ -50,7 +51,7 @@ export function InsulationList({ groups, prices, costs, onPrice }: Props) {
             </thead>
             <tbody>
               {groups.map((g, i) => {
-                const name = dict.insulation.materials[g.code] ?? g.code;
+                const name = insulationName(g.code, dict);
                 const cost = costs[i];
                 return (
                   <tr key={g.code} className="border-t border-line">

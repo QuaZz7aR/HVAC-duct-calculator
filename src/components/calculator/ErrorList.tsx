@@ -3,6 +3,7 @@ import type { FittingWarning } from "@/lib/calc/warnings";
 import { issueMessage, warningMessage, type FormIssue } from "@/lib/form/messages";
 import { useI18n } from "@/components/i18n";
 import type { Dictionary } from "@/lib/i18n";
+import { insulationName } from "./format";
 
 function fieldLabel(issue: FormIssue, dict: Dictionary, fmt: (n: number, digits?: number) => string) {
   const key = String(issue.path[0]);
@@ -12,7 +13,7 @@ function fieldLabel(issue: FormIssue, dict: Dictionary, fmt: (n: number, digits?
   if (key === "metalPrice") return dict.price.metalLabel(fmt(Number(issue.path[1]), 2));
   if (key === "insulationPrice") {
     const code = String(issue.path[1]);
-    return dict.price.insulationLabel(dict.insulation.materials[code] ?? code);
+    return dict.price.insulationLabel(insulationName(code, dict));
   }
   return dict.fields[key as FieldKey] ?? key;
 }

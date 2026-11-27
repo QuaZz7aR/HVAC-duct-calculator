@@ -1,5 +1,5 @@
 import { airAtConditions } from '../calc/air';
-import { defaultConfig, type CalcConfig } from '../calc/config';
+import { defaultConfig, type CalcConfig, type InsulationMaterial } from '../calc/config';
 import { assembleSection } from '../calc/section';
 import { centerlineLength } from '../calc/sheet-area';
 import { metalArea } from '../calc/waste-factor';
@@ -100,8 +100,8 @@ function parseRow(row: FormRow, schemas: ReturnType<typeof createSchemas>, confi
   if (Number.isNaN(zeta)) issues.push({ code: 'size.notFinite', path: ['zeta'] });
   else if (zeta < 0) issues.push({ code: 'coefficient.negative', path: ['zeta'] });
 
-  const code = row.insulation ?? '';
-  const material = code === '' ? null : (config.insulation.materials.find((m) => m.code === code) ?? null);
+  const code = (row.insulation ?? '').trim();
+  const material = code === '' ? null : insulationMaterial(code, config);
   if (code !== '' && !material) issues.push({ code: 'insulation.unknown', path: ['insulation'] });
 
   if (issues.length > 0 || !item.ok) return { ok: false as const, issues };
@@ -186,7 +186,7 @@ export function calculate(
   const groups = sheetList(valid, config, metalConsumption);
   const totalMetalConsumption = groups.reduce((sum, g) => sum + g.area, 0);
   const totalMetalArea = valid.reduce((sum, v) => sum + v.quantity * metalArea(v.fitting, config), 0);
-  const insulation = insulationList(insulatedItems, config);
+  const insulation = insulationList(insulatedItems, withMaterials(config, insulatedItems.map((i) => i.material)));
   return {
     air: air.ok ? { ok: true } : { ok: false, issues: air.issues },
     rows: outcomes,
@@ -200,4 +200,31 @@ export function calculate(
     // rows blocked only by invalid air carry no issues of their own and are not counted
     skipped: outcomes.filter((o) => !o.ok && o.issues.length > 0).length,
   };
+}
+
+/** Largest layer thickness the form accepts, mm (ADR 0120). */
+export const maxInsulationMm = 200;
+
+/** Code of a typed external insulation thickness (ADR 0120): one list line per thickness. */
+export const externalCode = (thicknessMm: number) => `ext${thicknessMm}`;
+
+/**
+ * The row's insulation (ADR 0120): a typed thickness in mm («Зовнішній утеплювач», no material),
+ * or a legacy material code of `config.insulation.materials` (older saved rows and tests). Null = not valid.
+ */
+export function insulationMaterial(text: string, config: CalcConfig): InsulationMaterial | null {
+  const legacy = config.insulation.materials.find((m) => m.code === text);
+  if (legacy) return legacy;
+  const t = parseNumber(text);
+  return t !== undefined && t > 0 && t <= maxInsulationMm ? { code: externalCode(t), thicknessMm: t } : null;
+}
+
+/** The config's list plus the typed thicknesses, thinnest first, so `insulationList` keeps a line for each. */
+function withMaterials(config: CalcConfig, used: InsulationMaterial[]): CalcConfig {
+  const known = new Set(config.insulation.materials.map((m) => m.code));
+  const extra = new Map<string, InsulationMaterial>();
+  for (const m of used) if (!known.has(m.code)) extra.set(m.code, m);
+  if (extra.size === 0) return config;
+  const materials = [...config.insulation.materials, ...[...extra.values()].sort((a, b) => a.thicknessMm - b.thicknessMm)];
+  return { ...config, insulation: { ...config.insulation, materials } };
 }

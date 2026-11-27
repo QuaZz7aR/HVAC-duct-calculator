@@ -6,7 +6,7 @@ import type { SettingsText } from "@/lib/form/settings";
 import type { Dictionary } from "@/lib/i18n";
 import type { CostTotal } from "@/lib/calc/price";
 import type { XCell, XSheet } from "@/lib/export/xlsx-writer";
-import { rowTitle, sizeLabel } from "./format";
+import { insulationName, rowTitle, sizeLabel } from "./format";
 
 export interface ReportInput {
   rows: FormRow[];
@@ -85,7 +85,7 @@ export function reportSheets(input: ReportInput, dict: Dictionary): XSheet[] {
     const priced = pricing.insulation.some((c) => c !== undefined);
     const ins: XCell[][] = [[b(dict.insulation.title)], [], [b(dict.insulation.material), b(dict.insulation.area), ...(priced ? [b(dict.price.cost)] : [])]];
     calc.insulationList.forEach((g, i) => ins.push([
-      dict.insulation.materials[g.code as keyof typeof dict.insulation.materials] ?? g.code, n(g.area),
+      insulationName(g.code, dict), n(g.area),
       ...(priced ? [pricing.insulation[i] === undefined ? null : n(pricing.insulation[i]!, 2)] : []),
     ]));
     ins.push([b(dict.totals.title), b(calc.totalInsulationArea), ...(priced ? [cost(pricing.insulationTotal, insLines)] : [])], [], [dict.insulation.note]);
