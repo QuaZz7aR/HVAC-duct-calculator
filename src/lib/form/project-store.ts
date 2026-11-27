@@ -2,6 +2,7 @@ import { kindFields, type FieldKey, type FittingKind, type FormRow } from './fie
 import { defaultConfig } from '../calc/config';
 import { defaultSettings, sheetKey, thicknessTables, type SettingsText } from './settings';
 import { emptyPrices, type PriceText } from './price';
+import type { EquipmentOpeningText, EquipmentRow } from './equipment';
 
 /** localStorage key of the saved project (ADR 0101). */
 export const projectKey = 'project';
@@ -13,6 +14,8 @@ export interface SavedProject {
   rows: FormRow[];
   settings: SettingsText;
   prices: PriceText;
+  /** equipment rows (ADR 0120); absent in projects saved before it = none */
+  equipment?: EquipmentRow[];
 }
 
 /** The saved form as JSON text; `flow` / `zeta` are hidden inputs and are not kept. */
@@ -22,6 +25,7 @@ export function serializeProject(p: SavedProject): string {
     rows: p.rows.map((r) => ({ ...r, flow: undefined, zeta: undefined })),
     settings: p.settings,
     prices: p.prices,
+    equipment: p.equipment ?? [],
   });
 }
 
@@ -65,6 +69,18 @@ function parseRow(v: unknown): FormRow | undefined {
   return row;
 }
 
+/** One saved equipment row, or undefined when the id is bad; missing text fields are empty, broken openings are dropped. */
+function parseEquipment(v: unknown): EquipmentRow | undefined {
+  if (!isObj(v) || typeof v.id !== 'number' || !Number.isInteger(v.id) || v.id < 1) return undefined;
+  const openings: EquipmentOpeningText[] = (Array.isArray(v.openings) ? v.openings : [])
+    .filter((o): o is Record<string, unknown> => isObj(o) && (o.shape === 'round' || o.shape === 'rect'))
+    .map((o) => ({ shape: o.shape as EquipmentOpeningText['shape'], a: str(o.a) ?? '', b: str(o.b) ?? '' }));
+  return {
+    id: v.id, name: str(v.name) ?? '', length: str(v.length) ?? '', width: str(v.width) ?? '', height: str(v.height) ?? '',
+    openings, quantity: str(v.quantity) ?? '1', insulation: str(v.insulation) ?? '',
+  };
+}
+
 function parseSettings(v: unknown): SettingsText {
   const d = defaultSettings();
   if (!isObj(v)) return d;
@@ -101,5 +117,9 @@ export function parseProject(text: string | null | undefined): SavedProject | un
     }
   }
   const prices = isObj(data.prices) ? { metal: textMap(data.prices.metal), insulation: textMap(data.prices.insulation) } : emptyPrices();
-  return { rows, settings: parseSettings(data.settings), prices };
+  const ids = new Set<number>();
+  const equipment = (Array.isArray(data.equipment) ? data.equipment : [])
+    .map(parseEquipment)
+    .filter((e): e is EquipmentRow => e !== undefined && !ids.has(e.id) && (ids.add(e.id), true));
+  return { rows, settings: parseSettings(data.settings), prices, equipment };
 }

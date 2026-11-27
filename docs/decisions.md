@@ -127,6 +127,7 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0117](adr/0117-brick-red-accent.md) | «Акцент» choice: blue (default) or brick red; errors turn orange with the red accent | 2026-11-26 | Accepted |
 | [0118](adr/0118-saddle-on-a-round-main-and-no-partitions.md) | Saddle of a branch on a round main as an option (taps: main Ø, round-main tees/crosses: on/off); box partitions not counted by the form | 2026-11-27 | Accepted |
 | [0119](adr/0119-placeholders-in-empty-fields.md) | Placeholders in empty optional fields (reducer length «300 (рекомендовано)», tap main Ø «пласка стінка»); `reducer.tooShort` names 150 mm | 2026-11-27 | Accepted |
+| [0120](adr/0120-equipment-insulation-only.md) | «Обладнання»: casing L x B x H with round / rect openings, insulation only (outer layer surface minus openings), own block apart from the fittings | 2026-11-27 | Accepted (beta, `TODO(confirm)`) |
 | [0095](adr/0095-numbering-by-systems.md) | «Нумерація»: positions «система-№», empty only or all again, preview first | 2026-11-24 | Accepted |
 | [0096](adr/0096-import-from-pdf.md) | Import from PDF: own text reader, columns from table borders or text ranges | 2026-11-24 | Accepted (thresholds `TODO(confirm)`) |
 | [0097](adr/0097-video-clips-in-the-help.md) | Short MP4 clip per help step, loaded only when the dialog opens | 2026-11-24 | Accepted |
@@ -146,6 +147,7 @@ Deliberate; the Excel is a reference, not the truth ([0001](adr/0001-excel-is-a-
 Find them all with `grep -rn "TODO(confirm)" src`.
 | Where | What is unconfirmed |
 |---|---|
+| `calc/equipment.ts` `equipmentInsulationArea`, `form/equipment.ts` `newEquipment` | Equipment openings subtracted at their own size (not d + 2t); prefills 1500 x 800 x 600, two openings 400 x 300 (ADR 0120) |
 | `calc/config.ts` thickness | Default is the ДБН table (`dbnThickness`, engineer: "do it by ДБН", 2026-10-19). Open: sizes between the listed ones take the next larger listed size (our rule); fire-resistant ducts (>= 0.8 mm) are not modelled. `engineerThickness` (0.55 / 0.7 at 400 mm, confirmed 2026-10-16) is the selectable option; it keys rect by the equivalent diameter, as his template and orders (2026-11-16, [0041](adr/0041-engineer-table-by-equivalent-diameter-and-allowance-count.md)). His Пвр seems keyed by the width only: not followed, asked the owner. |
 | `calc/config.ts` order | Margin 20 % is "probably the margin for ordering metal" (engineer, unsure); the offered sheet sizes and the default 1250 x 2500 are not from a supplier. |
 | `calc/config.ts` wasteFactor | Factors 1.15 / 1.2 / 1.1 and their thresholds came from websites. Decided: elbows only, no normative source (Ш4); what they cover stays unconfirmed. Other kinds: `default` = the user's seam allowance (0 by default). Rect is keyed by equivalent diameter, thickness by larger side. |
@@ -172,6 +174,7 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `calc/saddle.ts`, `sheet-area.ts` | Saddle option ([0118](adr/0118-saddle-on-a-round-main-and-no-partitions.md)): the cut-out on the round main stays the flat branch section. |
 
 ## Deferred
+- Import of equipment rows (ПВУ, нагрівач, вентилятор) into the «Обладнання» block (ADR 0120).
 - `npm audit`: 5 high findings, one chain (`braces` <- `micromatch` <- `fast-glob` <- `@next/eslint-plugin-next` <- `eslint-config-next`), dev tooling only, nothing ships to the browser or the server. No non-breaking fix exists: `npm audit fix --force` would downgrade `eslint-config-next` to 14.2.35 (Next 16 here). Wait for a `eslint-config-next` release that updates `fast-glob`/`micromatch`; do not run `npm audit fix`.
 - eslint 9 -> 10: blocked upstream. `eslint-config-next` 16.3.8 itself allows `eslint >=9`, but the plugins it bundles (`eslint-plugin-react` 7.37.5, `eslint-plugin-import` 2.32.0, `eslint-plugin-jsx-a11y` 6.10.2, all at their latest releases) declare peers only up to `^9`. Retry when those publish eslint 10 support; do not force it with overrides.
 - Share the equivalent-diameter helper between `aero.ts` (m) and `waste-factor.ts` (mm).

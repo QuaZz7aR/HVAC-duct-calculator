@@ -1,5 +1,6 @@
 import type { Calculation, RowOutcome } from "@/lib/form/calculate";
 import type { FormRow } from "@/lib/form/fields";
+import type { EquipmentRow } from "@/lib/form/equipment";
 import { positionLabel } from "@/lib/form/order";
 import type { Pricing } from "@/lib/form/price";
 import type { SettingsText } from "@/lib/form/settings";
@@ -14,6 +15,8 @@ export interface ReportInput {
   calc: Calculation;
   pricing: Pricing;
   settings: SettingsText;
+  /** equipment rows (ADR 0120): listed under the fittings with their insulation only */
+  equipment?: EquipmentRow[];
   date: Date;
 }
 
@@ -53,6 +56,18 @@ export function reportSheets(input: ReportInput, dict: Dictionary): XSheet[] {
       p ? dict.results.pieces(String(p.full), (p.pieceMm / 1000).toLocaleString(dict.locale), p.restMm > 0 ? (p.restMm / 1000).toLocaleString(dict.locale) : null).replace(/^[^:]*:\s*/, "") : null,
     ]);
   });
+  const equipment = input.equipment ?? [];
+  if (equipment.length > 0) {
+    // insulation only: the metal columns stay empty
+    spec.push([], [null, b(dict.equipment.title)]);
+    const outcomes = new Map((calc.equipment ?? []).map((o) => [o.ok ? o.result.id : o.id, o]));
+    equipment.forEach((e, i) => {
+      const o = outcomes.get(e.id);
+      const name = [null, e.name.trim() || dict.equipment.namePlaceholder(i + 1), `${e.length}×${e.width}×${e.height}`] as XCell[];
+      if (!o?.ok) spec.push([...name, null, d.notCounted]);
+      else spec.push([...name, o.result.quantity, null, null, null, null, null, ...(insulated ? [o.result.insulation ? n(o.result.insulation.areaTotal) : null] : [])]);
+    });
+  }
   const metalLines = pricing.metal.length, insLines = pricing.insulation.length;
   spec.push([], [b(dict.totals.title)],
     [dict.totals.metalArea, b(calc.totalMetalArea)],
