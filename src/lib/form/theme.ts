@@ -16,7 +16,7 @@ export function resolveTheme(theme: Theme, systemDark: boolean): 'light' | 'dark
 
 export const themeStorageKey = 'theme';
 
-/** Accent colour (ADR 0117): the blue of the blueprint by default, or a brick red; works in both themes. */
+/** Accent colour (ADR 0118): the blue of the blueprint by default, or a brick red; works in both themes. */
 export const accents = ['blue', 'red'] as const;
 export type Accent = (typeof accents)[number];
 

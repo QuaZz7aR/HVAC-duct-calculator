@@ -125,6 +125,8 @@ Companion to `CLAUDE.md`: why the core looks the way it does, and what is still 
 | [0115](adr/0115-import-fixes-from-the-full-recheck.md) | Import: «###» quantity left empty and flagged, slot adapters «A×B×C» with partitions, flexible duct not recognised | 2026-11-26 | Accepted |
 | [0116](adr/0116-open-face-of-a-box.md) | ПА: open face under a slot diffuser (`openFaces` 0 / 1), set by the import | 2026-11-26 | Accepted (beta) |
 | [0117](adr/0117-brick-red-accent.md) | «Акцент» choice: blue (default) or brick red; errors turn orange with the red accent | 2026-11-26 | Accepted |
+| [0118](adr/0118-saddle-on-a-round-main-and-no-partitions.md) | Saddle of a branch on a round main as an option (taps: main Ø, round-main tees/crosses: on/off); box partitions not counted by the form | 2026-11-27 | Accepted |
+| [0119](adr/0119-placeholders-in-empty-fields.md) | Placeholders in empty optional fields (reducer length «300 (рекомендовано)», tap main Ø «пласка стінка»); `reducer.tooShort` names 150 mm | 2026-11-27 | Accepted |
 | [0095](adr/0095-numbering-by-systems.md) | «Нумерація»: positions «система-№», empty only or all again, preview first | 2026-11-24 | Accepted |
 | [0096](adr/0096-import-from-pdf.md) | Import from PDF: own text reader, columns from table borders or text ranges | 2026-11-24 | Accepted (thresholds `TODO(confirm)`) |
 | [0097](adr/0097-video-clips-in-the-help.md) | Short MP4 clip per help step, loaded only when the dialog opens | 2026-11-24 | Accepted |
@@ -163,9 +165,11 @@ Find them all with `grep -rn "TODO(confirm)" src`.
 | `import/pdf.ts` layout | Word gap 0.2 font size, border must cross a third of the body lines, header lines within 2.2 font sizes: tuned on LibreOffice and Chrome PDFs of our samples only ([0096](adr/0096-import-from-pdf.md)). |
 | `import/pdf.ts` clipped cells | A clip box up to 20 font sizes high and wide is one cell; a wrapped fragment of 1-2 letters or digits joins without a space: tuned on one GridCraft PDF ([0099](adr/0099-pdf-clipped-cells-and-unicode-cmaps.md)). |
 | `import/pdf.ts` wrapped rows | Lines between two row borders join when the band has exactly one full line (3+ columns), lines within two font sizes: tuned on kyiv.pdf and order.pdf ([0100](adr/0100-pdf-wrapped-rows-between-row-borders.md)). |
-| `calc/sheet-area.ts` `rectBox`, `rectOffset`, `roundOffset` | Beta ([0113](adr/0113-adapters-boxes-and-offsets-beta.md)): box = closed plates a x b (ends 0-2) + partitions; open a x L face 0 / 1 under a slot diffuser ([0116](adr/0116-open-face-of-a-box.md)), whether partitions count there; box centre line = L; round offset is a smooth slanted tube, not segmented elbows; offset along side a. Prefill ends 2, partitions 0 (`form/fields.ts`). |
+| `calc/sheet-area.ts` `rectBox`, `rectOffset`, `roundOffset` | Beta ([0113](adr/0113-adapters-boxes-and-offsets-beta.md)): box = closed plates a x b (ends 0-2) + partitions; open a x L face 0 / 1 under a slot diffuser ([0116](adr/0116-open-face-of-a-box.md)); partitions not counted by the form ([0118](adr/0118-saddle-on-a-round-main-and-no-partitions.md)); box centre line = L; round offset is a smooth slanted tube, not segmented elbows; offset along side a. Prefill ends 2, partitions 0 (`form/fields.ts`). |
 | `import/recognize.ts` beta kinds | Codes ПА / ПУ / КУ only; the words «утка», «короб», «адаптер» wait for the owner (they change pinned import tests). |
 | `public/help/*.mp4` | Clip format and count are the agent's choice (MP4, one per step, uk + en) ([0097](adr/0097-video-clips-in-the-help.md)). |
+
+| `calc/saddle.ts`, `sheet-area.ts` | Saddle option ([0118](adr/0118-saddle-on-a-round-main-and-no-partitions.md)): the cut-out on the round main stays the flat branch section. |
 
 ## Deferred
 - `npm audit`: 5 high findings, one chain (`braces` <- `micromatch` <- `fast-glob` <- `@next/eslint-plugin-next` <- `eslint-config-next`), dev tooling only, nothing ships to the browser or the server. No non-breaking fix exists: `npm audit fix --force` would downgrade `eslint-config-next` to 14.2.35 (Next 16 here). Wait for a `eslint-config-next` release that updates `fast-glob`/`micromatch`; do not run `npm audit fix`.

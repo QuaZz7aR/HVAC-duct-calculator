@@ -125,6 +125,7 @@ export const en: Dictionary = {
   kind: 'Type',
   quantity: `Quantity ${sym.quantity}, pcs`,
   optional: 'optional',
+  recommendedValue: (v: number) => `${v} (recommended)`,
   sketch: {
     diameter: 'D',
     rect: 'W × H',
@@ -243,6 +244,7 @@ export const en: Dictionary = {
     metalLabel: (t: string) => `Metal price ${t} mm`,
     insulationLabel: (m: string) => `Price: ${m}`,
   },
+  saddle: { tapField: 'Main Ø', tapPlaceholder: 'flat wall', teeField: 'Saddle on a round main', tapInfo: 'Diameter of the round duct the tap goes into. The stub then follows the curve of the pipe (a saddle) and the area is a little larger. Empty = a tap into a flat wall (rect duct).', teeInfo: 'Yes: the branch follows the curve of the round main (a saddle), a slightly larger but more exact area. No: as most tables and calculators count it.', off: 'No', on: 'Yes' },
   allowanceCount: {
     field: 'Number of allowances',
     options: { 2: '2 (both ends)', 1: '1 (one end)', 0: '0 (no allowance)' },
@@ -281,7 +283,7 @@ export const en: Dictionary = {
     'allowance.negative': 'Cannot be negative',
     'allowanceCount.invalid': 'Number of allowances: 0, 1 or 2',
     'angle.outOfRange': 'The angle must be greater than 0° and not greater than 180°',
-    'reducer.tooShort': 'The reducer is shorter than the minimum allowed',
+    'reducer.tooShort': 'The reducer is shorter than 150 mm. Enter 150 mm or more (300 recommended).',
     'reducer.noSizeChange': 'Both ends of the reducer have the same size',
     'flow.nonPositive': 'Airflow must be greater than zero',
     'coefficient.negative': 'Cannot be negative',
@@ -295,6 +297,7 @@ export const en: Dictionary = {
     'box.ends': 'Closed ends must be 0, 1 or 2',
     'box.partitions': 'Partitions: a whole number from 0',
     'box.openFaces': 'Open face: 0 or 1',
+    'saddle.invalid': 'Saddle: 0 or 1',
     'offset.negative': 'The offset cannot be negative',
     'quantity.invalid': 'A whole number, at least 1',
   },
@@ -324,7 +327,6 @@ export const en: Dictionary = {
       insulation: 'Insulation material for this fitting. The area is the outer surface of the layer.',
       offset: 'How far the outlet axis is shifted from the inlet. On a rectangular offset the shift runs along side a₁. Beta: the walls follow the straight slant √(L² + H²).',
       ends: 'How many ends of the box are closed by an a₁ × b₁ plate. A closed box (adapter) = 2.\nSpigots (taps) are not part of the box area: add each one as a separate CTap or RTap fitting.',
-      partitions: 'Inner partitions (e.g. in a slot-diffuser adapter), each an a₁ × b₁ plate.',
       openFaces: 'One a₁ × L wall is left out of the area: the slot for a diffuser. Set by the import when the name mentions a slot diffuser. Preliminary rule (beta).',
     },
     settings: {

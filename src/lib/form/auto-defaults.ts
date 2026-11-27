@@ -59,5 +59,6 @@ export function resetToAuto(row: FormRow, key: FieldKey, config: CalcConfig): Fo
 
 /** A row whose kind changed: fresh prefills, no manual marks, auto field computed. */
 export function withKind(row: FormRow, kind: FittingKind, values: FormRow['values'], config: CalcConfig): FormRow {
-  return applyAutoDefaults({ ...row, kind, values, manual: [] }, config);
+  // the saddle means a main diameter on a tap and an on / off choice on a tee: it does not carry over to another kind (ADR 0118)
+  return applyAutoDefaults({ ...row, kind, values, manual: [], saddle: undefined }, config);
 }

@@ -61,8 +61,8 @@ export const kindFields: Record<FittingKind, FieldDef[]> = {
     { key: 'width' }, { key: 'height' }, { key: 'smallWidth' }, { key: 'smallHeight' }, reducerLength, allowance,
   ],
   rectToRoundReducer: [{ key: 'width' }, { key: 'height' }, { key: 'smallDiameter' }, reducerLength, allowance],
-  // TODO(confirm): a box with both end plates and no partitions as the prefill (the engineer's template «Адаптор» is a closed box)
-  rectBox: [{ key: 'width' }, { key: 'height' }, { key: 'length' }, { key: 'ends', initial: '2' }, { key: 'partitions', initial: '0' }, { key: 'openFaces', initial: '0' }],
+  // TODO(confirm): a box with both end plates as the prefill; partitions are not counted by the form (owner 2026-11-27, ADR 0118) (the engineer's template «Адаптор» is a closed box)
+  rectBox: [{ key: 'width' }, { key: 'height' }, { key: 'length' }, { key: 'ends', initial: '2' }, { key: 'openFaces', initial: '0' }],
   roundOffset: [{ key: 'diameter' }, { key: 'length' }, { key: 'offset' }, allowance],
   rectOffset: [{ key: 'width' }, { key: 'height' }, { key: 'length' }, { key: 'offset' }, allowance],
 };
@@ -77,6 +77,8 @@ export interface FormRow {
   zeta: string;
   /** How many ends get the allowance ('2', '1' or '0', ADR 0041); empty or absent = 2. Used only by kinds with an allowance field. */
   allowanceCount?: string;
+  /** Saddle on a round main (ADR 0118): taps take the main diameter in mm as text (empty = a flat wall), round-main tees and crosses '1' (on) or empty. */
+  saddle?: string;
   /** Insulation material code (config.insulation.materials); empty or absent = not insulated. */
   insulation?: string;
   /** Auto-filled fields (see auto-defaults.ts) that the user has typed over; they stop following the size. */
@@ -106,3 +108,7 @@ export function newRow(id: number, kind: FittingKind = 'roundStraight'): FormRow
 
 /** The kind has an allowance, so the number of allowances applies to it. */
 export const hasAllowance = (kind: FittingKind) => kindFields[kind].some((f) => f.key === 'allowance');
+
+/** Kinds whose branch can sit on a round main and so take the saddle choice (ADR 0118). */
+export const saddleKinds: ReadonlySet<FittingKind> = new Set<FittingKind>(['roundTap', 'rectTap', 'roundTee', 'roundTeeRectBranch', 'roundCross', 'roundCrossRectBranches']);
+export const isTap = (k: FittingKind) => k === 'roundTap' || k === 'rectTap';

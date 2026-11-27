@@ -48,6 +48,7 @@ const slots: Record<FittingKind, Partial<Record<SizeSlot, FieldKey>>> = {
   rectCross: { A: 'width', B: 'height', a: 'branchWidth', b: 'branchHeight', l: 'allowance' },
   rectCrossRoundBranches: { A: 'width', B: 'height', a: 'branchDiameter', l: 'allowance' },
   // BETA (ADR 0113): the template's «Адаптор» row has A, B and L; offsets take the offset from the name only
+  // partitions are read from the name but the form no longer counts them (ADR 0118)
   rectBox: { A: 'width', B: 'height', L: 'length', P: 'partitions', O: 'openFaces' },
   roundOffset: { A: 'diameter', l: 'allowance', L: 'length', H: 'offset' },
   rectOffset: { A: 'width', B: 'height', l: 'allowance', L: 'length', H: 'offset' },

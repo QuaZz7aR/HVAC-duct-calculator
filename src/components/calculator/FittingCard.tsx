@@ -2,7 +2,7 @@ import { defaultConfig } from "@/lib/calc/config";
 import { ChevronIcon, CloneIcon, TrashIcon } from "./ViewIcons";
 import { autoKey, isAuto } from "@/lib/form/auto-defaults";
 import { fieldColumns, isLongLabel } from "@/lib/form/layout";
-import { hasAllowance, kindFields, type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
+import { hasAllowance, isTap, kindFields, saddleKinds, type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
 import type { RowOutcome } from "@/lib/form/calculate";
 import { useI18n } from "@/components/i18n";
 import { kindTitle } from "./format";
@@ -89,11 +89,11 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
     </>
   );
   const fieldLabel = (f: (typeof kindFields)[FittingKind][number]) =>
-    `${dict.fields[f.key]}${f.optional ? ` (${dict.optional}: ${defaultConfig.reducerLengthMm})` : ""}`;
+    dict.fields[f.key];
   // the (авто) hint or the reset link sits after the label, so reserve room for the longer one on the suggested field
   // a hidden field with an error stays visible in the simple mode, so it can be fixed (ADR 0082)
   const hasIssue = (key: string) => !!outcome && !outcome.ok && outcome.issues.some((i) => i.path.includes(key));
-  const labels = [dict.order.position, ...kindFields[row.kind].map((f) => fieldLabel(f) + (autoKey(row.kind) === f.key ? ` ${dict.autoValue.length > dict.resetAuto.length ? `(${dict.autoValue})` : dict.resetAuto}` : "")), ...(hasAllowance(row.kind) ? [dict.allowanceCount.field] : []), dict.quantity, dict.insulation.field];
+  const labels = [dict.order.position, ...kindFields[row.kind].map((f) => fieldLabel(f) + (autoKey(row.kind) === f.key ? ` ${dict.autoValue.length > dict.resetAuto.length ? `(${dict.autoValue})` : dict.resetAuto}` : "")), ...(hasAllowance(row.kind) ? [dict.allowanceCount.field] : []), ...(saddleKinds.has(row.kind) ? [isTap(row.kind) ? dict.saddle.tapField : dict.saddle.teeField] : []), dict.quantity, dict.insulation.field];
   if (collapsed) {
     // one compact tile: number, kind and the typed values; the whole tile expands the card
     const summary = [...kindFields[row.kind].map((f) => row.values[f.key] ?? ""), row.quantity].map((v) => v || "–").join(" · ");
@@ -195,6 +195,7 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
             <TextField
               label={fieldLabel(f)}
               value={row.values[f.key] ?? ""}
+              placeholder={f.optional ? dict.recommendedValue(defaultConfig.reducerLengthMm) : undefined}
               onChange={(v) => onValueChange(f.key, v)}
               hint={hint}
               action={action}
@@ -211,6 +212,20 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
               {(["2", "1", "0"] as const).map((n) => (
                 <option key={n} value={n} className="bg-panel text-foreground">{dict.allowanceCount.options[n]}</option>
               ))}
+            </select>
+          </label>
+        )}
+        {saddleKinds.has(row.kind) && isTap(row.kind) && (
+          <div className={hasIssue("mainDiameter") ? "contents" : "contents adv-only"}>
+            <TextField label={dict.saddle.tapField} info={dict.saddle.tapInfo} inputMode="numeric" value={row.saddle ?? ""} placeholder={dict.saddle.tapPlaceholder} onChange={(saddle) => onPatch({ saddle })} />
+          </div>
+        )}
+        {saddleKinds.has(row.kind) && !isTap(row.kind) && (
+          <label className={`${hasIssue("saddle") ? "" : "adv-only "}flex flex-col justify-end`}>
+            <span className={labelClass}>{dict.saddle.teeField}<Info text={dict.saddle.teeInfo} /></span>
+            <select className={selectClass} value={row.saddle === "1" ? "1" : ""} onChange={(e) => onPatch({ saddle: e.target.value })}>
+              <option value="" className="bg-panel text-foreground">{dict.saddle.off}</option>
+              <option value="1" className="bg-panel text-foreground">{dict.saddle.on}</option>
             </select>
           </label>
         )}

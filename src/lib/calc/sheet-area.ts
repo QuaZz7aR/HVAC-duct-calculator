@@ -1,5 +1,6 @@
 import type { AllowanceCount, Fitting } from './types';
 import { branchLayout } from './branch';
+import { rectSaddle, roundSaddle } from './saddle';
 import { degToRad, mmToM } from './units';
 
 /** Wall length along the surface, computed once per fitting and shared by metal and insulation. */
@@ -69,13 +70,19 @@ export function developedLength(f: Fitting): number {
 export function sheetArea(f: Fitting): number {
   switch (f.kind) {
     case 'roundStraight':
-    case 'roundTap':
-      // cylinder wall (a tap is the same stub, its cut-out in the main duct is not subtracted): circumference x developed length
+      // cylinder wall: circumference x developed length
       return Math.PI * mmToM(f.diameter) * developedLength(f);
+    case 'roundTap':
+      // the stub wall (its cut-out in the main duct is not subtracted), plus its saddle on a round main (ADR 0118)
+      return Math.PI * mmToM(f.diameter) * developedLength(f)
+        + (f.mainDiameter ? roundSaddle(mmToM(f.mainDiameter) / 2, mmToM(f.diameter) / 2) : 0);
     case 'rectStraight':
-    case 'rectTap':
       // four walls: perimeter x developed length
       return 2 * (mmToM(f.width) + mmToM(f.height)) * developedLength(f);
+    case 'rectTap':
+      // four stub walls, plus the saddle on a round main (width along the main, ADR 0118)
+      return 2 * (mmToM(f.width) + mmToM(f.height)) * developedLength(f)
+        + (f.mainDiameter ? rectSaddle(mmToM(f.mainDiameter) / 2, mmToM(f.width), mmToM(f.height)) : 0);
     case 'roundCap':
       // end disc + cylindrical skirt
       return (Math.PI * mmToM(f.diameter) ** 2) / 4 + Math.PI * mmToM(f.diameter) * developedLength(f);
@@ -106,9 +113,9 @@ export function sheetArea(f: Fitting): number {
     case 'rectCross':
     case 'rectCrossRoundBranches':
       {
-        // main run wall + collar of each branch - cut-out of each branch (flat cross-section, the saddle effect is ignored)
+        // main run wall + collar of each branch (+ its saddle on a round main when chosen, ADR 0118) - cut-out of each branch (flat cross-section)
         const b = branchLayout(f);
-        return b.mainPerimeter * b.runLength + b.count * (b.branchPerimeter * b.collar - b.branchArea);
+        return b.mainPerimeter * b.runLength + b.count * (b.branchPerimeter * b.collar + b.saddle - b.branchArea);
       }
     case 'rectBox':
       // BETA, ADR 0113 (engineer's template «Адаптор» 2(AB + AL + BL)): four walls + closed end plates + inner partitions, each plate width x height
