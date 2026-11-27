@@ -1,4 +1,5 @@
 import { uk, type Dictionary } from "@/lib/i18n/uk";
+import { defaultConfig } from "@/lib/calc/config";
 import { kindFields, type FieldKey, type FittingKind, type FormRow } from "@/lib/form/fields";
 
 /** Number in Ukrainian locale with a fixed count of decimals. */
@@ -36,4 +37,10 @@ export function sizeLabel(row: FormRow, dict: Dictionary = uk): string {
     else if (!pairs.some(([a, b]) => b === k && keys.includes(a))) parts.push(`${sizeSymbol(k, s)} ${v(k)}${k === "angle" ? "°" : ""}`);
   }
   return parts.join(" · ");
+}
+
+/** «Зовнішній утеплювач 13 мм» for an insulation line code: a typed thickness `ext13` or a legacy material code (ADR 0120). */
+export function insulationName(code: string, dict: Dictionary = uk) {
+  const t = defaultConfig.insulation.materials.find((m) => m.code === code)?.thicknessMm ?? Number(code.replace(/^ext/, ""));
+  return Number.isFinite(t) ? dict.insulation.name(String(t).replace(".", dict.decimal)) : code;
 }

@@ -230,15 +230,9 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
           </label>
         )}
         <TextField label={dict.quantity} info={dict.help.fields.quantity} inputMode="numeric" value={row.quantity} onChange={(quantity) => onPatch({ quantity })} />
-        <label className={`${hasIssue("insulation") ? "" : "adv-only "}col-span-2 flex flex-col justify-end sm:col-span-1`}>
-          <span className={labelClass}>{dict.insulation.field}<Info text={dict.help.fields.insulation} /></span>
-          <select className={selectClass} value={row.insulation ?? ""} onChange={(e) => onPatch({ insulation: e.target.value })}>
-            <option value="" className="bg-panel text-foreground">{dict.insulation.none}</option>
-            {defaultConfig.insulation.materials.map((m) => (
-              <option key={m.code} value={m.code} className="bg-panel text-foreground">{dict.insulation.materials[m.code] ?? m.code}</option>
-            ))}
-          </select>
-        </label>
+        <div className={hasIssue("insulation") ? "contents" : "adv-only contents"}>
+          <TextField label={dict.insulation.field} info={dict.help.fields.insulation} value={insulationText(row.insulation)} placeholder={dict.insulation.none} onChange={(insulation) => onPatch({ insulation })} />
+        </div>
       </div>
       {showSketch && <div className="hidden sm:block">{sketch}</div>}
       {outcome && !outcome.ok && <ErrorList issues={outcome.issues} />}
@@ -252,4 +246,10 @@ export function FittingCard({ row, index, position, first, last, onMove, onDragS
       )}
     </div>
   );
+}
+
+/** A legacy material code shows as its thickness; typing replaces it (ADR 0120). */
+function insulationText(value: string | undefined) {
+  const legacy = defaultConfig.insulation.materials.find((m) => m.code === value);
+  return legacy ? String(legacy.thicknessMm) : (value ?? "");
 }
